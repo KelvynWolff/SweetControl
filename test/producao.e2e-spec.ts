@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../backend/src/app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Producao } from './../src/producao/entities/producao.entity';
-import { Cliente } from './../src/pessoas/entities/cliente.entity';
-import { Pessoa } from './../src/pessoas/entities/pessoa.entity';
-import { Produto } from './../src/produtos/entities/produto.entity';
+import { Producao } from '../backend/src/producao/entities/producao.entity';
+import { Cliente } from '../backend/src/pessoas/entities/cliente.entity';
+import { Pessoa } from '../backend/src/pessoas/entities/pessoa.entity';
+import { Produto } from '../backend/src/produtos/entities/produto.entity';
 
 describe('ProducaoController (e2e)', () => {
   let app: INestApplication;

@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../backend/src/app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Estado } from '../src/localizacao/entities/estado.entity';
-import { Cidade } from '../src/localizacao/entities/cidade.entity';
-import { Bairro } from '../src/localizacao/entities/bairro.entity';
+import { Estado } from '../backend/src/localizacao/entities/estado.entity';
+import { Cidade } from '../backend/src/localizacao/entities/cidade.entity';
+import { Bairro } from '../backend/src/localizacao/entities/bairro.entity';
 
 describe('LocalizacaoController (e2e)', () => {
   let app: INestApplication;

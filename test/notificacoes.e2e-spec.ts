@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../backend/src/app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Notificacao } from '../src/notificacoes/entities/notificacao.entity';
-import { Pedido } from '../src/vendas/entities/pedido.entity';
-import { Cliente } from '../src/pessoas/entities/cliente.entity';
-import { Pessoa } from '../src/pessoas/entities/pessoa.entity';
+import { Notificacao } from '../backend/src/notificacoes/entities/notificacao.entity';
+import { Pedido } from '../backend/src/vendas/entities/pedido.entity';
+import { Cliente } from '../backend/src/pessoas/entities/cliente.entity';
+import { Pessoa } from '../backend/src/pessoas/entities/pessoa.entity';
 
 describe('NotificacoesController (e2e)', () => {
   let app: INestApplication;

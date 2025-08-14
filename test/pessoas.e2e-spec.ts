@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../backend/src/app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Pessoa } from './../src/pessoas/entities/pessoa.entity';
+import { Pessoa } from '../backend/src/pessoas/entities/pessoa.entity';
 import { Repository } from 'typeorm';
 
 describe('PessoasController (e2e)', () => {
