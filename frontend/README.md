@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+# 🧁 Sweet Control
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Sistema de gestão completo para confeitarias e padarias, desenvolvido como Trabalho de Conclusão de Curso (TCC) de **Engenharia de Software**.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Sobre o Projeto
 
-### `npm start`
+O **Sweet Control** é uma solução web projetada para **automatizar e otimizar a administração de confeitarias e padarias**.  
+Ele oferece:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 📦 **Gerenciamento de produtos e insumos**  
+- 📊 **Controle de estoque automatizado**  
+- 🛒 **Gestão de pedidos**  
+- 💰 **Geração de relatórios financeiros**  
+- 🎯 **Módulo de fidelização de clientes**  
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 💻 Tecnologias Utilizadas
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+O projeto segue uma arquitetura com **backend e frontend desacoplados**.
 
-### `npm run build`
+### **Backend**
+- **Node.js** — Ambiente de execução JavaScript no servidor  
+- **Nest.js** — Framework para aplicações eficientes e escaláveis  
+- **TypeScript** — Linguagem de programação
+- **TypeORM** — ORM para comunicação com o banco de dados  
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### **Frontend**
+- **React.js** — Biblioteca para interfaces de usuário  
+- **Axios** — Cliente HTTP para integração com a API  
+- **CSS** — Estilização customizada  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### **Banco de Dados & DevOps**
+- **MySQL 8.0** — Banco de dados relacional  
+- **Docker** — Ambientes containerizados para desenvolvimento  
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ⚙️ Pré-requisitos
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Antes de começar, instale:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Node.js**
+- **Docker**
+- **Git**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 📦 Instalação e Execução
 
-## Learn More
+### 1. Clonar o Repositório
+```bash
+git clone https://github.com/KelvynWolff/SweetControl.git
+cd SweetControl
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 2. Configurar o Backend
+```bash
+cd backend
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# Criar o arquivo de variáveis de ambiente
+cp .env.example .env
+```
+> **Importante:** Edite o arquivo `.env` com as credenciais corretas do banco de dados. Os valores padrão funcionam com o Docker Compose.
 
-### Code Splitting
+```bash
+# Instalar dependências
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3. Configurar o Frontend
+Em um novo terminal:
+```bash
+cd frontend
+npm install
+```
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## ▶️ Rodando a Aplicação
 
-### Making a Progressive Web App
+Será necessário **3 terminais** abertos.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### **Terminal 1 — Banco de Dados**
+Na pasta raiz do projeto:
+```bash
+docker compose up -d
+```
 
-### Advanced Configuration
+### **Terminal 2 — Backend**
+```bash
+cd backend
+npm run start:dev
+```
+API disponível em: **[http://localhost:3000](http://localhost:3000)**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### **Terminal 3 — Frontend**
+```bash
+cd frontend
+npm start
+```
+Interface disponível em: **[http://localhost:3001](http://localhost:3001)**
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📂 Estrutura de Pastas
 
-### `npm run build` fails to minify
+```
+SweetControl/
+├── backend/
+├── frontend/
+└── docker-compose.yml
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 👨‍💻 Autores
+
+- **Kelvyn Luiz Wolff**  
+- **Rodrigo Lodi Micali**
+
+---
