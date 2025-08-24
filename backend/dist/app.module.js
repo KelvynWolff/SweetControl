@@ -19,6 +19,9 @@ const produtos_module_1 = require("./produtos/produtos.module");
 const vendas_module_1 = require("./vendas/vendas.module");
 const producao_module_1 = require("./producao/producao.module");
 const notificacoes_module_1 = require("./notificacoes/notificacoes.module");
+const insumos_module_1 = require("./insumos/insumos.module");
+const receitas_module_1 = require("./receitas/receitas.module");
+const promocoes_module_1 = require("./promocoes/promocoes.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -48,6 +51,9 @@ exports.AppModule = AppModule = __decorate([
             vendas_module_1.VendasModule,
             producao_module_1.ProducaoModule,
             notificacoes_module_1.NotificacoesModule,
+            insumos_module_1.InsumosModule,
+            receitas_module_1.ReceitasModule,
+            promocoes_module_1.PromocoesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

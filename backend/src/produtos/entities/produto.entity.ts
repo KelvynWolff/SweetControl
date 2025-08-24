@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Promocao } from './promocao.entity';
-import { Receita } from './receita.entity';
+import { Promocao } from '../../promocoes/entities/promocao.entity';
+import { Receita } from '../../receitas/entities/receita.entity';
 import { ItensPedido } from '../../vendas/entities/itens-pedido.entity';
 
 @Entity('produtos')

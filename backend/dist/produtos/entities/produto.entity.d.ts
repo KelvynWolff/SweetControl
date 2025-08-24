@@ -1,5 +1,5 @@
-import { Promocao } from './promocao.entity';
-import { Receita } from './receita.entity';
+import { Promocao } from '../../promocoes/entities/promocao.entity';
+import { Receita } from '../../receitas/entities/receita.entity';
 import { ItensPedido } from '../../vendas/entities/itens-pedido.entity';
 export declare class Produto {
     id: number;

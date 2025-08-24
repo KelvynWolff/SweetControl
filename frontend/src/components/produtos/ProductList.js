@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProducts, deleteProduct } from '../services/productService';
-import './tables.css';
+import { getProducts, deleteProduct } from '../../services/productService';
+import '../tables.css';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);

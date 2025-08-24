@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 
-import ProductList from '../../components/ProductList';
-import ProductForm from '../../components/ProductForm';
+import ProductList from '../../components/produtos/ProductList';
+import ProductForm from '../../components/produtos/ProductForm';
 
 function ProdutosPage() {
   return (
