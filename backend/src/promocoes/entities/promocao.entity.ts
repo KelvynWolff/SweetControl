@@ -1,12 +1,18 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Produto } from './produto.entity';
+import { Produto } from '../../produtos/entities/produto.entity';
 
-@Entity('promocoes')
+@Entity()
 export class Promocao {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('double')
+  @Column()
+  nome: string;
+
+  @Column()
+  tipoDeDesconto: string;
+
+  @Column({ type: 'double' })
   valor: number;
 
   @Column({ type: 'date' })
@@ -14,8 +20,11 @@ export class Promocao {
 
   @Column({ type: 'date' })
   dataFim: Date;
-  
-  @ManyToOne(() => Produto, (produto) => produto.promocoes)
+
+  @Column({ nullable: true })
+  idProduto: number;
+
+  @ManyToOne(() => Produto)
   @JoinColumn({ name: 'idProduto' })
   produto: Produto;
 }

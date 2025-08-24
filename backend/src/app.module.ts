@@ -12,6 +12,9 @@ import { ProdutosModule } from './produtos/produtos.module';
 import { VendasModule } from './vendas/vendas.module';
 import { ProducaoModule } from './producao/producao.module';
 import { NotificacoesModule } from './notificacoes/notificacoes.module';
+import { InsumosModule } from './insumos/insumos.module';
+import { ReceitasModule } from './receitas/receitas.module';
+import { PromocoesModule } from './promocoes/promocoes.module';
 
 @Module({
   imports: [
@@ -40,6 +43,9 @@ import { NotificacoesModule } from './notificacoes/notificacoes.module';
     VendasModule,
     ProducaoModule,
     NotificacoesModule,
+    InsumosModule,
+    ReceitasModule,
+    PromocoesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

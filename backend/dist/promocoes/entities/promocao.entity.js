@@ -11,12 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Promocao = void 0;
 const typeorm_1 = require("typeorm");
-const produto_entity_1 = require("./produto.entity");
+const produto_entity_1 = require("../../produtos/entities/produto.entity");
 let Promocao = class Promocao {
     id;
+    nome;
+    tipoDeDesconto;
     valor;
     dataInicio;
     dataFim;
+    idProduto;
     produto;
 };
 exports.Promocao = Promocao;
@@ -25,7 +28,15 @@ __decorate([
     __metadata("design:type", Number)
 ], Promocao.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)('double'),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Promocao.prototype, "nome", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Promocao.prototype, "tipoDeDesconto", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'double' }),
     __metadata("design:type", Number)
 ], Promocao.prototype, "valor", void 0);
 __decorate([
@@ -37,11 +48,15 @@ __decorate([
     __metadata("design:type", Date)
 ], Promocao.prototype, "dataFim", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => produto_entity_1.Produto, (produto) => produto.promocoes),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Promocao.prototype, "idProduto", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => produto_entity_1.Produto),
     (0, typeorm_1.JoinColumn)({ name: 'idProduto' }),
     __metadata("design:type", produto_entity_1.Produto)
 ], Promocao.prototype, "produto", void 0);
 exports.Promocao = Promocao = __decorate([
-    (0, typeorm_1.Entity)('promocoes')
+    (0, typeorm_1.Entity)()
 ], Promocao);
 //# sourceMappingURL=promocao.entity.js.map
