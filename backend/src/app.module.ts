@@ -15,6 +15,9 @@ import { NotificacoesModule } from './notificacoes/notificacoes.module';
 import { InsumosModule } from './insumos/insumos.module';
 import { ReceitasModule } from './receitas/receitas.module';
 import { PromocoesModule } from './promocoes/promocoes.module';
+import { EstadosModule } from './estados/estados.module';
+import { CidadesModule } from './cidades/cidades.module';
+import { BairrosModule } from './bairros/bairros.module';
 
 @Module({
   imports: [
@@ -46,6 +49,10 @@ import { PromocoesModule } from './promocoes/promocoes.module';
     InsumosModule,
     ReceitasModule,
     PromocoesModule,
+    EstadosModule,
+    CidadesModule,
+    BairrosModule,
+    PessoasModule,
   ],
   controllers: [AppController],
   providers: [AppService],
