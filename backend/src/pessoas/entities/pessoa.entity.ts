@@ -1,12 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from 'typeorm';
-import { Endereco } from './endereco.entity';
-import { Telefone } from './telefone.entity';
-import { Email } from './email.entity';
-import { Cliente } from './cliente.entity';
-import { Fornecedor } from './fornecedor.entity';
-import { Funcionario } from './funcionario.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Cidade } from '../../cidades/entities/cidade.entity';
 
-@Entity('pessoas')
+@Entity()
 export class Pessoa {
   @PrimaryGeneratedColumn()
   id: number;
@@ -17,21 +12,10 @@ export class Pessoa {
   @Column({ unique: true })
   cpfCnpj: string;
 
-  @OneToMany(() => Endereco, (endereco) => endereco.pessoa)
-  enderecos: Endereco[];
+  @Column()
+  idCidade: number;
 
-  @OneToMany(() => Telefone, (telefone) => telefone.pessoa)
-  telefones: Telefone[];
-
-  @OneToMany(() => Email, (email) => email.pessoa)
-  emails: Email[];
-  
-  @OneToOne(() => Cliente, cliente => cliente.pessoa)
-  cliente: Cliente;
-
-  @OneToOne(() => Fornecedor, fornecedor => fornecedor.pessoa)
-  fornecedor: Fornecedor;
-
-  @OneToOne(() => Funcionario, funcionario => funcionario.pessoa)
-  funcionario: Funcionario;
+  @ManyToOne(() => Cidade)
+  @JoinColumn({ name: 'idCidade', referencedColumnName: 'codigobge' })
+  cidade: Cidade;
 }

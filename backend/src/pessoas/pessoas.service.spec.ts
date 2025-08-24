@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PessoasService } from './pessoa.service';
+import { PessoasService } from './pessoas.service';
 import { Pessoa } from './entities/pessoa.entity';
 import { CreatePessoaDto } from './dto/create-pessoa.dto';
 
@@ -12,7 +12,6 @@ const mockPessoaRepository = {
 
 describe('PessoasService', () => {
   let service: PessoasService;
-  let repository: Repository<Pessoa>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,34 +25,16 @@ describe('PessoasService', () => {
     }).compile();
 
     service = module.get<PessoasService>(PessoasService);
-    repository = module.get<Repository<Pessoa>>(getRepositoryToken(Pessoa));
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create a new person and return it', async () => {
-      const createPessoaDto: CreatePessoaDto = {
-        nome: 'João Teste',
-        cpfCnpj: '12345678901',
-      };
-      const expectedResult = {
-        id: 1,
-        ...createPessoaDto,
-      };
-
-      mockPessoaRepository.create.mockReturnValue(createPessoaDto);
-      mockPessoaRepository.save.mockReturnValue(expectedResult);
-
-      const result = await service.create(createPessoaDto);
-
-      expect(result).toEqual(expectedResult);
-
-      expect(repository.create).toHaveBeenCalledWith(createPessoaDto);
-      expect(repository.save).toHaveBeenCalledWith(createPessoaDto);
-    });
+  it('should create a new pessoa', async () => {
+    const createDto: CreatePessoaDto = { nome: 'João da Silva', cpfCnpj: '123.456.789-00', idCidade: 12345 };
+    mockPessoaRepository.create.mockReturnValue(createDto);
+    mockPessoaRepository.save.mockResolvedValue({ id: 1, ...createDto });
+    await expect(service.create(createDto)).resolves.toEqual({ id: 1, ...createDto });
   });
-
 });

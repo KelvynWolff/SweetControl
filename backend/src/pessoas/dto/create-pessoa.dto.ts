@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, IsPositive } from 'class-validator';
 
 export class CreatePessoaDto {
   @IsString()
@@ -7,6 +7,9 @@ export class CreatePessoaDto {
 
   @IsString()
   @IsNotEmpty()
-  @Length(11, 14)
   cpfCnpj: string;
+
+  @IsInt()
+  @IsPositive()
+  idCidade: number;
 }
