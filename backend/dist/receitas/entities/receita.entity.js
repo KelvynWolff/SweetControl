@@ -11,13 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Receita = void 0;
 const typeorm_1 = require("typeorm");
-const produto_entity_1 = require("./produto.entity");
-const insumo_entity_1 = require("./insumo.entity");
+const produto_entity_1 = require("../../produtos/entities/produto.entity");
+const insumo_entity_1 = require("../../insumos/entities/insumo.entity");
 let Receita = class Receita {
     id;
+    idProduto;
+    idInsumo;
+    qtdInsumo;
     produto;
     insumo;
-    qtdInsumo;
 };
 exports.Receita = Receita;
 __decorate([
@@ -25,20 +27,28 @@ __decorate([
     __metadata("design:type", Number)
 ], Receita.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => produto_entity_1.Produto, (produto) => produto.receitas),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Receita.prototype, "idProduto", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Receita.prototype, "idInsumo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'double' }),
+    __metadata("design:type", Number)
+], Receita.prototype, "qtdInsumo", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => produto_entity_1.Produto, produto => produto.receitas),
     (0, typeorm_1.JoinColumn)({ name: 'idProduto' }),
     __metadata("design:type", produto_entity_1.Produto)
 ], Receita.prototype, "produto", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => insumo_entity_1.Insumo, (insumo) => insumo.receitas),
+    (0, typeorm_1.ManyToOne)(() => insumo_entity_1.Insumo, insumo => insumo.receitas),
     (0, typeorm_1.JoinColumn)({ name: 'idInsumo' }),
     __metadata("design:type", insumo_entity_1.Insumo)
 ], Receita.prototype, "insumo", void 0);
-__decorate([
-    (0, typeorm_1.Column)('double'),
-    __metadata("design:type", Number)
-], Receita.prototype, "qtdInsumo", void 0);
 exports.Receita = Receita = __decorate([
-    (0, typeorm_1.Entity)('receitas')
+    (0, typeorm_1.Entity)()
 ], Receita);
 //# sourceMappingURL=receita.entity.js.map
