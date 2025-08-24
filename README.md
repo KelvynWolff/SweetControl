@@ -81,26 +81,16 @@ npm install
 
 ## ▶️ Rodando a Aplicação
 
-Será necessário **3 terminais** abertos.
+Será necessário **1 terminal** abertos.
 
-### **Terminal 1 — Banco de Dados**
+### **Container Docker**
 Na pasta raiz do projeto:
 ```bash
 docker compose up -d
 ```
 
-### **Terminal 2 — Backend**
-```bash
-cd backend
-npm run start:dev
-```
 API disponível em: **[http://localhost:3000](http://localhost:3000)**
 
-### **Terminal 3 — Frontend**
-```bash
-cd frontend
-npm start
-```
 Interface disponível em: **[http://localhost:3001](http://localhost:3001)**
 
 ---
