@@ -22,6 +22,9 @@ const notificacoes_module_1 = require("./notificacoes/notificacoes.module");
 const insumos_module_1 = require("./insumos/insumos.module");
 const receitas_module_1 = require("./receitas/receitas.module");
 const promocoes_module_1 = require("./promocoes/promocoes.module");
+const estados_module_1 = require("./estados/estados.module");
+const cidades_module_1 = require("./cidades/cidades.module");
+const bairros_module_1 = require("./bairros/bairros.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,6 +57,9 @@ exports.AppModule = AppModule = __decorate([
             insumos_module_1.InsumosModule,
             receitas_module_1.ReceitasModule,
             promocoes_module_1.PromocoesModule,
+            estados_module_1.EstadosModule,
+            cidades_module_1.CidadesModule,
+            bairros_module_1.BairrosModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
