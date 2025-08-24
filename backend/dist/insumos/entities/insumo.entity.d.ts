@@ -1,4 +1,4 @@
-import { Receita } from './receita.entity';
+import { Receita } from '../../receitas/entities/receita.entity';
 export declare class Insumo {
     id: number;
     nome: string;
