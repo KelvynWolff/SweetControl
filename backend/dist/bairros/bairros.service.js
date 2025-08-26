@@ -29,6 +29,9 @@ let BairrosService = class BairrosService {
     findAll() {
         return this.bairroRepository.find({ relations: ['cidade'] });
     }
+    findAllByCidade(cidadeId) {
+        return this.bairroRepository.find({ where: { ibgeCidade: cidadeId } });
+    }
     async findOne(id) {
         const bairro = await this.bairroRepository.findOne({
             where: { id },

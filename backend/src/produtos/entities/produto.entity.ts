@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Promocao } from '../../promocoes/entities/promocao.entity';
 import { Receita } from '../../receitas/entities/receita.entity';
-import { ItensPedido } from '../../vendas/entities/itens-pedido.entity';
 
 @Entity('produtos')
 export class Produto {
@@ -38,6 +37,4 @@ export class Produto {
   @OneToMany(() => Promocao, (promocao) => promocao.produto)
   promocoes: Promocao[];
 
-  @OneToMany(() => ItensPedido, (item) => item.produto)
-  itensPedido: ItensPedido[];
 }

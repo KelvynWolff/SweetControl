@@ -7,6 +7,7 @@ export declare class BairrosController {
     create(createBairroDto: CreateBairroDto): Promise<import("./entities/bairro.entity").Bairro>;
     findAll(): Promise<import("./entities/bairro.entity").Bairro[]>;
     findOne(id: number): Promise<import("./entities/bairro.entity").Bairro>;
+    findAllByCidade(cidadeId: number): Promise<import("./entities/bairro.entity").Bairro[]>;
     update(id: number, updateBairroDto: UpdateBairroDto): Promise<import("./entities/bairro.entity").Bairro>;
     remove(id: number): Promise<void>;
 }

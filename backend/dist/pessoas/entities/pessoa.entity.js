@@ -11,22 +11,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pessoa = void 0;
 const typeorm_1 = require("typeorm");
-const endereco_entity_1 = require("./endereco.entity");
-const telefone_entity_1 = require("./telefone.entity");
-const email_entity_1 = require("./email.entity");
-const cliente_entity_1 = require("./cliente.entity");
-const fornecedor_entity_1 = require("./fornecedor.entity");
-const funcionario_entity_1 = require("./funcionario.entity");
+const cidade_entity_1 = require("../../cidades/entities/cidade.entity");
+const cliente_entity_1 = require("../../clientes/entities/cliente.entity");
+const fornecedor_entity_1 = require("../../fornecedores/entities/fornecedor.entity");
+const funcionario_entity_1 = require("../../funcionarios/entities/funcionario.entity");
+const telefone_entity_1 = require("../../telefones/entities/telefone.entity");
+const email_entity_1 = require("../../emails/entities/email.entity");
+const endereco_entity_1 = require("../../enderecos/entities/endereco.entity");
 let Pessoa = class Pessoa {
     id;
     nome;
     cpfCnpj;
-    enderecos;
-    telefones;
-    emails;
+    idCidade;
+    cidade;
     cliente;
     fornecedor;
     funcionario;
+    telefones;
+    emails;
+    enderecos;
 };
 exports.Pessoa = Pessoa;
 __decorate([
@@ -42,17 +45,14 @@ __decorate([
     __metadata("design:type", String)
 ], Pessoa.prototype, "cpfCnpj", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => endereco_entity_1.Endereco, (endereco) => endereco.pessoa),
-    __metadata("design:type", Array)
-], Pessoa.prototype, "enderecos", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Pessoa.prototype, "idCidade", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => telefone_entity_1.Telefone, (telefone) => telefone.pessoa),
-    __metadata("design:type", Array)
-], Pessoa.prototype, "telefones", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => email_entity_1.Email, (email) => email.pessoa),
-    __metadata("design:type", Array)
-], Pessoa.prototype, "emails", void 0);
+    (0, typeorm_1.ManyToOne)(() => cidade_entity_1.Cidade),
+    (0, typeorm_1.JoinColumn)({ name: 'idCidade', referencedColumnName: 'codigobge' }),
+    __metadata("design:type", cidade_entity_1.Cidade)
+], Pessoa.prototype, "cidade", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => cliente_entity_1.Cliente, cliente => cliente.pessoa),
     __metadata("design:type", cliente_entity_1.Cliente)
@@ -65,7 +65,19 @@ __decorate([
     (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario, funcionario => funcionario.pessoa),
     __metadata("design:type", funcionario_entity_1.Funcionario)
 ], Pessoa.prototype, "funcionario", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => telefone_entity_1.Telefone, telefone => telefone.pessoa),
+    __metadata("design:type", Array)
+], Pessoa.prototype, "telefones", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => email_entity_1.Email, email => email.pessoa),
+    __metadata("design:type", Array)
+], Pessoa.prototype, "emails", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => endereco_entity_1.Endereco, endereco => endereco.pessoa),
+    __metadata("design:type", Array)
+], Pessoa.prototype, "enderecos", void 0);
 exports.Pessoa = Pessoa = __decorate([
-    (0, typeorm_1.Entity)('pessoas')
+    (0, typeorm_1.Entity)()
 ], Pessoa);
 //# sourceMappingURL=pessoa.entity.js.map

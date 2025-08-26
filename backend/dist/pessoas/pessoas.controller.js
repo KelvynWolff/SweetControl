@@ -14,8 +14,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PessoasController = void 0;
 const common_1 = require("@nestjs/common");
-const pessoa_service_1 = require("./pessoa.service");
+const pessoas_service_1 = require("./pessoas.service");
 const create_pessoa_dto_1 = require("./dto/create-pessoa.dto");
+const update_pessoa_dto_1 = require("./dto/update-pessoa.dto");
 let PessoasController = class PessoasController {
     pessoasService;
     constructor(pessoasService) {
@@ -23,6 +24,18 @@ let PessoasController = class PessoasController {
     }
     create(createPessoaDto) {
         return this.pessoasService.create(createPessoaDto);
+    }
+    findAll() {
+        return this.pessoasService.findAll();
+    }
+    findOne(id) {
+        return this.pessoasService.findOne(id);
+    }
+    update(id, updatePessoaDto) {
+        return this.pessoasService.update(id, updatePessoaDto);
+    }
+    remove(id) {
+        return this.pessoasService.remove(id);
     }
 };
 exports.PessoasController = PessoasController;
@@ -33,8 +46,36 @@ __decorate([
     __metadata("design:paramtypes", [create_pessoa_dto_1.CreatePessoaDto]),
     __metadata("design:returntype", void 0)
 ], PessoasController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PessoasController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], PessoasController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_pessoa_dto_1.UpdatePessoaDto]),
+    __metadata("design:returntype", void 0)
+], PessoasController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], PessoasController.prototype, "remove", null);
 exports.PessoasController = PessoasController = __decorate([
     (0, common_1.Controller)('pessoas'),
-    __metadata("design:paramtypes", [pessoa_service_1.PessoasService])
+    __metadata("design:paramtypes", [pessoas_service_1.PessoasService])
 ], PessoasController);
 //# sourceMappingURL=pessoas.controller.js.map

@@ -1,6 +1,5 @@
 import { Promocao } from '../../promocoes/entities/promocao.entity';
 import { Receita } from '../../receitas/entities/receita.entity';
-import { ItensPedido } from '../../vendas/entities/itens-pedido.entity';
 export declare class Produto {
     id: number;
     nome: string;
@@ -13,5 +12,4 @@ export declare class Produto {
     ativo: boolean;
     receitas: Receita[];
     promocoes: Promocao[];
-    itensPedido: ItensPedido[];
 }

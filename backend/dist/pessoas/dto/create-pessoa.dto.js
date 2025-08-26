@@ -14,6 +14,7 @@ const class_validator_1 = require("class-validator");
 class CreatePessoaDto {
     nome;
     cpfCnpj;
+    idCidade;
 }
 exports.CreatePessoaDto = CreatePessoaDto;
 __decorate([
@@ -24,7 +25,11 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Length)(11, 14),
     __metadata("design:type", String)
 ], CreatePessoaDto.prototype, "cpfCnpj", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], CreatePessoaDto.prototype, "idCidade", void 0);
 //# sourceMappingURL=create-pessoa.dto.js.map

@@ -13,7 +13,6 @@ exports.Produto = void 0;
 const typeorm_1 = require("typeorm");
 const promocao_entity_1 = require("../../promocoes/entities/promocao.entity");
 const receita_entity_1 = require("../../receitas/entities/receita.entity");
-const itens_pedido_entity_1 = require("../../vendas/entities/itens-pedido.entity");
 let Produto = class Produto {
     id;
     nome;
@@ -26,7 +25,6 @@ let Produto = class Produto {
     ativo;
     receitas;
     promocoes;
-    itensPedido;
 };
 exports.Produto = Produto;
 __decorate([
@@ -73,10 +71,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => promocao_entity_1.Promocao, (promocao) => promocao.produto),
     __metadata("design:type", Array)
 ], Produto.prototype, "promocoes", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => itens_pedido_entity_1.ItensPedido, (item) => item.produto),
-    __metadata("design:type", Array)
-], Produto.prototype, "itensPedido", void 0);
 exports.Produto = Produto = __decorate([
     (0, typeorm_1.Entity)('produtos')
 ], Produto);

@@ -7,17 +7,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { PessoasModule } from './pessoas/pessoas.module';
-import { LocalizacaoModule } from './localizacao/localizacao.module';
 import { ProdutosModule } from './produtos/produtos.module';
-import { VendasModule } from './vendas/vendas.module';
-import { ProducaoModule } from './producao/producao.module';
-import { NotificacoesModule } from './notificacoes/notificacoes.module';
 import { InsumosModule } from './insumos/insumos.module';
 import { ReceitasModule } from './receitas/receitas.module';
 import { PromocoesModule } from './promocoes/promocoes.module';
 import { EstadosModule } from './estados/estados.module';
 import { CidadesModule } from './cidades/cidades.module';
 import { BairrosModule } from './bairros/bairros.module';
+import { ClientesModule } from './clientes/clientes.module';
+import { EnderecosModule } from './enderecos/enderecos.module';
+import { EmailsModule } from './emails/emails.module';
+import { TelefonesModule } from './telefones/telefones.module';
+import { FuncionariosModule } from './funcionarios/funcionarios.module';
+import { FornecedoresModule } from './fornecedores/fornecedores.module';
 
 @Module({
   imports: [
@@ -41,11 +43,7 @@ import { BairrosModule } from './bairros/bairros.module';
       }),
     }),
     PessoasModule,
-    LocalizacaoModule,
     ProdutosModule,
-    VendasModule,
-    ProducaoModule,
-    NotificacoesModule,
     InsumosModule,
     ReceitasModule,
     PromocoesModule,
@@ -53,6 +51,12 @@ import { BairrosModule } from './bairros/bairros.module';
     CidadesModule,
     BairrosModule,
     PessoasModule,
+    ClientesModule,
+    EnderecosModule,
+    EmailsModule,
+    TelefonesModule,
+    FuncionariosModule,
+    FornecedoresModule
   ],
   controllers: [AppController],
   providers: [AppService],

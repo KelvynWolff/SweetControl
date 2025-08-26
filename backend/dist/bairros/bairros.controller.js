@@ -31,6 +31,9 @@ let BairrosController = class BairrosController {
     findOne(id) {
         return this.bairrosService.findOne(id);
     }
+    findAllByCidade(cidadeId) {
+        return this.bairrosService.findAllByCidade(cidadeId);
+    }
     update(id, updateBairroDto) {
         return this.bairrosService.update(id, updateBairroDto);
     }
@@ -59,6 +62,13 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], BairrosController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)('por-cidade/:cidadeId'),
+    __param(0, (0, common_1.Param)('cidadeId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], BairrosController.prototype, "findAllByCidade", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

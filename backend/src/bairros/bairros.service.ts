@@ -21,6 +21,10 @@ export class BairrosService {
     return this.bairroRepository.find({ relations: ['cidade'] });
   }
 
+  findAllByCidade(cidadeId: number): Promise<Bairro[]> {
+    return this.bairroRepository.find({ where: { ibgeCidade: cidadeId } });
+  }
+
   async findOne(id: number): Promise<Bairro> {
     const bairro = await this.bairroRepository.findOne({ 
       where: { id }, 

@@ -22,6 +22,11 @@ export class BairrosController {
     return this.bairrosService.findOne(id);
   }
 
+  @Get('por-cidade/:cidadeId')
+  findAllByCidade(@Param('cidadeId', ParseIntPipe) cidadeId: number) {
+    return this.bairrosService.findAllByCidade(cidadeId);
+  }
+
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateBairroDto: UpdateBairroDto) {
     return this.bairrosService.update(id, updateBairroDto);

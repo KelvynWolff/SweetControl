@@ -26,3 +26,8 @@ export const deleteBairro = async (id) => {
   const response = await axios.delete(`${API_URL}/${id}`);
   return response.data;
 };
+
+export const getBairrosByCidade = async (cidadeId) => {
+  const response = await axios.get(`${API_URL}/por-cidade/${cidadeId}`);
+  return response.data;
+};

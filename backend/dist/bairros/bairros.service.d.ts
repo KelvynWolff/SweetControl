@@ -7,6 +7,7 @@ export declare class BairrosService {
     constructor(bairroRepository: Repository<Bairro>);
     create(createBairroDto: CreateBairroDto): Promise<Bairro>;
     findAll(): Promise<Bairro[]>;
+    findAllByCidade(cidadeId: number): Promise<Bairro[]>;
     findOne(id: number): Promise<Bairro>;
     update(id: number, updateBairroDto: UpdateBairroDto): Promise<Bairro>;
     remove(id: number): Promise<void>;
