@@ -21,21 +21,51 @@ function App() {
       <div className="App">
         <header>
           <h1>Sweet Control</h1>
-          <nav>
-            <Link to="/">Dashboard</Link> | 
-            <Link to="/produtos">Produtos</Link> |
-            <Link to="/insumos">Insumos</Link> |
-            <Link to="/receitas">Receitas</Link> |
-            <Link to="/promocoes">Promoções</Link> |
-            <Link to="/estados">Estados</Link> |
-            <Link to="/cidades">Cidades</Link> |
-            <Link to="/bairros">Bairros</Link> |
-            <Link to="/enderecos">Endereços</Link> |
-            <Link to="/clientes">Clientes</Link> |
-            <Link to="/emails">Emails</Link> |
-            <Link to="/telefones">Telefones</Link> |
-            <Link to="/fornecedores">Fornecedores</Link> |
-            <Link to="/funcionarios">Funcionarios</Link>
+          <nav className="main-nav">
+            <ul>
+              <li>
+                <Link to="/">Dashboard</Link>
+              </li>
+              <li>
+                <Link to="/produtos">Produtos</Link>
+              </li>
+              <li>
+                <Link to="/insumos">Insumos</Link>
+              </li>
+              <li>
+                <Link to="/receitas">Receitas</Link>
+              </li>
+              <li>
+                <Link to="/promocoes">Promoções</Link>
+              </li>
+              <li>
+                <Link to="/estados">Estados</Link>
+              </li>
+              <li>
+                <Link to="/cidades">Cidades</Link>
+              </li>
+              <li>
+                <Link to="/bairros">Bairros</Link>
+              </li>
+              <li>
+                <Link to="/enderecos">Endereços</Link>
+              </li>
+              <li>
+                <Link to="/clientes">Clientes</Link>
+              </li>
+              <li>
+                <Link to="/emails">Emails</Link>
+              </li>
+              <li>
+                <Link to="/telefones">Telefones</Link>
+              </li>
+              <li>
+                <Link to="/fornecedores">Fornecedores</Link>
+              </li>
+              <li>
+                <Link to="/funcionarios">Funcionarios</Link>
+              </li>
+            </ul>
           </nav>
         </header>
         <main>
