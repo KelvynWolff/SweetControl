@@ -47,7 +47,10 @@ const InsumosList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Insumos</h2>
+      <h2>
+        <a class="btn" href="/insumos/novo">+</a>
+        Gerenciar Insumos
+      </h2>
       <table>
         <thead>
           <tr>

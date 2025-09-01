@@ -189,8 +189,8 @@ const FuncionariosForm = () => {
         </fieldset>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Funcionário'}</button>
-          <button type="button" onClick={() => navigate('/funcionarios')}>Cancelar</button>
+          <button style={{marginTop: '10px'}} type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Funcionário'}</button>
+          <button style={{marginTop: '10px', backgroundColor: '#6c757d'}} type="button" onClick={() => navigate('/funcionarios')}>Cancelar</button>
         </div>
       </form>
     </div>

@@ -63,8 +63,8 @@ const CidadesForm = () => {
             <option key={estado.sigla} value={estado.sigla}>{estado.nome}</option>
           ))}
         </select>
-        <button type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
-        <button type="button" onClick={() => navigate('/cidades')}>Cancelar</button>
+        <button style={{marginTop: '10px'}} type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
+        <button style={{marginTop: '10px', backgroundColor: '#6c757d'}} type="button" onClick={() => navigate('/cidades')}>Cancelar</button>
       </form>
     </div>
   );

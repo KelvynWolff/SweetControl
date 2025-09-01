@@ -12,6 +12,11 @@ export const getReceitaById = async (id) => {
   return response.data;
 };
 
+export const getReceitaByProdutoId = async (produtoId) => {
+  const response = await axios.get(`${API_URL}?idProduto=${produtoId}`);
+  return response.data;
+};
+
 export const createReceita = async (receitaData) => {
   const response = await axios.post(API_URL, receitaData);
   return response.data;

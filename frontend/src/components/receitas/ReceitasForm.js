@@ -1,148 +1,253 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getReceitaById, updateReceita, createReceita } from '../../services/receitasService';
+import { getReceitas, updateReceita, createReceita } from '../../services/receitasService';
 import { getProducts } from '../../services/productService';
 import { getInsumos } from '../../services/insumosService';
-import '../forms.css';
 
 const ReceitasForm = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const isEditing = Boolean(id);
-
-  const [produtos, setProdutos] = useState([]);
-  const [insumos, setInsumos] = useState([]);
-  const [selectedProductId, setSelectedProductId] = useState('');
-  const [insumoList, setInsumoList] = useState([{ idInsumo: '', qtdInsumo: 0 }]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchDependencies = async () => {
-      try {
-        const [produtosData, insumosData] = await Promise.all([getProducts(), getInsumos()]);
-        setProdutos(produtosData);
-        setInsumos(insumosData);
-      } catch (err) {
-        console.error("Erro ao carregar produtos e insumos:", err);
-        alert("Não foi possível carregar os dados de produtos e insumos.");
-      }
+    const styles = {
+        formContainer: {
+            maxWidth: '800px', margin: '2rem auto', padding: '2rem', backgroundColor: '#f9f9f9',
+            borderRadius: '8px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)'
+        },
+        formGroup: { marginBottom: '1.5rem' },
+        label: { display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#555' },
+        select: { width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #ccc' },
+        selectDisabled: { backgroundColor: '#e9ecef', cursor: 'not-allowed' },
+        input: { width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #ccc' },
+        hr: { border: 'none', borderTop: '1px solid #eee', margin: '2rem 0' },
+        insumoListHeader: {
+            display: 'flex', gap: '10px', fontWeight: 'bold', paddingBottom: '0.5rem',
+            borderBottom: '2px solid #eee', marginBottom: '1rem'
+        },
+        insumoRow: { display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '0.5rem' },
+        insumoName: { flex: 3 },
+        insumoQtd: { flex: 2 },
+        insumoAction: { flex: 1 },
+        btn: {
+            padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer',
+            fontSize: '1rem', fontWeight: 'bold', transition: 'background-color 0.2s'
+        },
+        btnPrimary: { backgroundColor: '#007bff', color: 'white' },
+        btnSecondary: { backgroundColor: '#6c757d', color: 'white', marginTop: '1rem' },
+        btnDanger: { backgroundColor: '#dc3545', color: 'white' },
+        btnCancel: { backgroundColor: '#a0a0a0', color: 'white' },
+        btnDisabled: { backgroundColor: '#a0cfff', cursor: 'not-allowed' },
+        formActions: { display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' },
+        notification: {
+            padding: '1rem', marginBottom: '1.5rem', borderRadius: '4px',
+            color: 'white', textAlign: 'center'
+        },
+        notificationSuccess: { backgroundColor: '#28a745' },
+        notificationError: { backgroundColor: '#dc3545' },
     };
-    fetchDependencies();
 
-    if (isEditing) {
-      setIsLoading(true);
-      getReceitaById(id)
-        .then(data => {
-          setSelectedProductId(data.idProduto);
-          setInsumoList([{ idInsumo: data.idInsumo, qtdInsumo: data.qtdInsumo }]);
-        })
-        .catch(err => {
-          console.error("Erro ao buscar receita para edição:", err);
-          alert("Receita não encontrada.");
-          navigate('/receitas');
-        })
-        .finally(() => setIsLoading(false));
-    }
-  }, [id, isEditing, navigate]);
+    const { id: produtoId } = useParams();
+    const navigate = useNavigate();
+    const isEditing = Boolean(produtoId);
 
-  const addInsumoField = () => {
-    setInsumoList([...insumoList, { idInsumo: '', qtdInsumo: 0 }]);
-  };
+    const [produtos, setProdutos] = useState([]);
+    const [insumos, setInsumos] = useState([]);
+    const [selectedProductId, setSelectedProductId] = useState(produtoId || '');
+    const [insumoList, setInsumoList] = useState([{ idInsumo: '', qtdInsumo: '' }]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [notification, setNotification] = useState({ message: '', type: '' });
+    const [existingInsumoIds, setExistingInsumoIds] = useState(new Set());
+    const [dependenciesLoaded, setDependenciesLoaded] = useState(false);
 
-  const removeInsumoField = (index) => {
-    const list = [...insumoList];
-    list.splice(index, 1);
-    setInsumoList(list);
-  };
+    useEffect(() => {
+        const fetchDependencies = async () => {
+            try {
+                const [produtosData, insumosData] = await Promise.all([getProducts(), getInsumos()]);
+                setProdutos(produtosData);
+                setInsumos(insumosData);
+                setDependenciesLoaded(true);
+            } catch (err) {
+                console.error("ERRO ao buscar dependências:", err);
+                setNotification({ message: 'Erro ao carregar dependências.', type: 'error' });
+            }
+        };
+        fetchDependencies();
+    }, []);
 
-  const handleInsumoChange = (e, index) => {
-    const { name, value } = e.target;
-    const list = [...insumoList];
-    list[index][name] = (name === 'idInsumo') ? parseInt(value, 10) : parseFloat(value) || 0;
-    setInsumoList(list);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      if (isEditing) {
-        await updateReceita(id, {
-          idProduto: selectedProductId,
-          idInsumo: insumoList[0].idInsumo,
-          qtdInsumo: insumoList[0].qtdInsumo
-        });
-        alert('Item da receita atualizado com sucesso!');
-      } else {
-        for (const insumo of insumoList) {
-          if (insumo.idInsumo && insumo.qtdInsumo > 0) {
-            await createReceita({
-              idProduto: selectedProductId,
-              idInsumo: insumo.idInsumo,
-              qtdInsumo: insumo.qtdInsumo
-            });
-          }
+    useEffect(() => {
+        if (!dependenciesLoaded) {
+            console.log("Aguardando dependências serem carregadas...");
+            return;
         }
-        alert('Receita criada com sucesso!');
-      }
-      navigate('/receitas');
-    } catch (error) {
-      console.error("Erro ao salvar:", error.response?.data || error);
-      alert('Erro ao salvar receita.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  return (
-    <div className="form-container">
-      <h3>{isEditing ? 'Editar Item da Receita' : 'Cadastrar Nova Receita'}</h3>
-      <form onSubmit={handleSubmit}>
-        <label>Produto:</label>
-        <select
-          value={selectedProductId}
-          onChange={e => setSelectedProductId(parseInt(e.target.value, 10))}
-          disabled={isEditing}
-          required
-        >
-          <option value="">Selecione um Produto</option>
-          {produtos.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
-        </select>
-        
-        <hr/>
-        
-        {!isEditing && insumoList.map((insumoField, index) => (
-          <div key={index} style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-            <label>Insumo {index + 1}:</label>
-            <select name="idInsumo" value={insumoField.idInsumo} onChange={e => handleInsumoChange(e, index)} required>
-              <option value="">Selecione um Insumo</option>
-              {insumos.map(i => <option key={i.id} value={i.id}>{i.nome}</option>)}
-            </select>
-            <label>Quantidade:</label>
-            <input
-              type="number"
-              step="0.01"
-              name="qtdInsumo"
-              value={insumoField.qtdInsumo}
-              onChange={e => handleInsumoChange(e, index)}
-              placeholder="Quantidade do Insumo"
-              required
-            />
-            {insumoList.length > 1 && (
-              <button type="button" onClick={() => removeInsumoField(index)} style={{ backgroundColor: '#dc3545' }}>-</button>
+        setSelectedProductId(produtoId || '');
+
+        const loadFormData = async () => {
+            setIsLoading(true);
+            setInsumoList([{ idInsumo: '', qtdInsumo: '' }]);
+
+            if (isEditing) {
+                try {
+                    const todasAsReceitas = await getReceitas();
+
+                    const idNumerico = parseInt(produtoId, 10);
+                    
+                    const receitaDoProduto = todasAsReceitas.filter(item => {
+                        if (item.idProduto === idNumerico) return true;
+                        return false;
+                    });
+                    
+
+                    if (receitaDoProduto.length > 0) {
+                        const novaListaInsumos = receitaDoProduto.map(item => ({ idInsumo: item.idInsumo, qtdInsumo: item.qtdInsumo }));
+                        setInsumoList(novaListaInsumos);
+                    }
+                } catch (err) {
+                    setNotification({ message: 'Erro ao buscar receita para edição.', type: 'error' });
+                }
+            }
+            setIsLoading(false);
+        };
+
+        loadFormData();
+    }, [produtoId, isEditing, dependenciesLoaded]);
+
+    useEffect(() => {
+        if (!dependenciesLoaded) return;
+        const checkForExistingRecipe = async () => {
+            if (!isEditing && selectedProductId) {
+                try {
+                    const todasAsReceitas = await getReceitas();
+                    const receitaDoProduto = todasAsReceitas.filter(item => item.idProduto === parseInt(selectedProductId, 10));
+                    const ids = new Set(receitaDoProduto.map(item => item.idInsumo));
+                    setExistingInsumoIds(ids);
+                } catch (error) {
+                    console.error("Erro ao verificar receita existente:", error);
+                }
+            } else {
+                setExistingInsumoIds(new Set());
+            }
+        };
+        checkForExistingRecipe();
+    }, [selectedProductId, isEditing, dependenciesLoaded]);
+
+    const handleInsumoChange = (index, event) => {
+        const { name, value } = event.target;
+        const list = [...insumoList];
+        list[index][name] = name === 'idInsumo' ? parseInt(value, 10) : value;
+        setInsumoList(list);
+    };
+
+    const addInsumoField = () => setInsumoList([...insumoList, { idInsumo: '', qtdInsumo: '' }]);
+    const removeInsumoField = (index) => {
+        const list = [...insumoList];
+        list.splice(index, 1);
+        setInsumoList(list);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!selectedProductId || insumoList.some(i => !i.idInsumo || i.qtdInsumo <= 0)) {
+            setNotification({ message: 'Por favor, preencha todos os campos corretamente.', type: 'error' });
+            return;
+        }
+        setIsLoading(true);
+        setNotification({ message: '', type: '' });
+        const payload = {
+            idProduto: parseInt(selectedProductId, 10),
+            insumos: insumoList.map(i => ({
+                idInsumo: parseInt(i.idInsumo, 10),
+                qtdInsumo: parseFloat(i.qtdInsumo)
+            }))
+        };
+        try {
+            if (isEditing) {
+                await updateReceita(produtoId, payload);
+                setNotification({ message: 'Receita atualizada com sucesso!', type: 'success' });
+            } else {
+                await createReceita(payload);
+                setNotification({ message: 'Receita criada com sucesso!', type: 'success' });
+            }
+            setTimeout(() => navigate('/receitas'), 1500);
+        } catch (error) {
+            setNotification({ message: 'Erro ao salvar a receita.', type: 'error' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div style={styles.formContainer}>
+            <h3>{isEditing ? 'Editar Receita' : 'Cadastrar Nova Receita'}</h3>
+            {notification.message && (
+                <div style={{ ...styles.notification, ...(notification.type === 'success' ? styles.notificationSuccess : styles.notificationError) }}>
+                    {notification.message}
+                </div>
             )}
-          </div>
-        ))}
-        
-        {!isEditing && <button type="button" onClick={addInsumoField} style={{ marginTop: '10px' }}>+ Adicionar Insumo</button>}
-        
-        <hr/>
-
-        <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar'}</button>
-        <button type="button" onClick={() => navigate('/receitas')} style={{ marginLeft: '10px', backgroundColor: '#6c757d' }}>Cancelar</button>
-      </form>
-    </div>
-  );
+            <form onSubmit={handleSubmit}>
+                <div style={styles.formGroup}>
+                    <label htmlFor="produto" style={styles.label}>Produto:</label>
+                    <select id="produto" value={selectedProductId} onChange={e => setSelectedProductId(e.target.value)} disabled={isEditing} required style={{ ...styles.select, ...(isEditing && styles.selectDisabled) }}>
+                        <option value="">Selecione um Produto</option>
+                        {produtos.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+                    </select>
+                </div>
+                <hr style={styles.hr} />
+                <h4>Insumos da Receita</h4>
+                <div style={styles.insumoListHeader}>
+                    <div style={styles.insumoName}>Insumo</div>
+                    <div style={styles.insumoQtd}>Quantidade</div>
+                    {!isEditing && <div style={styles.insumoAction}>Ação</div>}
+                </div>
+                {insumoList.map((insumoField, index) => (
+                    <div key={index} style={styles.insumoRow}>
+                        <div style={styles.insumoName}>
+                            <select name="idInsumo" value={insumoField.idInsumo} onChange={e => handleInsumoChange(index, e)} required
+                                disabled={isEditing}
+                                style={{ ...styles.select, ...(isEditing && styles.selectDisabled) }}
+                            >
+                                <option value="">Selecione...</option>
+                                {
+                                    insumos
+                                    .filter(insumo => {
+                                        if (isEditing) {
+                                            return insumo.id === insumoField.idInsumo;
+                                        }
+                                        return !existingInsumoIds.has(insumo.id) || insumo.id === insumoField.idInsumo;
+                                    })
+                                    .map(insumo => (
+                                        <option key={insumo.id} value={insumo.id}>{insumo.nome}</option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+                        <div style={styles.insumoQtd}>
+                            <input type="number" step="0.01" min="0.01" name="qtdInsumo" value={insumoField.qtdInsumo}
+                                onChange={e => handleInsumoChange(index, e)} placeholder="Ex: 0.5" required style={styles.input} />
+                        </div>
+                        {!isEditing && (
+                            <div style={styles.insumoAction}>
+                                 <button type="button" onClick={() => removeInsumoField(index)}
+                                    style={{ ...styles.btn, ...styles.btnDanger }} disabled={insumoList.length === 1}>
+                                     -
+                                 </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
+                {!isEditing && (
+                    <button type="button" onClick={addInsumoField} style={{ ...styles.btn, ...styles.btnSecondary }}>
+                        + Adicionar Insumo
+                    </button>
+                )}
+                <hr style={styles.hr} />
+                <div style={styles.formActions}>
+                    <button type="button" onClick={() => navigate('/receitas')} style={{ ...styles.btn, ...styles.btnCancel }}>
+                        Cancelar
+                    </button>
+                    <button type="submit" style={{ ...styles.btn, ...styles.btnPrimary, ...(isLoading && styles.btnDisabled) }} disabled={isLoading}>
+                        {isLoading ? 'Salvando...' : 'Salvar Receita'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
 };
 
 export default ReceitasForm;

@@ -65,8 +65,8 @@ const EstadosForm = () => {
           placeholder="Nome do Estado (ex: São Paulo)"
           required
         />
-        <button type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
-        <button type="button" onClick={() => navigate('/estados')}>Cancelar</button>
+        <button style={{marginTop: '10px'}} type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
+        <button style={{marginTop: '10px', backgroundColor: '#6c757d'}} type="button" onClick={() => navigate('/estados')}>Cancelar</button>
       </form>
     </div>
   );

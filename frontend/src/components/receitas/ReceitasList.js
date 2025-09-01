@@ -49,7 +49,7 @@ const ReceitasList = () => {
   };
 
   const handleEdit = (receita) => {
-    navigate(`/receitas/editar/${receita.id}`);
+    navigate(`/receitas/editar/${receita.idProduto}`);
   };
 
   if (loading) {
@@ -58,7 +58,10 @@ const ReceitasList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Receitas</h2>
+      <h2>
+        <a class="btn" href="/receitas/novo">+</a>
+        Gerenciar Receitas
+      </h2>
       {Object.keys(groupedReceitas).length === 0 ? (
         <p>Nenhuma receita cadastrada.</p>
       ) : (

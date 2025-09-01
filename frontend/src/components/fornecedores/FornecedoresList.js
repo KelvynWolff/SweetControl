@@ -20,7 +20,10 @@ const FornecedoresList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Fornecedores</h2>
+      <h2>
+        <a class="btn" href="/fornecedores/novo">+</a>
+        Gerenciar Fornecedores
+      </h2>
       <table>
         <thead>
           <tr>
@@ -39,8 +42,8 @@ const FornecedoresList = () => {
               <td>{fornecedor.pessoa.cpfCnpj}</td>
               <td>{fornecedor.pessoa.cidade.nome}</td>
               <td>
-                <button onClick={() => navigate(`/fornecedores/editar/${fornecedor.id}`)}>✏️</button>
-                <button onClick={() => handleDelete(fornecedor.id, fornecedor.pessoa.nome)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/fornecedores/editar/${fornecedor.id}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(fornecedor.id, fornecedor.pessoa.nome)}>🗑️</button>
               </td>
             </tr>
           ))}

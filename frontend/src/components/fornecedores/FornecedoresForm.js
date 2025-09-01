@@ -185,8 +185,8 @@ const FornecedoresForm = () => {
         </fieldset>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Fornecedor'}</button>
-          <button type="button" onClick={() => navigate('/fornecedores')}>Cancelar</button>
+          <button style={{marginTop: '10px'}} type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Fornecedor'}</button>
+          <button style={{marginTop: '10px', backgroundColor: '#6c757d'}} type="button" onClick={() => navigate('/fornecedores')}>Cancelar</button>
         </div>
       </form>
     </div>

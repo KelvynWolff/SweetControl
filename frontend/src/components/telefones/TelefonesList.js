@@ -20,7 +20,10 @@ const TelefonesList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Telefones</h2>
+      <h2>
+        <a class="btn" href="/telefones/novo">+</a>
+        Gerenciar Telefones
+      </h2>
       <table>
         <thead>
           <tr>
@@ -39,8 +42,8 @@ const TelefonesList = () => {
               <td>{telefone.observacao}</td>
               <td>{telefone.pessoa ? telefone.pessoa.nome : 'N/A'}</td>
               <td>
-                <button onClick={() => navigate(`/telefones/editar/${telefone.id}`)}>✏️</button>
-                <button onClick={() => handleDelete(telefone.id)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/telefones/editar/${telefone.id}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(telefone.id)}>🗑️</button>
               </td>
             </tr>
           ))}

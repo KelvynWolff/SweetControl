@@ -66,12 +66,18 @@ const ProductForm = () => {
     <div className="form-container">
       <h3>{isEditing ? 'Editar Produto' : 'Cadastrar Novo Produto'}</h3>
       <form onSubmit={handleSubmit}>
-        <input name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome do produto" required />
-        <input name="preco" type="number" step="0.01" value={formData.preco} onChange={handleChange} placeholder="Preço de Venda" required />
-        <input name="unidadeMedida" value={formData.unidadeMedida} onChange={handleChange} placeholder="Unidade de Medida" required />
-        <input name="estoque" type="number" value={formData.estoque} onChange={handleChange} placeholder="Estoque" required />
-        <input name="custo" type="number" step="0.01" value={formData.custo} onChange={handleChange} placeholder="Custo" required />
-        <input name="margem" type="number" step="0.01" value={formData.margem} onChange={handleChange} placeholder="Margem" required />
+        <label htmlFor="nome">Nome</label>
+        <input name="nome" value={formData.nome} onChange={handleChange} required />
+        <label htmlFor="preco">Preço de Venda</label>
+        <input name="preco" type="number" step="0.01" value={formData.preco} onChange={handleChange} required />
+        <label htmlFor="unidadeMedida">Unidade de Medida</label>
+        <input name="unidadeMedida" value={formData.unidadeMedida} onChange={handleChange} required />
+        <label htmlFor="estoque">Estoque</label>
+        <input name="estoque" type="number" value={formData.estoque} onChange={handleChange} required />
+        <label htmlFor="custo">Preço de Custo</label>
+        <input name="custo" type="number" step="0.01" value={formData.custo} onChange={handleChange} required />
+        <label htmlFor="margem">Margem</label>
+        <input name="margem" type="number" step="0.01" value={formData.margem} onChange={handleChange} required />
         <button type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
         <button type="button" onClick={() => navigate('/produtos')} style={{marginTop: '10px', backgroundColor: '#6c757d'}}>Cancelar</button>
       </form>

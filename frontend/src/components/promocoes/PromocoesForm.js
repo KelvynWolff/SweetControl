@@ -93,7 +93,9 @@ const PromocoesForm = () => {
     <div className="form-container">
       <h3>{isEditing ? 'Editar Promoção' : 'Cadastrar Nova Promoção'}</h3>
       <form onSubmit={handleSubmit}>
-        <input name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome da Promoção" required />
+        <label htmlFor="nome">Nome da Promoção</label>
+        <input name="nome" value={formData.nome} onChange={handleChange} required />
+        <label htmlFor="valor">Valor do Desconto:</label>
         <select name="tipoDeDesconto" value={formData.tipoDeDesconto} onChange={handleChange} required>
           <option value="Percentual">Percentual</option>
           <option value="Valor Fixo">Valor Fixo</option>
@@ -109,8 +111,8 @@ const PromocoesForm = () => {
           {produtos.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
         </select>
         
-        <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar'}</button>
-        <button type="button" onClick={() => navigate('/promocoes')} style={{marginLeft: '10px', backgroundColor: '#6c757d'}}>Cancelar</button>
+        <button type="submit" disabled={isLoading} style={{marginTop: '10px'}}>{isLoading ? 'Salvando...' : 'Salvar'}</button>
+        <button type="button" onClick={() => navigate('/promocoes')} style={{marginTop: '10px', backgroundColor: '#6c757d'}}>Cancelar</button>
       </form>
     </div>
   );

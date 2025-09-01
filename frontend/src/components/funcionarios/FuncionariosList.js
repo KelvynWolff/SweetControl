@@ -20,7 +20,10 @@ const FuncionariosList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Funcionários</h2>
+      <h2>
+        <a class="btn" href="/funcionarios/novo">+</a>
+        Gerenciar Funcionários
+      </h2>
       <table>
         <thead>
           <tr>
@@ -39,8 +42,8 @@ const FuncionariosList = () => {
               <td>{funcionario.pessoa.cpfCnpj}</td>
               <td>{new Date(funcionario.dataAdmissao).toLocaleDateString()}</td>
               <td>
-                <button onClick={() => navigate(`/funcionarios/editar/${funcionario.id}`)}>✏️</button>
-                <button onClick={() => handleDelete(funcionario.id, funcionario.pessoa.nome)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/funcionarios/editar/${funcionario.id}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(funcionario.id, funcionario.pessoa.nome)}>🗑️</button>
               </td>
             </tr>
           ))}

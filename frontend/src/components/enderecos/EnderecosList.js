@@ -20,7 +20,10 @@ const EnderecosList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Endereços</h2>
+      <h2>
+        <a class="btn" href="/enderecos/novo">+</a>
+        Gerenciar Endereços
+      </h2>
       <table>
         <thead>
           <tr>
@@ -41,8 +44,8 @@ const EnderecosList = () => {
               <td>{end.bairro.nome}</td>
               <td>{end.bairro.cidade.nome}</td>
               <td>
-                <button onClick={() => navigate(`/enderecos/editar/${end.id}`)}>✏️</button>
-                <button onClick={() => handleDelete(end.id)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/enderecos/editar/${end.id}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(end.id)}>🗑️</button>
               </td>
             </tr>
           ))}

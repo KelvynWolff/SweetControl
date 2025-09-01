@@ -26,44 +26,31 @@ function App() {
               <li>
                 <Link to="/">Dashboard</Link>
               </li>
-              <li>
-                <Link to="/produtos">Produtos</Link>
+
+              <li className="dropdown">
+                <a href="#!" className="dropbtn">Produtos ▼</a>
+                <ul className="submenu">
+                  <li><Link to="/produtos">Produtos</Link></li>
+                  <li><Link to="/insumos">Insumos</Link></li>
+                  <li><Link to="/receitas">Receitas</Link></li>
+                  <li><Link to="/promocoes">Promoções</Link></li>
+                </ul>
               </li>
-              <li>
-                <Link to="/insumos">Insumos</Link>
-              </li>
-              <li>
-                <Link to="/receitas">Receitas</Link>
-              </li>
-              <li>
-                <Link to="/promocoes">Promoções</Link>
-              </li>
-              <li>
-                <Link to="/estados">Estados</Link>
-              </li>
-              <li>
-                <Link to="/cidades">Cidades</Link>
-              </li>
-              <li>
-                <Link to="/bairros">Bairros</Link>
-              </li>
-              <li>
-                <Link to="/enderecos">Endereços</Link>
-              </li>
-              <li>
-                <Link to="/clientes">Clientes</Link>
-              </li>
-              <li>
-                <Link to="/emails">Emails</Link>
-              </li>
-              <li>
-                <Link to="/telefones">Telefones</Link>
-              </li>
-              <li>
-                <Link to="/fornecedores">Fornecedores</Link>
-              </li>
-              <li>
-                <Link to="/funcionarios">Funcionarios</Link>
+
+              <li className="dropdown">
+                <a href="#!" className="dropbtn">Pessoas & Cadastros ▼</a>
+                <ul className="submenu">
+                  <li><Link to="/clientes">Clientes</Link></li>
+                  <li><Link to="/fornecedores">Fornecedores</Link></li>
+                  <li><Link to="/funcionarios">Funcionários</Link></li>
+                  <li className="separator"><hr /></li>
+                  <li><Link to="/estados">Estados</Link></li>
+                  <li><Link to="/cidades">Cidades</Link></li>
+                  <li><Link to="/bairros">Bairros</Link></li>
+                  <li><Link to="/enderecos">Endereços</Link></li>
+                  <li><Link to="/emails">Emails</Link></li>
+                  <li><Link to="/telefones">Telefones</Link></li>
+                </ul>
               </li>
             </ul>
           </nav>
@@ -84,7 +71,6 @@ function App() {
             <Route path="/telefones/*" element={<TelefonesPage />} />
             <Route path="/fornecedores/*" element={<FornecedoresPage />} />
             <Route path="/funcionarios/*" element={<FuncionariosPage />} />
-
           </Routes>
         </main>
       </div>

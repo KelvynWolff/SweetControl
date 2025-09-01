@@ -20,7 +20,10 @@ const EmailsList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Emails</h2>
+      <h2>
+        <a class="btn" href="/emails/novo">+</a>
+        Gerenciar Emails
+      </h2>
       <table>
         <thead>
           <tr>
@@ -39,8 +42,8 @@ const EmailsList = () => {
               <td>{email.observacao}</td>
               <td>{email.pessoa ? email.pessoa.nome : 'N/A'}</td>
               <td>
-                <button onClick={() => navigate(`/emails/editar/${email.id}`)}>✏️</button>
-                <button onClick={() => handleDelete(email.id)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/emails/editar/${email.id}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(email.id)}>🗑️</button>
               </td>
             </tr>
           ))}

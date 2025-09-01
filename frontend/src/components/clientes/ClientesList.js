@@ -20,7 +20,10 @@ const ClientesList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Clientes</h2>
+      <h2>
+        <a class="btn" href="/clientes/novo">+</a>
+        Gerenciar Clientes
+      </h2>
       <table>
         <thead>
           <tr>
@@ -39,8 +42,8 @@ const ClientesList = () => {
               <td>{cliente.pessoa.cpfCnpj}</td>
               <td>{cliente.pessoa.cidade.nome}</td>
               <td>
-                <button onClick={() => navigate(`/clientes/editar/${cliente.id}`)}>✏️</button>
-                <button onClick={() => handleDelete(cliente.id, cliente.pessoa.nome)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/clientes/editar/${cliente.id}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(cliente.id, cliente.pessoa.nome)}>🗑️</button>
               </td>
             </tr>
           ))}

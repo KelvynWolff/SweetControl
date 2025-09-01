@@ -20,7 +20,10 @@ const BairrosList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Bairros</h2>
+      <h2>
+        <a class="btn" href="/bairros/novo">+</a>
+        Gerenciar Bairros
+      </h2>
       <table>
         <thead>
           <tr>
@@ -37,8 +40,8 @@ const BairrosList = () => {
               <td>{bairro.nome}</td>
               <td>{bairro.cidade.nome}</td>
               <td>
-                <button onClick={() => navigate(`/bairros/editar/${bairro.id}`)}>✏️</button>
-                <button onClick={() => handleDelete(bairro.id, bairro.nome)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/bairros/editar/${bairro.id}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(bairro.id, bairro.nome)}>🗑️</button>
               </td>
             </tr>
           ))}

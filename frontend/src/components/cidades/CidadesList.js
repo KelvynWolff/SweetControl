@@ -20,7 +20,10 @@ const CidadesList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Cidades</h2>
+      <h2>
+        <a class="btn" href="/cidades/novo">+</a>
+        Gerenciar Cidades
+      </h2>
       <table>
         <thead>
           <tr>
@@ -37,8 +40,8 @@ const CidadesList = () => {
               <td>{cidade.nome}</td>
               <td>{cidade.estadoRel.nome} ({cidade.estado})</td>
               <td>
-                <button onClick={() => navigate(`/cidades/editar/${cidade.codigobge}`)}>✏️</button>
-                <button onClick={() => handleDelete(cidade.codigobge, cidade.nome)}>🗑️</button>
+                <button className="icon-btn" onClick={() => navigate(`/cidades/editar/${cidade.codigobge}`)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(cidade.codigobge, cidade.nome)}>🗑️</button>
               </td>
             </tr>
           ))}

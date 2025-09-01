@@ -43,7 +43,10 @@ const EstadosList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Estados</h2>
+      <h2>
+        <a class="btn" href="/estados/novo">+</a>
+        Gerenciar Estados
+      </h2>
       <table>
         <thead>
           <tr>
@@ -58,8 +61,8 @@ const EstadosList = () => {
               <td>{estado.sigla}</td>
               <td>{estado.nome}</td>
               <td>
-                <button onClick={() => handleEdit(estado)}>✏️</button>
-                <button onClick={() => handleDelete(estado.sigla)}>🗑️</button>
+                <button className="icon-btn" onClick={() => handleEdit(estado)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(estado.sigla)}>🗑️</button>
               </td>
             </tr>
           ))}

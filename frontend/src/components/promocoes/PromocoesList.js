@@ -54,7 +54,10 @@ const PromocoesList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Promoções</h2>
+      <h2>
+        <a class="btn" href="/promocoes/novo">+</a>
+        Gerenciar Promoções
+      </h2>
       <table>
         <thead>
           <tr>
@@ -84,8 +87,8 @@ const PromocoesList = () => {
                   {isAtiva(promocao.dataInicio, promocao.dataFim) ? 'Ativa' : 'Inativa'}
                 </td>
                 <td>
-                  <button onClick={() => handleEdit(promocao)}>✏️</button>
-                  <button onClick={() => handleDelete(promocao.id)}>🗑️</button>
+                  <button className="icon-btn" onClick={() => handleEdit(promocao)}>✏️</button>
+                  <button className="icon-btn-delete" onClick={() => handleDelete(promocao.id)}>🗑️</button>
                 </td>
               </tr>
             ))

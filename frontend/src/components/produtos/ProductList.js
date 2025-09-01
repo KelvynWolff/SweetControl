@@ -47,7 +47,10 @@ const ProductList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Produtos</h2>
+      <h2>
+        <a class="btn" href="/produtos/novo">+</a>
+        Gerenciar Produtos
+      </h2>
       <table>
         <thead>
           <tr>

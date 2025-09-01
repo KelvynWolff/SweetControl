@@ -64,10 +64,14 @@ const InsumosForm = () => {
     <div className="form-container">
       <h3>{isEditing ? 'Editar Insumo' : 'Cadastrar Novo Insumo'}</h3>
       <form onSubmit={handleSubmit}>
-        <input name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome do Insumo" required />
-        <input name="valor" type="number" step="0.01" value={formData.valor} onChange={handleChange} placeholder="Valor" required />
-        <input name="unidadeMedida" value={formData.unidadeMedida} onChange={handleChange} placeholder="Unidade de Medida (ex: KG, L, UN)" required />
-        <input name="estoque" type="number" step="0.01" value={formData.estoque} onChange={handleChange} placeholder="Estoque" required />
+        <label htmlFor="nome">Nome</label>
+        <input name="nome" value={formData.nome} onChange={handleChange} required />
+        <label htmlFor="valor">Valor</label>
+        <input name="valor" type="number" step="0.01" value={formData.valor} onChange={handleChange} required />
+        <label htmlFor="unidadeMedida">Unidade de Medida</label>
+        <input name="unidadeMedida" value={formData.unidadeMedida} onChange={handleChange} required />
+        <label htmlFor="estoque">Estoque</label>
+        <input name="estoque" type="number" step="0.01" value={formData.estoque} onChange={handleChange} required />
         
         <button type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
         <button type="button" onClick={() => navigate('/insumos')} style={{marginTop: '10px', backgroundColor: '#6c757d'}}>Cancelar</button>

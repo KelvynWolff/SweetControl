@@ -186,8 +186,8 @@ const ClientesForm = () => {
         </fieldset>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Cliente'}</button>
-          <button type="button" onClick={() => navigate('/clientes')}>Cancelar</button>
+          <button style={{marginTop: '10px'}} type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Cliente'}</button>
+          <button style={{marginTop: '10px', backgroundColor: '#6c757d'}} type="button" onClick={() => navigate('/clientes')}>Cancelar</button>
         </div>
       </form>
     </div>
