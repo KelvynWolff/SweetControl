@@ -65,12 +65,12 @@ const PedidosForm = () => {
         <div className="form-container">
             <h3>Novo Pedido</h3>
             <form onSubmit={handleSubmit}>
-                <select value={selectedCliente} onChange={e => setSelectedCliente(e.target.value)} required>
+                <select value={selectedCliente} onChange={e => setSelectedCliente(e.target.value)} style={{marginTop: "10px"}} required>
                     <option value="">Selecione um Cliente</option>
                     {clientes.map(c => <option key={c.id} value={c.id}>{c.pessoa.nome}</option>)}
                 </select>
 
-                <fieldset>
+                <fieldset style={{marginTop: "20px"}}>
                     <legend>Itens do Pedido</legend>
                     {itens.map((item, index) => (
                         <div key={index} className="dynamic-field">
@@ -84,7 +84,7 @@ const PedidosForm = () => {
                     <button type="button" onClick={addItem}>+ Adicionar Item</button>
                 </fieldset>
                 
-                <fieldset>
+                <fieldset style={{marginTop: "20px"}}>
                     <legend>Entrega e Pagamento</legend>
                     <label htmlFor="dataEntrega">Data de Entrega:</label>
                     <input 
@@ -101,11 +101,11 @@ const PedidosForm = () => {
                     </select>
                 </fieldset>
 
-                <textarea name="observacao" value={observacao} onChange={e => setObservacao(e.target.value)} placeholder="Observações adicionais..."></textarea>
+                <textarea style={{marginTop: "20px", width: '50%'}} rows="5" name="observacao" value={observacao} onChange={e => setObservacao(e.target.value)} placeholder="Observações adicionais..."></textarea>
                 
-                <div className="form-actions">
+                <div className="form-actions" style={{marginTop: "20px"}}>
                     <button type="submit">Cadastrar Pedido</button>
-                    <button type="button" onClick={() => navigate('/pedidos')}>Cancelar</button>
+                    <button type="button" style={{backgroundColor: "gray", marginTop: '5px'}} onClick={() => navigate('/pedidos')}>Cancelar</button>
                 </div>
             </form>
         </div>

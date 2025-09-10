@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getReceitas, updateReceita, createReceita } from '../../services/receitasService';
+import { getReceitas, updateReceita, createReceita, deleteReceita } from '../../services/receitasService';
 import { getProducts } from '../../services/productService';
 import { getInsumos } from '../../services/insumosService';
 
@@ -143,30 +143,42 @@ const ReceitasForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!selectedProductId || insumoList.some(i => !i.idInsumo || i.qtdInsumo <= 0)) {
+        if (!selectedProductId || insumoList.some(i => !i.idInsumo || !i.qtdInsumo || i.qtdInsumo <= 0)) {
             setNotification({ message: 'Por favor, preencha todos os campos corretamente.', type: 'error' });
             return;
         }
         setIsLoading(true);
         setNotification({ message: '', type: '' });
-        const payload = {
-            idProduto: parseInt(selectedProductId, 10),
-            insumos: insumoList.map(i => ({
-                idInsumo: parseInt(i.idInsumo, 10),
-                qtdInsumo: parseFloat(i.qtdInsumo)
-            }))
-        };
+
         try {
             if (isEditing) {
-                await updateReceita(produtoId, payload);
-                setNotification({ message: 'Receita atualizada com sucesso!', type: 'success' });
-            } else {
-                await createReceita(payload);
-                setNotification({ message: 'Receita criada com sucesso!', type: 'success' });
+                const todasAsReceitas = await getReceitas();
+                const idNumerico = parseInt(produtoId, 10);
+                const receitaDoProduto = todasAsReceitas.filter(item => item.idProduto === idNumerico);
+
+                for (const item of receitaDoProduto) {
+                    await deleteReceita(item.id);
+                }
             }
+
+            for (const insumo of insumoList) {
+                const payload = {
+                    idProduto: parseInt(selectedProductId),
+                    idInsumo: parseInt(insumo.idInsumo),
+                    qtdInsumo: parseFloat(insumo.qtdInsumo)
+                };
+                await createReceita(payload);
+            }
+            
+            setNotification({ 
+                message: isEditing ? 'Receita atualizada com sucesso!' : 'Receita criada com sucesso!', 
+                type: 'success' 
+            });
+
             setTimeout(() => navigate('/receitas'), 1500);
         } catch (error) {
-            setNotification({ message: 'Erro ao salvar a receita.', type: 'error' });
+            console.error("Erro ao salvar receita:", error);
+            setNotification({ message: 'Erro ao salvar a receita. Verifique o console.', type: 'error' });
         } finally {
             setIsLoading(false);
         }
