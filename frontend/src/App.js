@@ -14,6 +14,8 @@ import TelefonesPage from './pages/telefones/TelefonesPage';
 import './App.css';
 import FornecedoresPage from './pages/fornecedores/FornecedoresPage';
 import FuncionariosPage from './pages/funcionarios/FuncionariosPage';
+import PedidosPage from './pages/pedidos/PedidosPage';
+import NotificacoesPage from './pages/notificacoes/NotificacoesPage';
 
 function App() {
   return (
@@ -52,6 +54,14 @@ function App() {
                   <li><Link to="/telefones">Telefones</Link></li>
                 </ul>
               </li>
+
+              <li className="dropdown">
+                <a href="#!" className="dropbtn">Pedidos ▼</a>
+                <ul className="submenu">
+                  <li><Link to="/pedidos">Pedidos</Link></li>
+                  <li><Link to="/notificacoes">Notificações</Link></li>
+                </ul>
+              </li>
             </ul>
           </nav>
         </header>
@@ -71,6 +81,8 @@ function App() {
             <Route path="/telefones/*" element={<TelefonesPage />} />
             <Route path="/fornecedores/*" element={<FornecedoresPage />} />
             <Route path="/funcionarios/*" element={<FuncionariosPage />} />
+            <Route path="/pedidos/*" element={<PedidosPage />} />
+            <Route path="/notificacoes/*" element={<NotificacoesPage />} />
           </Routes>
         </main>
       </div>

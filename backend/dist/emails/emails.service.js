@@ -17,10 +17,21 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const email_entity_1 = require("./entities/email.entity");
+const nodemailer = require("nodemailer");
 let EmailsService = class EmailsService {
     emailRepository;
+    transporter;
     constructor(emailRepository) {
         this.emailRepository = emailRepository;
+        this.transporter = nodemailer.createTransport({
+            host: 'smtp.ethereal.email',
+            port: 587,
+            secure: false,
+            auth: {
+                user: 'jerrold.upton@ethereal.email',
+                pass: 'kMKTDjVkmHF7ceXAQW',
+            },
+        });
     }
     create(createEmailDto) {
         const email = this.emailRepository.create(createEmailDto);
@@ -30,20 +41,14 @@ let EmailsService = class EmailsService {
         return this.emailRepository.find({ relations: ['pessoa'] });
     }
     async findOne(id) {
-        const email = await this.emailRepository.findOne({
-            where: { id },
-            relations: ['pessoa']
-        });
+        const email = await this.emailRepository.findOne({ where: { id }, relations: ['pessoa'] });
         if (!email) {
             throw new common_1.NotFoundException(`Email com o ID #${id} não encontrado.`);
         }
         return email;
     }
     async update(id, updateEmailDto) {
-        const email = await this.emailRepository.preload({
-            id: id,
-            ...updateEmailDto,
-        });
+        const email = await this.emailRepository.preload({ id, ...updateEmailDto });
         if (!email) {
             throw new common_1.NotFoundException(`Email com o ID #${id} não encontrado.`);
         }
@@ -52,6 +57,26 @@ let EmailsService = class EmailsService {
     async remove(id) {
         const email = await this.findOne(id);
         await this.emailRepository.remove(email);
+    }
+    async enviarEmailPedido(pedido, emailCliente) {
+        console.log(`--- [EmailsService] Preparando para enviar email para ${emailCliente}... ---`);
+        const htmlContent = `
+      <h1>Olá, ${pedido.cliente.pessoa.nome}!</h1>
+      <p>Seu pedido #${pedido.id} foi recebido com sucesso.</p>
+      <p>Status: ${pedido.status}</p>
+      <ul>
+        ${pedido.itens.map(item => `<li>${item.produto.nome} (x${item.quantidade})</li>`).join('')}
+      </ul>
+      <p>Total: R$ ${pedido.pagamento.valor.toFixed(2)}</p>
+    `;
+        const info = await this.transporter.sendMail({
+            to: emailCliente,
+            from: '"Sweet Control" <noreply@sweetcontrol.com>',
+            subject: `Confirmação do Pedido #${pedido.id}`,
+            html: htmlContent,
+        });
+        console.log('--- [EmailsService] Email enviado com sucesso! ---');
+        console.log('URL de Visualização (Ethereal):', nodemailer.getTestMessageUrl(info));
     }
 };
 exports.EmailsService = EmailsService;

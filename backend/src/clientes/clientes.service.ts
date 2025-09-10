@@ -14,8 +14,6 @@ export class ClientesService {
   constructor(
     @InjectRepository(Cliente)
     private readonly clienteRepository: Repository<Cliente>,
-    @InjectRepository(Pessoa)
-    private readonly pessoaRepository: Repository<Pessoa>,
     private dataSource: DataSource,
   ) {}
 
@@ -88,24 +86,78 @@ export class ClientesService {
     return cliente;
   }
 
-  async update(id: number, updateClienteDto: UpdateClienteDto): Promise<Cliente> {
-    const cliente = await this.findOne(id);
-    
-    const pessoaAtualizada = await this.pessoaRepository.preload({
-      id: cliente.idPessoa,
-      ...updateClienteDto,
-    });
-    if (!pessoaAtualizada) {
-      throw new NotFoundException(`Pessoa associada ao cliente #${id} não encontrada.`);
-    }
-    await this.pessoaRepository.save(pessoaAtualizada);
+async update(id: number, updateClienteDto: UpdateClienteDto): Promise<Cliente> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    return this.findOne(id);
+    try {
+      const clienteRepo = queryRunner.manager.getRepository(Cliente);
+      const pessoaRepo = queryRunner.manager.getRepository(Pessoa);
+      const enderecoRepo = queryRunner.manager.getRepository(Endereco);
+      const telefoneRepo = queryRunner.manager.getRepository(Telefone);
+      const emailRepo = queryRunner.manager.getRepository(Email);
+
+      const cliente = await clienteRepo.findOneBy({ id });
+      if (!cliente) {
+        throw new NotFoundException(`Cliente com o ID #${id} não encontrado.`);
+      }
+      
+      const { idPessoa } = cliente;
+
+      const dadosPessoa = {
+        nome: updateClienteDto.nome,
+        cpfCnpj: updateClienteDto.cpfCnpj,
+        idCidade: updateClienteDto.endereco?.idCidade,
+      };
+      await pessoaRepo.update(idPessoa, dadosPessoa);
+
+      if (updateClienteDto.endereco) {
+        const dadosEndereco = {
+          rua: updateClienteDto.endereco.rua,
+          numero: updateClienteDto.endereco.numero,
+          CEP: updateClienteDto.endereco.CEP,
+          idBairro: updateClienteDto.endereco.idBairro,
+        };
+        await enderecoRepo.update({ idPessoa }, dadosEndereco);
+      }
+      
+      if (updateClienteDto.telefones) {
+        await telefoneRepo.delete({ idPessoa });
+        for (const tel of updateClienteDto.telefones) {
+          if (tel.numero) {
+            const telefone = telefoneRepo.create({ ...tel, idPessoa });
+            await queryRunner.manager.save(telefone);
+          }
+        }
+      }
+
+      if (updateClienteDto.emails) {
+        await emailRepo.delete({ idPessoa });
+        for (const mail of updateClienteDto.emails) {
+          if (mail.email) {
+            const email = emailRepo.create({ ...mail, idPessoa });
+            await queryRunner.manager.save(email);
+          }
+        }
+      }
+
+      await queryRunner.commitTransaction();
+      return this.findOne(id);
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      console.error('ERRO NA TRANSAÇÃO DE UPDATE:', err);
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async remove(id: number): Promise<void> {
     const cliente = await this.findOne(id);
-    await this.clienteRepository.remove(cliente);
-    await this.pessoaRepository.delete(cliente.idPessoa);
+    await this.dataSource.transaction(async manager => {
+        await manager.getRepository(Cliente).remove(cliente);
+        await manager.getRepository(Pessoa).delete(cliente.idPessoa);
+    });
   }
 }

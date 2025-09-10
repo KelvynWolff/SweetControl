@@ -1,13 +1,11 @@
 import { Repository, DataSource } from 'typeorm';
 import { Cliente } from './entities/cliente.entity';
-import { Pessoa } from '../pessoas/entities/pessoa.entity';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 export declare class ClientesService {
     private readonly clienteRepository;
-    private readonly pessoaRepository;
     private dataSource;
-    constructor(clienteRepository: Repository<Cliente>, pessoaRepository: Repository<Pessoa>, dataSource: DataSource);
+    constructor(clienteRepository: Repository<Cliente>, dataSource: DataSource);
     create(createClienteDto: CreateClienteDto): Promise<Cliente>;
     findAll(): Promise<Cliente[]>;
     findOne(id: number): Promise<Cliente>;

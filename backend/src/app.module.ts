@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 
 import { AppController } from './app.controller';
@@ -20,6 +21,8 @@ import { EmailsModule } from './emails/emails.module';
 import { TelefonesModule } from './telefones/telefones.module';
 import { FuncionariosModule } from './funcionarios/funcionarios.module';
 import { FornecedoresModule } from './fornecedores/fornecedores.module';
+import { PedidosModule } from './pedidos/pedidos.module';
+import { NotificacoesModule } from './notificacoes/notificacoes.module';
 
 @Module({
   imports: [
@@ -36,13 +39,21 @@ import { FornecedoresModule } from './fornecedores/fornecedores.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-
         synchronize: true,
       }),
     }),
-    PessoasModule,
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: 'alana.labadie15@ethereal.email',
+          pass: 'EXvHgDW7JBdjJtf8a9',
+        },
+      },
+    }),
     ProdutosModule,
     InsumosModule,
     ReceitasModule,
@@ -56,7 +67,9 @@ import { FornecedoresModule } from './fornecedores/fornecedores.module';
     EmailsModule,
     TelefonesModule,
     FuncionariosModule,
-    FornecedoresModule
+    FornecedoresModule,
+    PedidosModule,
+    NotificacoesModule
   ],
   controllers: [AppController],
   providers: [AppService],

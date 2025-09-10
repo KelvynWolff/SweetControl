@@ -54,27 +54,27 @@ __decorate([
     __metadata("design:type", cidade_entity_1.Cidade)
 ], Pessoa.prototype, "cidade", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => cliente_entity_1.Cliente, cliente => cliente.pessoa),
+    (0, typeorm_1.OneToOne)(() => cliente_entity_1.Cliente, cliente => cliente.pessoa, { cascade: true }),
     __metadata("design:type", cliente_entity_1.Cliente)
 ], Pessoa.prototype, "cliente", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => fornecedor_entity_1.Fornecedor, fornecedor => fornecedor.pessoa),
+    (0, typeorm_1.OneToOne)(() => fornecedor_entity_1.Fornecedor, fornecedor => fornecedor.pessoa, { cascade: true }),
     __metadata("design:type", fornecedor_entity_1.Fornecedor)
 ], Pessoa.prototype, "fornecedor", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario, funcionario => funcionario.pessoa),
+    (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario, funcionario => funcionario.pessoa, { cascade: true }),
     __metadata("design:type", funcionario_entity_1.Funcionario)
 ], Pessoa.prototype, "funcionario", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => telefone_entity_1.Telefone, telefone => telefone.pessoa),
+    (0, typeorm_1.OneToMany)(() => telefone_entity_1.Telefone, telefone => telefone.pessoa, { cascade: true }),
     __metadata("design:type", Array)
 ], Pessoa.prototype, "telefones", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => email_entity_1.Email, email => email.pessoa),
+    (0, typeorm_1.OneToMany)(() => email_entity_1.Email, email => email.pessoa, { cascade: true }),
     __metadata("design:type", Array)
 ], Pessoa.prototype, "emails", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => endereco_entity_1.Endereco, endereco => endereco.pessoa),
+    (0, typeorm_1.OneToMany)(() => endereco_entity_1.Endereco, endereco => endereco.pessoa, { cascade: true }),
     __metadata("design:type", Array)
 ], Pessoa.prototype, "enderecos", void 0);
 exports.Pessoa = Pessoa = __decorate([

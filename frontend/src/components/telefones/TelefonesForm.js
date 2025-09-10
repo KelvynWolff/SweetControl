@@ -33,21 +33,25 @@ const TelefonesForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = {
-        ...formData,
-        idPessoa: parseInt(formData.idPessoa),
-      };
-
       if (isEditing) {
-        await updateTelefone(id, payload);
+        const dadosParaAtualizar = {
+          numero: formData.numero,
+          observacao: formData.observacao,
+        };
+        await updateTelefone(id, dadosParaAtualizar);
         alert('Telefone atualizado com sucesso!');
       } else {
+        const payload = {
+          ...formData,
+          idPessoa: parseInt(formData.idPessoa),
+        };
         await createTelefone(payload);
         alert('Telefone criado com sucesso!');
       }
       navigate('/telefones');
     } catch (error) {
       alert('Erro ao salvar telefone.');
+      console.error(error);
     }
   };
 

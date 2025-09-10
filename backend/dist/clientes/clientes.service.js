@@ -23,11 +23,9 @@ const telefone_entity_1 = require("../telefones/entities/telefone.entity");
 const email_entity_1 = require("../emails/entities/email.entity");
 let ClientesService = class ClientesService {
     clienteRepository;
-    pessoaRepository;
     dataSource;
-    constructor(clienteRepository, pessoaRepository, dataSource) {
+    constructor(clienteRepository, dataSource) {
         this.clienteRepository = clienteRepository;
-        this.pessoaRepository = pessoaRepository;
         this.dataSource = dataSource;
     }
     async create(createClienteDto) {
@@ -92,30 +90,78 @@ let ClientesService = class ClientesService {
         return cliente;
     }
     async update(id, updateClienteDto) {
-        const cliente = await this.findOne(id);
-        const pessoaAtualizada = await this.pessoaRepository.preload({
-            id: cliente.idPessoa,
-            ...updateClienteDto,
-        });
-        if (!pessoaAtualizada) {
-            throw new common_1.NotFoundException(`Pessoa associada ao cliente #${id} não encontrada.`);
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const clienteRepo = queryRunner.manager.getRepository(cliente_entity_1.Cliente);
+            const pessoaRepo = queryRunner.manager.getRepository(pessoa_entity_1.Pessoa);
+            const enderecoRepo = queryRunner.manager.getRepository(endereco_entity_1.Endereco);
+            const telefoneRepo = queryRunner.manager.getRepository(telefone_entity_1.Telefone);
+            const emailRepo = queryRunner.manager.getRepository(email_entity_1.Email);
+            const cliente = await clienteRepo.findOneBy({ id });
+            if (!cliente) {
+                throw new common_1.NotFoundException(`Cliente com o ID #${id} não encontrado.`);
+            }
+            const { idPessoa } = cliente;
+            const dadosPessoa = {
+                nome: updateClienteDto.nome,
+                cpfCnpj: updateClienteDto.cpfCnpj,
+                idCidade: updateClienteDto.endereco?.idCidade,
+            };
+            await pessoaRepo.update(idPessoa, dadosPessoa);
+            if (updateClienteDto.endereco) {
+                const dadosEndereco = {
+                    rua: updateClienteDto.endereco.rua,
+                    numero: updateClienteDto.endereco.numero,
+                    CEP: updateClienteDto.endereco.CEP,
+                    idBairro: updateClienteDto.endereco.idBairro,
+                };
+                await enderecoRepo.update({ idPessoa }, dadosEndereco);
+            }
+            if (updateClienteDto.telefones) {
+                await telefoneRepo.delete({ idPessoa });
+                for (const tel of updateClienteDto.telefones) {
+                    if (tel.numero) {
+                        const telefone = telefoneRepo.create({ ...tel, idPessoa });
+                        await queryRunner.manager.save(telefone);
+                    }
+                }
+            }
+            if (updateClienteDto.emails) {
+                await emailRepo.delete({ idPessoa });
+                for (const mail of updateClienteDto.emails) {
+                    if (mail.email) {
+                        const email = emailRepo.create({ ...mail, idPessoa });
+                        await queryRunner.manager.save(email);
+                    }
+                }
+            }
+            await queryRunner.commitTransaction();
+            return this.findOne(id);
         }
-        await this.pessoaRepository.save(pessoaAtualizada);
-        return this.findOne(id);
+        catch (err) {
+            await queryRunner.rollbackTransaction();
+            console.error('ERRO NA TRANSAÇÃO DE UPDATE:', err);
+            throw err;
+        }
+        finally {
+            await queryRunner.release();
+        }
     }
     async remove(id) {
         const cliente = await this.findOne(id);
-        await this.clienteRepository.remove(cliente);
-        await this.pessoaRepository.delete(cliente.idPessoa);
+        await this.dataSource.transaction(async (manager) => {
+            await manager.getRepository(cliente_entity_1.Cliente).remove(cliente);
+            await manager.getRepository(pessoa_entity_1.Pessoa).delete(cliente.idPessoa);
+        });
     }
 };
 exports.ClientesService = ClientesService;
 exports.ClientesService = ClientesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(cliente_entity_1.Cliente)),
-    __param(1, (0, typeorm_1.InjectRepository)(pessoa_entity_1.Pessoa)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository,
         typeorm_2.DataSource])
 ], ClientesService);
 //# sourceMappingURL=clientes.service.js.map

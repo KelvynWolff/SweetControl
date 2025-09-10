@@ -5,7 +5,7 @@ import { Fornecedor } from '../../fornecedores/entities/fornecedor.entity';
 import { Funcionario } from '../../funcionarios/entities/funcionario.entity';
 import { Telefone } from '../../telefones/entities/telefone.entity';
 import { Email } from '../../emails/entities/email.entity';
-import { Endereco } from '../../enderecos/entities/endereco.entity'; // <-- Importe a entidade Endereco
+import { Endereco } from '../../enderecos/entities/endereco.entity';
 
 @Entity()
 export class Pessoa {
@@ -25,21 +25,21 @@ export class Pessoa {
   @JoinColumn({ name: 'idCidade', referencedColumnName: 'codigobge' })
   cidade: Cidade;
 
-  @OneToOne(() => Cliente, cliente => cliente.pessoa)
+  @OneToOne(() => Cliente, cliente => cliente.pessoa, { cascade: true })
   cliente: Cliente;
 
-  @OneToOne(() => Fornecedor, fornecedor => fornecedor.pessoa)
+  @OneToOne(() => Fornecedor, fornecedor => fornecedor.pessoa, { cascade: true })
   fornecedor: Fornecedor;
 
-  @OneToOne(() => Funcionario, funcionario => funcionario.pessoa)
+  @OneToOne(() => Funcionario, funcionario => funcionario.pessoa, { cascade: true })
   funcionario: Funcionario;
 
-  @OneToMany(() => Telefone, telefone => telefone.pessoa)
+  @OneToMany(() => Telefone, telefone => telefone.pessoa, { cascade: true })
   telefones: Telefone[];
 
-  @OneToMany(() => Email, email => email.pessoa)
+  @OneToMany(() => Email, email => email.pessoa, { cascade: true })
   emails: Email[];
 
-  @OneToMany(() => Endereco, endereco => endereco.pessoa)
+  @OneToMany(() => Endereco, endereco => endereco.pessoa, { cascade: true })
   enderecos: Endereco[];
 }

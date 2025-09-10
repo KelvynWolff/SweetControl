@@ -15,7 +15,7 @@ export class Funcionario {
   @Column({ type: 'date', nullable: true })
   dataRecisao: Date | null;
 
-  @OneToOne(() => Pessoa, { cascade: true })
+  @OneToOne(() => Pessoa)
   @JoinColumn({ name: 'idPessoa' })
   pessoa: Pessoa;
 }

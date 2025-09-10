@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const mailer_1 = require("@nestjs-modules/mailer");
 const email_entity_1 = require("./entities/email.entity");
 const emails_controller_1 = require("./emails.controller");
 const emails_service_1 = require("./emails.service");
@@ -17,9 +18,23 @@ let EmailsModule = class EmailsModule {
 exports.EmailsModule = EmailsModule;
 exports.EmailsModule = EmailsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([email_entity_1.Email])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([email_entity_1.Email]),
+            mailer_1.MailerModule.forRoot({
+                transport: {
+                    host: 'smtp.ethereal.email',
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: 'jerrold.upton@ethereal.email',
+                        pass: 'kMKTDjVkmHF7ceXAQW',
+                    },
+                },
+            }),
+        ],
         controllers: [emails_controller_1.EmailsController],
         providers: [emails_service_1.EmailsService],
+        exports: [emails_service_1.EmailsService],
     })
 ], EmailsModule);
 //# sourceMappingURL=emails.module.js.map

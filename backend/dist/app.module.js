@@ -10,6 +10,7 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
+const mailer_1 = require("@nestjs-modules/mailer");
 const path_1 = require("path");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
@@ -27,6 +28,8 @@ const emails_module_1 = require("./emails/emails.module");
 const telefones_module_1 = require("./telefones/telefones.module");
 const funcionarios_module_1 = require("./funcionarios/funcionarios.module");
 const fornecedores_module_1 = require("./fornecedores/fornecedores.module");
+const pedidos_module_1 = require("./pedidos/pedidos.module");
+const notificacoes_module_1 = require("./notificacoes/notificacoes.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -50,7 +53,17 @@ exports.AppModule = AppModule = __decorate([
                     synchronize: true,
                 }),
             }),
-            pessoas_module_1.PessoasModule,
+            mailer_1.MailerModule.forRoot({
+                transport: {
+                    host: 'smtp.ethereal.email',
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: 'alana.labadie15@ethereal.email',
+                        pass: 'EXvHgDW7JBdjJtf8a9',
+                    },
+                },
+            }),
             produtos_module_1.ProdutosModule,
             insumos_module_1.InsumosModule,
             receitas_module_1.ReceitasModule,
@@ -64,7 +77,9 @@ exports.AppModule = AppModule = __decorate([
             emails_module_1.EmailsModule,
             telefones_module_1.TelefonesModule,
             funcionarios_module_1.FuncionariosModule,
-            fornecedores_module_1.FornecedoresModule
+            fornecedores_module_1.FornecedoresModule,
+            pedidos_module_1.PedidosModule,
+            notificacoes_module_1.NotificacoesModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

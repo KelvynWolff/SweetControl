@@ -37,9 +37,11 @@ export class TelefonesService {
       id: id,
       ...updateTelefoneDto,
     });
+
     if (!telefone) {
       throw new NotFoundException(`Telefone com o ID #${id} não encontrado.`);
     }
+    
     return this.telefoneRepository.save(telefone);
   }
 

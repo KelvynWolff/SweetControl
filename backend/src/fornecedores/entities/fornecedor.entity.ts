@@ -9,7 +9,7 @@ export class Fornecedor {
   @Column()
   idPessoa: number;
 
-  @OneToOne(() => Pessoa, { cascade: true })
+  @OneToOne(() => Pessoa)
   @JoinColumn({ name: 'idPessoa' })
   pessoa: Pessoa;
 }

@@ -27,7 +27,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Fornecedor.prototype, "idPessoa", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => pessoa_entity_1.Pessoa, { cascade: true }),
+    (0, typeorm_1.OneToOne)(() => pessoa_entity_1.Pessoa),
     (0, typeorm_1.JoinColumn)({ name: 'idPessoa' }),
     __metadata("design:type", pessoa_entity_1.Pessoa)
 ], Fornecedor.prototype, "pessoa", void 0);
