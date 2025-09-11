@@ -13,6 +13,7 @@ export declare class CreatePedidoDto {
     dataEntrega: Date;
     enderecoEntrega?: string;
     observacao?: string;
+    desconto?: number;
     itens: CreateItemPedidoDto[];
     pagamento: CreatePagamentoDto;
 }

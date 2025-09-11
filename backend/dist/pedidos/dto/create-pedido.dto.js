@@ -52,6 +52,7 @@ class CreatePedidoDto {
     dataEntrega;
     enderecoEntrega;
     observacao;
+    desconto;
     itens;
     pagamento;
 }
@@ -80,6 +81,11 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreatePedidoDto.prototype, "observacao", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreatePedidoDto.prototype, "desconto", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

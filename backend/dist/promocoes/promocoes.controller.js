@@ -25,6 +25,9 @@ let PromocoesController = class PromocoesController {
     create(createPromocaoDto) {
         return this.promocoesService.create(createPromocaoDto);
     }
+    findAtivas() {
+        return this.promocoesService.findAtivas();
+    }
     findAll() {
         return this.promocoesService.findAll();
     }
@@ -46,6 +49,12 @@ __decorate([
     __metadata("design:paramtypes", [create_promocao_dto_1.CreatePromocaoDto]),
     __metadata("design:returntype", void 0)
 ], PromocoesController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('ativas'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PromocoesController.prototype, "findAtivas", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

@@ -18,7 +18,7 @@ export class Notificacao {
   @Column({ default: false })
   status_leitura: boolean;
 
-  @ManyToOne(() => Pedido)
+  @ManyToOne(() => Pedido,  { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idPedido' })
   pedido: Pedido;
 }

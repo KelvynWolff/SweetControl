@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const pedido_entity_1 = require("./entities/pedido.entity");
 const item_pedido_entity_1 = require("../itens-pedido/entities/item-pedido.entity");
 const pagamento_entity_1 = require("../pagamentos/entities/pagamento.entity");
+const produto_entity_1 = require("../produtos/entities/produto.entity");
 const emails_module_1 = require("../emails/emails.module");
 const pedidos_controller_1 = require("./pedidos.controller");
 const pedidos_service_1 = require("./pedidos.service");
@@ -22,7 +23,7 @@ exports.PedidosModule = PedidosModule;
 exports.PedidosModule = PedidosModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([pedido_entity_1.Pedido, item_pedido_entity_1.ItemPedido, pagamento_entity_1.Pagamento]),
+            typeorm_1.TypeOrmModule.forFeature([pedido_entity_1.Pedido, item_pedido_entity_1.ItemPedido, pagamento_entity_1.Pagamento, produto_entity_1.Produto]),
             emails_module_1.EmailsModule,
             notificacoes_module_1.NotificacoesModule
         ],

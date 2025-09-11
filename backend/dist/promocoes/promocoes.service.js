@@ -50,6 +50,15 @@ let PromocoesService = class PromocoesService {
         const promocao = await this.findOne(id);
         await this.promocaoRepository.remove(promocao);
     }
+    findAtivas() {
+        const hoje = new Date();
+        return this.promocaoRepository
+            .createQueryBuilder('promocao')
+            .leftJoinAndSelect('promocao.produto', 'produto')
+            .where('promocao.dataInicio <= :dataAtual', { dataAtual: hoje })
+            .andWhere('promocao.dataFim >= :dataAtual', { dataAtual: hoje })
+            .getMany();
+    }
 };
 exports.PromocoesService = PromocoesService;
 exports.PromocoesService = PromocoesService = __decorate([

@@ -12,6 +12,11 @@ export class PromocoesController {
     return this.promocoesService.create(createPromocaoDto);
   }
 
+  @Get('ativas')
+  findAtivas() {
+    return this.promocoesService.findAtivas();
+  }
+
   @Get()
   findAll() {
     return this.promocoesService.findAll();

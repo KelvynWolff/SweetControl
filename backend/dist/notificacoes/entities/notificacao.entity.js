@@ -42,7 +42,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Notificacao.prototype, "status_leitura", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => pedido_entity_1.Pedido),
+    (0, typeorm_1.ManyToOne)(() => pedido_entity_1.Pedido, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'idPedido' }),
     __metadata("design:type", pedido_entity_1.Pedido)
 ], Notificacao.prototype, "pedido", void 0);

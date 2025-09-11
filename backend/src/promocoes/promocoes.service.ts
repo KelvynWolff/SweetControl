@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { Promocao } from './entities/promocao.entity';
 import { CreatePromocaoDto } from './dto/create-promocao.dto';
 import { UpdatePromocaoDto } from './dto/update-promocao.dto';
@@ -43,5 +43,16 @@ export class PromocoesService {
   async remove(id: number): Promise<void> {
     const promocao = await this.findOne(id);
     await this.promocaoRepository.remove(promocao);
+  }
+
+  findAtivas(): Promise<Promocao[]> {
+    const hoje = new Date();
+
+    return this.promocaoRepository
+      .createQueryBuilder('promocao')
+      .leftJoinAndSelect('promocao.produto', 'produto')
+      .where('promocao.dataInicio <= :dataAtual', { dataAtual: hoje })
+      .andWhere('promocao.dataFim >= :dataAtual', { dataAtual: hoje })
+      .getMany();
   }
 }

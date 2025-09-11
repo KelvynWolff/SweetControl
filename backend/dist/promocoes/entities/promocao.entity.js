@@ -40,11 +40,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Promocao.prototype, "valor", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'date' }),
+    (0, typeorm_1.Column)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], Promocao.prototype, "dataInicio", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'date' }),
+    (0, typeorm_1.Column)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], Promocao.prototype, "dataFim", void 0);
 __decorate([

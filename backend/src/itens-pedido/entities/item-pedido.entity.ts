@@ -19,7 +19,10 @@ export class ItemPedido {
   @Column({ type: 'double' })
   preco: number;
 
-  @ManyToOne(() => Pedido, pedido => pedido.itens)
+  @Column({ type: 'double', nullable: true, default: 0 })
+  desconto: number;
+
+  @ManyToOne(() => Pedido, pedido => pedido.itens, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idPedido' })
   pedido: Pedido;
 

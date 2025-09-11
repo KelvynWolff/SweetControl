@@ -19,6 +19,7 @@ let ItemPedido = class ItemPedido {
     idProduto;
     quantidade;
     preco;
+    desconto;
     pedido;
     produto;
 };
@@ -44,7 +45,11 @@ __decorate([
     __metadata("design:type", Number)
 ], ItemPedido.prototype, "preco", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => pedido_entity_1.Pedido, pedido => pedido.itens),
+    (0, typeorm_1.Column)({ type: 'double', nullable: true, default: 0 }),
+    __metadata("design:type", Number)
+], ItemPedido.prototype, "desconto", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => pedido_entity_1.Pedido, pedido => pedido.itens, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'idPedido' }),
     __metadata("design:type", pedido_entity_1.Pedido)
 ], ItemPedido.prototype, "pedido", void 0);

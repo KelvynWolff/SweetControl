@@ -45,6 +45,10 @@ export class CreatePedidoDto {
   @IsOptional()
   observacao?: string;
 
+  @IsNumber()
+  @IsOptional()
+  desconto?: number; 
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateItemPedidoDto)

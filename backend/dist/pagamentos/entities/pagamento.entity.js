@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", String)
 ], Pagamento.prototype, "formaPagamento", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => pedido_entity_1.Pedido, pedido => pedido.pagamento),
+    (0, typeorm_1.OneToOne)(() => pedido_entity_1.Pedido, pedido => pedido.pagamento, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'idPedido' }),
     __metadata("design:type", pedido_entity_1.Pedido)
 ], Pagamento.prototype, "pedido", void 0);

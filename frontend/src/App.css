@@ -136,3 +136,7 @@ hr {
   margin-right: 5px;
   margin-bottom: 5px;
 }
+
+.btn:hover {
+  cursor: pointer
+}

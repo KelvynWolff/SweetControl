@@ -5,6 +5,7 @@ export declare class PromocoesController {
     private readonly promocoesService;
     constructor(promocoesService: PromocoesService);
     create(createPromocaoDto: CreatePromocaoDto): Promise<import("./entities/promocao.entity").Promocao>;
+    findAtivas(): Promise<import("./entities/promocao.entity").Promocao[]>;
     findAll(): Promise<import("./entities/promocao.entity").Promocao[]>;
     findOne(id: number): Promise<import("./entities/promocao.entity").Promocao>;
     update(id: number, updatePromocaoDto: UpdatePromocaoDto): Promise<import("./entities/promocao.entity").Promocao>;

@@ -10,4 +10,5 @@ export declare class PromocoesService {
     findOne(id: number): Promise<Promocao>;
     update(id: number, updatePromocaoDto: UpdatePromocaoDto): Promise<Promocao>;
     remove(id: number): Promise<void>;
+    findAtivas(): Promise<Promocao[]>;
 }

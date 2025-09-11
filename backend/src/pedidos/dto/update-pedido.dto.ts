@@ -1,8 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreatePedidoDto } from './create-pedido.dto';
 
-export class UpdatePedidoDto {
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  status?: string;
-}
+export class UpdatePedidoDto extends PartialType(CreatePedidoDto) {}

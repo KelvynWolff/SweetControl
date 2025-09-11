@@ -15,10 +15,10 @@ export class Promocao {
   @Column({ type: 'double' })
   valor: number;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamp' })
   dataInicio: Date;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamp' })
   dataFim: Date;
 
   @Column({ nullable: true })

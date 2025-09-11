@@ -6,6 +6,7 @@ export declare class ItemPedido {
     idProduto: number;
     quantidade: number;
     preco: number;
+    desconto: number;
     pedido: Pedido;
     produto: Produto;
 }

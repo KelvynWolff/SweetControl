@@ -26,3 +26,8 @@ export const deletePromocao = async (id) => {
   const response = await axios.delete(`${API_URL}/${id}`);
   return response.data;
 };
+
+export const getPromocoesAtivas = async () => {
+  const response = await axios.get(`${API_URL}/ativas`);
+  return response.data;
+};
