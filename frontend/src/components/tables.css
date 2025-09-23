@@ -53,3 +53,13 @@ tbody tr:hover {
 .icon-btn-delete:hover {
   color: #dc3545;
 }
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}

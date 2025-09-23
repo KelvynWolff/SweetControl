@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getProducts, deleteProduct } from '../../services/productService';
 import '../tables.css';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const fetchProducts = async () => {
-    try {
-      const data = await getProducts();
-      setProducts(data);
-    } catch (error) {
-      alert("Erro ao carregar produtos.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (error) {
+        alert("Erro ao carregar produtos.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchProducts();
   }, []);
 
@@ -29,7 +29,7 @@ const ProductList = () => {
       try {
         await deleteProduct(id);
         alert('Produto deletado com sucesso!');
-        fetchProducts();
+        setProducts(products.filter(p => p.id !== id));
       } catch (error) {
         alert('Erro ao deletar produto.');
         console.error(error);
@@ -41,6 +41,10 @@ const ProductList = () => {
     navigate(`/produtos/editar/${product.id}`);
   };
 
+  const filteredProducts = products.filter(product =>
+    product.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return <p>Carregando lista...</p>;
   }
@@ -48,9 +52,18 @@ const ProductList = () => {
   return (
     <div className="list-container">
       <h2>
-        <a class="btn" href="/produtos/novo">+</a>
+        <Link className="btn" to="/produtos/novo">+</Link>
         Gerenciar Produtos
       </h2>
+      
+      <input
+        type="text"
+        placeholder="Buscar produtos pelo nome..."
+        className="search-input"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
+
       <table>
         <thead>
           <tr>
@@ -62,10 +75,10 @@ const ProductList = () => {
           </tr>
         </thead>
         <tbody>
-          {products.length === 0 ? (
-            <tr><td colSpan="5">Nenhum produto cadastrado.</td></tr>
+          {filteredProducts.length === 0 ? (
+            <tr><td colSpan="5">Nenhum produto encontrado.</td></tr>
           ) : (
-            products.map((product) => (
+            filteredProducts.map((product) => (
               <tr key={product.id}>
                 <td>{product.nome}</td>
                 <td>R$ {Number(product.preco).toFixed(2)}</td>

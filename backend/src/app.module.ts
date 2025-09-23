@@ -23,6 +23,9 @@ import { FuncionariosModule } from './funcionarios/funcionarios.module';
 import { FornecedoresModule } from './fornecedores/fornecedores.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 import { NotificacoesModule } from './notificacoes/notificacoes.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { AuthModule } from './auth/auth.module';
+import { ProducaoModule } from './producao/producao.module';
 
 @Module({
   imports: [
@@ -69,7 +72,10 @@ import { NotificacoesModule } from './notificacoes/notificacoes.module';
     FuncionariosModule,
     FornecedoresModule,
     PedidosModule,
-    NotificacoesModule
+    NotificacoesModule,
+    UsuariosModule,
+    AuthModule,
+    ProducaoModule
   ],
   controllers: [AppController],
   providers: [AppService],
