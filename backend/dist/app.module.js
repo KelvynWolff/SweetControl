@@ -30,6 +30,9 @@ const funcionarios_module_1 = require("./funcionarios/funcionarios.module");
 const fornecedores_module_1 = require("./fornecedores/fornecedores.module");
 const pedidos_module_1 = require("./pedidos/pedidos.module");
 const notificacoes_module_1 = require("./notificacoes/notificacoes.module");
+const usuarios_module_1 = require("./usuarios/usuarios.module");
+const auth_module_1 = require("./auth/auth.module");
+const producao_module_1 = require("./producao/producao.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -79,7 +82,10 @@ exports.AppModule = AppModule = __decorate([
             funcionarios_module_1.FuncionariosModule,
             fornecedores_module_1.FornecedoresModule,
             pedidos_module_1.PedidosModule,
-            notificacoes_module_1.NotificacoesModule
+            notificacoes_module_1.NotificacoesModule,
+            usuarios_module_1.UsuariosModule,
+            auth_module_1.AuthModule,
+            producao_module_1.ProducaoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

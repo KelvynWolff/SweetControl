@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { createFuncionario, getFuncionarioById, updateFuncionario } from '../../services/funcionariosService';
 import { getCidades } from '../../services/cidadesService';
+import { getEstados } from '../../services/estadosService';
 import { createBairro, getBairrosByCidade } from '../../services/bairrosService';
 import '../forms.css';
 
@@ -28,6 +29,7 @@ const FuncionariosForm = () => {
 
   useEffect(() => {
     getCidades().then(setCidades);
+    getEstados().then(setEstados);
 
     if (isEditing) {
       setIsLoading(true);

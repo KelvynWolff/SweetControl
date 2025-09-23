@@ -30,4 +30,4 @@ export const updateReceita = async (id, receitaData) => {
 export const deleteReceita = async (id) => {
   const response = await axios.delete(`${API_URL}/${id}`);
   return response.data;
-};
+};  
