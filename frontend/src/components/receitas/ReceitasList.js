@@ -1,37 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getReceitas, deleteReceita } from '../../services/receitasService';
 import '../tables.css';
 
 const ReceitasList = () => {
   const [groupedReceitas, setGroupedReceitas] = useState({});
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const fetchAndGroupReceitas = async () => {
-    try {
-      setLoading(true);
-      const flatReceitas = await getReceitas();
-
-      const groupedData = flatReceitas.reduce((acc, receita) => {
-        const productName = receita.produto.nome;
-        if (!acc[productName]) {
-          acc[productName] = [];
-        }
-        acc[productName].push(receita);
-        return acc;
-      }, {});
-
-      setGroupedReceitas(groupedData);
-    } catch (error) {
-      alert("Erro ao carregar receitas.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchAndGroupReceitas = async () => {
+      try {
+        setLoading(true);
+        const flatReceitas = await getReceitas();
+
+        const groupedData = flatReceitas.reduce((acc, receita) => {
+          const productName = receita.produto.nome;
+          if (!acc[productName]) {
+            acc[productName] = [];
+          }
+          acc[productName].push(receita);
+          return acc;
+        }, {});
+
+        setGroupedReceitas(groupedData);
+      } catch (error) {
+        alert("Erro ao carregar receitas.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchAndGroupReceitas();
   }, []);
 
@@ -40,7 +40,14 @@ const ReceitasList = () => {
       try {
         await deleteReceita(id);
         alert('Item da receita deletado com sucesso!');
-        fetchAndGroupReceitas();
+        const flatReceitas = await getReceitas();
+        const groupedData = flatReceitas.reduce((acc, receita) => {
+            const productName = receita.produto.nome;
+            if (!acc[productName]) { acc[productName] = []; }
+            acc[productName].push(receita);
+            return acc;
+        }, {});
+        setGroupedReceitas(groupedData);
       } catch (error) {
         alert('Erro ao deletar item da receita.');
         console.error(error);
@@ -52,6 +59,10 @@ const ReceitasList = () => {
     navigate(`/receitas/editar/${receita.idProduto}`);
   };
 
+  const filteredProductNames = Object.keys(groupedReceitas).filter(productName =>
+    productName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return <p>Carregando lista de receitas...</p>;
   }
@@ -59,13 +70,22 @@ const ReceitasList = () => {
   return (
     <div className="list-container">
       <h2>
-        <a class="btn" href="/receitas/novo">+</a>
+        <Link className="btn" to="/receitas/novo">+</Link>
         Gerenciar Receitas
       </h2>
-      {Object.keys(groupedReceitas).length === 0 ? (
-        <p>Nenhuma receita cadastrada.</p>
+
+      <input
+        type="text"
+        placeholder="Buscar receita pelo nome do produto..."
+        className="search-input"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
+
+      {filteredProductNames.length === 0 ? (
+        <p>Nenhuma receita encontrada.</p>
       ) : (
-        Object.keys(groupedReceitas).map((productName) => (
+        filteredProductNames.map((productName) => (
           <div key={productName} className="recipe-group">
             <h3>{productName}</h3>
             <table>

@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getPromocoes, deletePromocao } from '../../services/promocoesService';
 import '../tables.css';
 
 const PromocoesList = () => {
   const [promocoes, setPromocoes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const fetchPromocoes = async () => {
-    try {
-      const data = await getPromocoes();
-      setPromocoes(data);
-    } catch (error) {
-      alert("Erro ao carregar promoções.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchPromocoes = async () => {
+      try {
+        const data = await getPromocoes();
+        setPromocoes(data);
+      } catch (error) {
+        alert("Erro ao carregar promoções.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchPromocoes();
   }, []);
 
@@ -29,7 +29,7 @@ const PromocoesList = () => {
       try {
         await deletePromocao(id);
         alert('Promoção deletada com sucesso!');
-        fetchPromocoes();
+        setPromocoes(promocoes.filter(p => p.id !== id));
       } catch (error) {
         alert('Erro ao deletar promoção.');
         console.error(error);
@@ -48,6 +48,10 @@ const PromocoesList = () => {
     return today >= inicio && today <= fim;
   };
 
+  const filteredPromocoes = promocoes.filter(promocao =>
+    promocao.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return <p>Carregando lista...</p>;
   }
@@ -55,9 +59,18 @@ const PromocoesList = () => {
   return (
     <div className="list-container">
       <h2>
-        <a class="btn" href="/promocoes/novo">+</a>
+        <Link className="btn" to="/promocoes/novo">+</Link>
         Gerenciar Promoções
       </h2>
+
+      <input
+        type="text"
+        placeholder="Buscar promoções pelo nome..."
+        className="search-input"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
+
       <table>
         <thead>
           <tr>
@@ -71,10 +84,10 @@ const PromocoesList = () => {
           </tr>
         </thead>
         <tbody>
-          {promocoes.length === 0 ? (
-            <tr><td colSpan="7">Nenhuma promoção cadastrada.</td></tr>
+          {filteredPromocoes.length === 0 ? (
+            <tr><td colSpan="7">Nenhuma promoção encontrada.</td></tr>
           ) : (
-            promocoes.map((promocao) => (
+            filteredPromocoes.map((promocao) => (
               <tr key={promocao.id}>
                 <td>{promocao.nome}</td>
                 <td>{promocao.tipoDeDesconto}</td>

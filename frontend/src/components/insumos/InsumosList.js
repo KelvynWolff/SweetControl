@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getInsumos, deleteInsumo } from '../../services/insumosService';
 import '../tables.css';
 
 const InsumosList = () => {
   const [insumos, setInsumos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const fetchInsumos = async () => {
-    try {
-      const data = await getInsumos();
-      setInsumos(data);
-    } catch (error) {
-      alert("Erro ao carregar insumos.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchInsumos = async () => {
+      try {
+        const data = await getInsumos();
+        setInsumos(data);
+      } catch (error) {
+        alert("Erro ao carregar insumos.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchInsumos();
   }, []);
 
@@ -29,7 +29,7 @@ const InsumosList = () => {
       try {
         await deleteInsumo(id);
         alert('Insumo deletado com sucesso!');
-        fetchInsumos();
+        setInsumos(insumos.filter(i => i.id !== id));
       } catch (error) {
         alert('Erro ao deletar insumo.');
         console.error(error);
@@ -41,6 +41,10 @@ const InsumosList = () => {
     navigate(`/insumos/editar/${insumo.id}`);
   };
 
+  const filteredInsumos = insumos.filter(insumo =>
+    insumo.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return <p>Carregando lista...</p>;
   }
@@ -48,9 +52,18 @@ const InsumosList = () => {
   return (
     <div className="list-container">
       <h2>
-        <a class="btn" href="/insumos/novo">+</a>
+        <Link className="btn" to="/insumos/novo">+</Link>
         Gerenciar Insumos
       </h2>
+
+      <input
+        type="text"
+        placeholder="Buscar insumos pelo nome..."
+        className="search-input"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
+
       <table>
         <thead>
           <tr>
@@ -62,10 +75,10 @@ const InsumosList = () => {
           </tr>
         </thead>
         <tbody>
-          {insumos.length === 0 ? (
-            <tr><td colSpan="5">Nenhum insumo cadastrado.</td></tr>
+          {filteredInsumos.length === 0 ? (
+            <tr><td colSpan="5">Nenhum insumo encontrado.</td></tr>
           ) : (
-            insumos.map((insumo) => (
+            filteredInsumos.map((insumo) => (
               <tr key={insumo.id}>
                 <td>{insumo.nome}</td>
                 <td>R$ {Number(insumo.valor).toFixed(2)}</td>
