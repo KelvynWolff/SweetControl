@@ -1,135 +1,142 @@
-header.app-header {
-  background-color: var(--color-primary);
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #fff7e5;
+}
+
+
+.App {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+header {
+  background-color: #0d3b66;
+  color: #ffeed0;
   padding: 1rem;
-  border: 4px solid var(--color-dark);
+  text-align: center;
+  border: 4px solid #000;
   border-bottom: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-.logo {
-  max-height: 60px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-.title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--color-light);
-  text-shadow: 2px 2px 0 var(--color-dark);
   font-family: 'Press Start 2P', cursive;
 }
-.menu-toggle {
-  display: none;
-  position: absolute;
-  top: 1.2rem;
-  right: 1.2rem;
-  background: 0 0;
-  border: 0;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: var(--color-light);
-}
-.main-nav {
-  width: 100%;
-}
-.main-nav ul {
-  display: flex;
-  gap: 0.75rem;
-  list-style: none;
-  padding: 0;
+
+header h1 {
   margin: 0;
+  font-size: 1.5rem;
+}
+
+.main-nav > ul {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
 }
-.main-nav > ul > li > a {
-  color: var(--color-dark);
-  background-color: var(--color-warning);
+
+.main-nav a {
+  color: #0d3b66;
+  background-color: #ffd166;
   text-decoration: none;
   padding: 0.5rem 1rem;
-  border: 2px solid var(--color-dark);
-  transition: all 0.2s ease-in-out;
+  border: 3px solid #000;
+  transition: background-color 0.2s, transform 0.1s;
   display: inline-block;
-  font-weight: 700;
+  vertical-align: middle;
 }
-.main-nav > ul > li > a.active {
-  background-color: var(--color-success);
-  color: var(--color-light);
-  box-shadow: 2px 2px 0 var(--color-dark);
-}
-.main-nav > ul > li > a:hover {
-  background-color: var(--color-secondary);
-  color: var(--color-light);
+
+.main-nav a:hover {
+  background-color: #06d6a0;
+  color: #fff;
   transform: translateY(-2px);
 }
+
 main {
-  background: var(--color-light);
+  background: #ffeed0;
   padding: 2rem;
-  border: 4px solid var(--color-dark);
+  border: 4px solid #000;
   border-top: none;
 }
-.dashboard {
-  text-align: center;
+
+hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 40px 0;
 }
-.dashboard h2 {
-  color: var(--color-primary);
+
+.dropdown {
+  position: relative;
+  display: inline-block;
 }
-.dashboard p {
-  margin-top: 0.5rem;
-  font-size: 1.1rem;
-  color: var(--color-dark);
-}
-.dashboard-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 2rem;
-}
-.card {
-  background: var(--color-light);
-  border: 2px solid var(--color-dark);
-  border-radius: 12px;
-  padding: 1.2rem;
-  text-align: center;
-  font-weight: 700;
+
+.dropbtn {
   cursor: pointer;
-  transition: transform 0.2s, background 0.3s;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.75rem;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  background-color: #ffd166;
+  min-width: 220px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border: 3px solid #000;
+  padding: 0;
+  flex-direction: column; 
+  align-items: stretch;
+}
+
+.dropdown:hover .submenu {
+  display: block;
+}
+
+.submenu a {
+  color: #0d3b66;
+  padding: 12px 16px;
   text-decoration: none;
-  color: inherit;
+  display: block;
+  text-align: left;
+  border: none;
+  border-bottom: 2px solid #0d3b66;
+  background-color: #ffd166;
+  font-family: 'Helvetica Neue', sans-serif;
 }
-.card:hover {
-  background: var(--color-warning);
-  transform: translateY(-5px);
+
+.submenu li:last-child a {
+  border-bottom: none;
 }
-@media (max-width: 768px) {
-  .menu-toggle {
-    display: block;
-  }
-  .main-nav {
-    display: none;
-    width: 100%;
-    background-color: var(--color-primary);
-    margin-top: 1rem;
-    border-top: 2px solid var(--color-dark);
-    padding-top: 0.5rem;
-  }
-  .main-nav.open {
-    display: block;
-  }
-  .main-nav ul {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .main-nav > ul > li > a {
-    width: 92%;
-    text-align: center;
-  }
+
+.submenu a:hover {
+  background-color: #06d6a0;
+  color: #fff;
+  transform: none;
+}
+
+.submenu .separator hr {
+  margin: 0;
+  border-top: 2px solid #000;
+}
+
+.btn {
+  background-color: #007bff;
+  padding: 0px 6px;
+  text-decoration: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.btn:hover {
+  cursor: pointer
 }

@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import ProdutosHub from './pages/produtos/ProdutosHub';
-=======
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -12,7 +7,6 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProducaoPage from './pages/producao/ProducaoPage';
 
->>>>>>> d6862ef3b3f41442d1ba992191aca92c07547a77
 import ProdutosPage from './pages/produtos/ProdutosPage';
 import InsumosPage from './pages/insumos/InsumosPage';
 import ReceitasPage from './pages/receitas/ReceitasPage';
@@ -28,9 +22,6 @@ import FornecedoresPage from './pages/fornecedores/FornecedoresPage';
 import FuncionariosPage from './pages/funcionarios/FuncionariosPage';
 import PedidosPage from './pages/pedidos/PedidosPage';
 import NotificacoesPage from './pages/notificacoes/NotificacoesPage';
-<<<<<<< HEAD
-import './App.css';
-=======
 import Dashboard from './pages/Dashboard';
 
 import './App.css';
@@ -54,104 +45,9 @@ const AuthStatus = () => {
     </div>
   );
 };
->>>>>>> d6862ef3b3f41442d1ba992191aca92c07547a77
 
 function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
-<<<<<<< HEAD
-    <BrowserRouter>
-      <div className="App">
-        <header className="app-header">
-          <div className="logo-container">
-            <img
-              src="/Logo Sweet Control.jpg"
-              alt="Logo Sweet Control"
-              className="logo"
-            />
-            <h1 className="title">Sweet Control</h1>
-          </div>
-          <button
-            className="menu-toggle"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Alternar menu"
-          >
-            ☰
-          </button>
-          <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
-            <ul>
-              <li>
-                <NavLink to="/" end>
-                  Dashboard
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/produtos" end>
-                  Produtos
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/clientes">Pessoas & Cadastros</NavLink>
-              </li>
-              <li>
-                <NavLink to="/pedidos">Pedidos</NavLink>
-              </li>
-              <li>
-                <NavLink to="/promocoes">Promoções</NavLink>
-              </li>
-            </ul>
-          </nav>
-        </header>
-        <main>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/produtos" element={<ProdutosHub />} />
-            <Route path="/produtos/*" element={<ProdutosPage />} />
-            <Route path="/insumos/*" element={<InsumosPage />} />
-            <Route path="/receitas/*" element={<ReceitasPage />} />
-            <Route path="/promocoes/*" element={<PromocoesPage />} />
-            <Route path="/estados/*" element={<EstadosPage />} />
-            <Route path="/cidades/*" element={<CidadesPage />} />
-            <Route path="/bairros/*" element={<BairrosPage />} />
-            <Route path="/clientes/*" element={<ClientesPage />} />
-            <Route path="/enderecos/*" element={<EnderecosPage />} />
-            <Route path="/emails/*" element={<EmailsPage />} />
-            <Route path="/telefones/*" element={<TelefonesPage />} />
-            <Route path="/fornecedores/*" element={<FornecedoresPage />} />
-            <Route path="/funcionarios/*" element={<FuncionariosPage />} />
-            <Route path="/pedidos/*" element={<PedidosPage />} />
-            <Route path="/notificacoes/*" element={<NotificacoesPage />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
-  );
-}
-
-const Dashboard = () => (
-  <section className="dashboard">
-    <h2>Bem-vindo ao seu Dashboard!</h2>
-    <p>
-      Gerencie seus produtos, pedidos e clientes de forma prática e moderna 🚀
-    </p>
-    <div className="dashboard-cards">
-      <NavLink to="/produtos" className="card">
-        📦 Produtos
-      </NavLink>
-      <NavLink to="/clientes" className="card">
-        👥 Clientes
-      </NavLink>
-      <NavLink to="/pedidos" className="card">
-        🛒 Pedidos
-      </NavLink>
-      <NavLink to="/promocoes" className="card">
-        📢 Promoções
-      </NavLink>
-    </div>
-  </section>
-);
-=======
     <AuthProvider>
       <BrowserRouter>
         <AppContent />
@@ -237,6 +133,5 @@ const AppContent = () => {
     </div>
   );
 };
->>>>>>> d6862ef3b3f41442d1ba992191aca92c07547a77
 
 export default App;
