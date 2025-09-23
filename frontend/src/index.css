@@ -1,3 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --color-primary: #ff7a2f; /* Laranja */
+  --color-secondary: #22b7f2; /* Azul turquesa */
+  --color-success: #3ccf6e; /* Verde */
+  --color-warning: #ffd84d; /* Amarelo */
+  --color-error: #f2527d; /* Rosa avermelhado */
+  --color-dark: #1e1e1e; /* Preto grafite */
+  --color-light: #fff6e8; /* Bege claro */
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +17,5 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  background-color: var(--color-light);
 }
