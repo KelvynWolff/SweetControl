@@ -33,7 +33,6 @@ describe('InsumosService', () => {
                 nome: 'Farinha de Trigo',
                 valor: 5.50,
                 unidadeMedida: 'KG',
-                estoque: 100,
             };
             const expectedResult = { id: 1, ...createInsumoDto };
             mockInsumoRepository.create.mockReturnValue(createInsumoDto);

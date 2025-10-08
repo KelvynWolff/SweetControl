@@ -5,7 +5,7 @@ declare class CreateItemPedidoDto {
 }
 declare class CreatePagamentoDto {
     valor: number;
-    formaPagamento: string;
+    dataPagamento?: Date;
 }
 export declare class CreatePedidoDto {
     idCliente: number;

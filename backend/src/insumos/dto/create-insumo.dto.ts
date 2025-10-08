@@ -12,8 +12,4 @@ export class CreateInsumoDto {
   @IsString()
   @IsNotEmpty()
   unidadeMedida: string;
-
-  @IsNumber()
-  @IsPositive()
-  estoque: number;
 }

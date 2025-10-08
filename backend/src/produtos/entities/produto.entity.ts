@@ -1,28 +1,25 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Promocao } from '../../promocoes/entities/promocao.entity';
 import { Receita } from '../../receitas/entities/receita.entity';
+import { Lote } from '../../lotes/entities/lote.entity';
 
-@Entity('produtos')
+@Entity()
 export class Produto {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 100, nullable: false })
+  @Column()
   nome: string;
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: false })
+  @Column({ type: 'double' })
   preco: number;
 
   @Column()
   unidadeMedida: string;
 
-  @Column('double')
-  estoque: number;
-  
-  @Column('double')
+  @Column({ type: 'double' })
   custo: number;
 
-  @Column('double')
+  @Column({ type: 'double' })
   margem: number;
 
   @Column({ type: 'text', nullable: true })
@@ -31,10 +28,9 @@ export class Produto {
   @Column({ default: true })
   ativo: boolean;
 
-  @OneToMany(() => Receita, (receita) => receita.produto)
+  @OneToMany(() => Receita, receita => receita.produto)
   receitas: Receita[];
 
-  @OneToMany(() => Promocao, (promocao) => promocao.produto)
-  promocoes: Promocao[];
-
+  @OneToMany(() => Lote, lote => lote.produto)
+  lotes: Lote[];
 }

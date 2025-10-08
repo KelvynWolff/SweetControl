@@ -69,28 +69,24 @@ const ProductList = () => {
           <tr>
             <th>Nome</th>
             <th>Preço</th>
-            <th>Estoque</th>
+            <th>Estoque Atual</th>
             <th>Custo</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {filteredProducts.length === 0 ? (
-            <tr><td colSpan="5">Nenhum produto encontrado.</td></tr>
-          ) : (
-            filteredProducts.map((product) => (
-              <tr key={product.id}>
-                <td>{product.nome}</td>
-                <td>R$ {Number(product.preco).toFixed(2)}</td>
-                <td>{product.estoque}</td>
-                <td>R$ {Number(product.custo).toFixed(2)}</td>
-                <td>
-                  <button className="icon-btn" onClick={() => handleEdit(product)}>✏️</button>
-                  <button className="icon-btn-delete" onClick={() => handleDelete(product.id)}>🗑️</button>
-                </td>
-              </tr>
-            ))
-          )}
+          {filteredProducts.map((product) => (
+            <tr key={product.id}>
+              <td>{product.nome}</td>
+              <td>R$ {Number(product.preco).toFixed(2)}</td>
+              <td>{product.estoqueAtual}</td>
+              <td>R$ {Number(product.custo).toFixed(2)}</td>
+              <td>
+                <button className="icon-btn" onClick={() => handleEdit(product)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(product.id)}>🗑️</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

@@ -15,10 +15,6 @@ export class CreateProdutoDto {
 
   @IsNumber()
   @IsPositive()
-  estoque: number;
-
-  @IsNumber()
-  @IsPositive()
   custo: number;
 
   @IsNumber()

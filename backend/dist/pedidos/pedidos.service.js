@@ -17,7 +17,8 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const pedido_entity_1 = require("./entities/pedido.entity");
-const produto_entity_1 = require("../produtos/entities/produto.entity");
+const lote_entity_1 = require("../lotes/entities/lote.entity");
+const movimentacao_estoque_entity_1 = require("../movimentacao-estoque/entities/movimentacao-estoque.entity");
 const item_pedido_entity_1 = require("../itens-pedido/entities/item-pedido.entity");
 let PedidosService = class PedidosService {
     pedidoRepository;
@@ -31,22 +32,22 @@ let PedidosService = class PedidosService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const produtoRepo = queryRunner.manager.getRepository(produto_entity_1.Produto);
             for (const item of createPedidoDto.itens) {
-                const produto = await produtoRepo.findOneBy({ id: item.idProduto });
-                if (!produto) {
-                    throw new common_1.NotFoundException(`Produto com ID #${item.idProduto} não encontrado.`);
+                const estoqueTotal = await this.calcularEstoqueItem(item.idProduto, 'produto', queryRunner);
+                if (estoqueTotal < item.quantidade) {
+                    throw new common_1.UnprocessableEntityException(`Estoque insuficiente para o produto ID #${item.idProduto}.`);
                 }
-                if (produto.estoque < item.quantidade) {
-                    throw new common_1.UnprocessableEntityException(`Estoque insuficiente para o produto "${produto.nome}".`);
-                }
-                produto.estoque -= item.quantidade;
-                await queryRunner.manager.save(produto);
+                await this.registrarSaidaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, movimentacao_estoque_entity_1.TipoMovimentacao.SAIDA_VENDA);
             }
-            const pedido = this.pedidoRepository.create({
+            const dadosDoPedido = {
                 ...createPedidoDto,
                 data: new Date(),
-            });
+                pagamento: {
+                    ...createPedidoDto.pagamento,
+                    dataPagamento: new Date(),
+                }
+            };
+            const pedido = this.pedidoRepository.create(dadosDoPedido);
             const novoPedido = await queryRunner.manager.save(pedido);
             await queryRunner.commitTransaction();
             return this.findOne(novoPedido.id);
@@ -70,38 +71,41 @@ let PedidosService = class PedidosService {
             where: { id },
             relations: ['cliente', 'cliente.pessoa', 'cliente.pessoa.emails', 'itens', 'itens.produto', 'pagamento']
         });
+        if (!pedido)
+            throw new common_1.NotFoundException(`Pedido com o ID #${id} não encontrado.`);
+        return pedido;
+    }
+    async updateStatus(id, status) {
+        const pedido = await this.pedidoRepository.preload({ id, status });
         if (!pedido) {
             throw new common_1.NotFoundException(`Pedido com o ID #${id} não encontrado.`);
         }
-        return pedido;
+        await this.pedidoRepository.save(pedido);
+        return this.findOne(id);
     }
     async update(id, updatePedidoDto) {
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const produtoRepo = queryRunner.manager.getRepository(produto_entity_1.Produto);
             const pedidoRepo = queryRunner.manager.getRepository(pedido_entity_1.Pedido);
             const itemPedidoRepo = queryRunner.manager.getRepository(item_pedido_entity_1.ItemPedido);
             const pedidoExistente = await this.findOne(id);
-            if (updatePedidoDto.itens) {
-                for (const item of pedidoExistente.itens) {
-                    const produto = await produtoRepo.findOneBy({ id: item.idProduto });
-                    if (produto) {
-                        produto.estoque += item.quantidade;
-                        await queryRunner.manager.save(produto);
-                    }
-                }
-                for (const item of updatePedidoDto.itens) {
-                    const produto = await produtoRepo.findOneBy({ id: item.idProduto });
-                    if (!produto || produto.estoque < item.quantidade) {
-                        throw new common_1.UnprocessableEntityException(`Estoque insuficiente para o novo item "${produto?.nome || 'desconhecido'}".`);
-                    }
-                    produto.estoque -= item.quantidade;
-                    await queryRunner.manager.save(produto);
-                }
-                await itemPedidoRepo.delete({ idPedido: id });
+            for (const item of pedidoExistente.itens) {
+                await this.registrarEntradaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, movimentacao_estoque_entity_1.TipoMovimentacao.ENTRADA_DEVOLUCAO);
             }
+            if (updatePedidoDto.itens) {
+                for (const item of updatePedidoDto.itens) {
+                    if (!item.idProduto || !item.quantidade)
+                        continue;
+                    const estoqueTotal = await this.calcularEstoqueItem(item.idProduto, 'produto', queryRunner);
+                    if (estoqueTotal < item.quantidade) {
+                        throw new common_1.UnprocessableEntityException(`Estoque insuficiente para o item de ID #${item.idProduto}.`);
+                    }
+                    await this.registrarSaidaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, movimentacao_estoque_entity_1.TipoMovimentacao.SAIDA_VENDA);
+                }
+            }
+            await itemPedidoRepo.delete({ idPedido: id });
             const pedidoAtualizado = pedidoRepo.merge(pedidoExistente, updatePedidoDto);
             await queryRunner.manager.save(pedidoAtualizado);
             await queryRunner.commitTransaction();
@@ -120,14 +124,9 @@ let PedidosService = class PedidosService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const produtoRepo = queryRunner.manager.getRepository(produto_entity_1.Produto);
             const pedido = await this.findOne(id);
             for (const item of pedido.itens) {
-                const produto = await produtoRepo.findOneBy({ id: item.idProduto });
-                if (produto) {
-                    produto.estoque += item.quantidade;
-                    await queryRunner.manager.save(produto);
-                }
+                await this.registrarEntradaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, movimentacao_estoque_entity_1.TipoMovimentacao.ENTRADA_DEVOLUCAO);
             }
             await queryRunner.manager.remove(pedido);
             await queryRunner.commitTransaction();
@@ -140,12 +139,43 @@ let PedidosService = class PedidosService {
             await queryRunner.release();
         }
     }
-    async updateStatus(id, status) {
-        const pedido = await this.pedidoRepository.preload({ id, status });
-        if (!pedido) {
-            throw new common_1.NotFoundException(`Pedido com o ID #${id} não encontrado.`);
+    async registrarSaidaEstoque(itemId, tipoItem, quantidadeTotalSaida, queryRunner, tipoMovimentacao) {
+        const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
+        const movEstoqueRepo = queryRunner.manager.getRepository(movimentacao_estoque_entity_1.MovimentacaoEstoque);
+        const whereCondition = tipoItem === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
+        const lotes = await loteRepo.find({ where: whereCondition, relations: ['movimentacoes'], order: { dataValidade: 'ASC' } });
+        let quantidadeRestante = quantidadeTotalSaida;
+        for (const lote of lotes) {
+            if (quantidadeRestante <= 0)
+                break;
+            const estoqueLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+            if (estoqueLote > 0) {
+                const quantidadeASerRetirada = Math.min(estoqueLote, quantidadeRestante);
+                const movimentacao = movEstoqueRepo.create({ idLote: lote.id, tipo: tipoMovimentacao, quantidade: -quantidadeASerRetirada });
+                await queryRunner.manager.save(movimentacao);
+                quantidadeRestante -= quantidadeASerRetirada;
+            }
         }
-        return this.pedidoRepository.save(pedido);
+    }
+    async registrarEntradaEstoque(itemId, tipoItem, quantidadeTotalEntrada, queryRunner, tipoMovimentacao) {
+        const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
+        const movEstoqueRepo = queryRunner.manager.getRepository(movimentacao_estoque_entity_1.MovimentacaoEstoque);
+        const whereCondition = tipoItem === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
+        const loteMaisRecente = await loteRepo.findOne({ where: whereCondition, order: { dataValidade: 'DESC' } });
+        if (!loteMaisRecente) {
+            throw new common_1.NotFoundException(`Nenhum lote encontrado para o item #${itemId} para reverter o estoque.`);
+        }
+        const movimentacao = movEstoqueRepo.create({ idLote: loteMaisRecente.id, tipo: tipoMovimentacao, quantidade: quantidadeTotalEntrada });
+        await queryRunner.manager.save(movimentacao);
+    }
+    async calcularEstoqueItem(itemId, tipo, queryRunner) {
+        const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
+        const whereCondition = tipo === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
+        const lotes = await loteRepo.find({ where: whereCondition, relations: ['movimentacoes'] });
+        return lotes.reduce((total, lote) => {
+            const saldoLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+            return total + saldoLote;
+        }, 0);
     }
 };
 exports.PedidosService = PedidosService;

@@ -26,23 +26,37 @@ let ProdutosService = class ProdutosService {
         const produto = this.produtoRepository.create(createProdutoDto);
         return this.produtoRepository.save(produto);
     }
-    findAll() {
-        return this.produtoRepository.find();
+    async findAll() {
+        const produtos = await this.produtoRepository.find({
+            relations: ['lotes', 'lotes.movimentacoes'],
+        });
+        return produtos.map(produto => {
+            const estoqueAtual = produto.lotes.reduce((totalLote, lote) => {
+                const saldoLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+                return totalLote + saldoLote;
+            }, 0);
+            const { lotes, ...result } = produto;
+            return { ...result, estoqueAtual };
+        });
     }
     async findOne(id) {
-        const produto = await this.produtoRepository.findOneBy({ id });
-        if (!produto) {
-            throw new common_1.NotFoundException(`Produto com o ID #${id} não encontrado.`);
-        }
-        return produto;
-    }
-    async update(id, updateProdutoDto) {
-        const produto = await this.produtoRepository.preload({
-            id: id,
-            ...updateProdutoDto,
+        const produto = await this.produtoRepository.findOne({
+            where: { id },
+            relations: ['lotes', 'lotes.movimentacoes'],
         });
         if (!produto) {
-            throw new common_1.NotFoundException(`Produto com o ID #${id} não encontrado para atualização.`);
+            throw new common_1.NotFoundException(`Produto com ID #${id} não encontrado.`);
+        }
+        const estoqueAtual = produto.lotes.reduce((totalLote, lote) => {
+            const saldoLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+            return totalLote + saldoLote;
+        }, 0);
+        return { ...produto, estoqueAtual };
+    }
+    async update(id, updateProdutoDto) {
+        const produto = await this.produtoRepository.preload({ id, ...updateProdutoDto });
+        if (!produto) {
+            throw new common_1.NotFoundException(`Produto com ID #${id} não encontrado.`);
         }
         return this.produtoRepository.save(produto);
     }

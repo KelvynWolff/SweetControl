@@ -5,8 +5,8 @@ export declare class InsumosController {
     private readonly insumosService;
     constructor(insumosService: InsumosService);
     create(createInsumoDto: CreateInsumoDto): Promise<import("./entities/insumo.entity").Insumo>;
-    findAll(): Promise<import("./entities/insumo.entity").Insumo[]>;
-    findOne(id: number): Promise<import("./entities/insumo.entity").Insumo>;
+    findAll(): Promise<any[]>;
+    findOne(id: number): Promise<any>;
     update(id: number, updateInsumoDto: UpdateInsumoDto): Promise<import("./entities/insumo.entity").Insumo>;
     remove(id: number): Promise<void>;
 }

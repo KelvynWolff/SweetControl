@@ -39,7 +39,6 @@ describe('ProdutosService', () => {
         nome: 'Produto Teste',
         preco: 75.00,
         unidadeMedida: 'UN',
-        estoque: 10,
         custo: 50,
         margem: 1.5,
         descricao: 'Um produto de teste',

@@ -4,5 +4,6 @@ export declare class Pagamento {
     idPedido: number;
     valor: number;
     formaPagamento: string;
+    dataPagamento: Date;
     pedido: Pedido;
 }

@@ -26,6 +26,10 @@ import { NotificacoesModule } from './notificacoes/notificacoes.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
 import { ProducaoModule } from './producao/producao.module';
+import { LotesModule } from './lotes/lotes.module';
+import { Pagamento } from './pagamentos/entities/pagamento.entity';
+import { PagamentosModule } from './pagamentos/pagamentos.module';
+import { NotasComprasModule } from './notas-compras/notas-compras.module';
 
 @Module({
   imports: [
@@ -75,7 +79,10 @@ import { ProducaoModule } from './producao/producao.module';
     NotificacoesModule,
     UsuariosModule,
     AuthModule,
-    ProducaoModule
+    ProducaoModule,
+    LotesModule,
+    PagamentosModule,
+    NotasComprasModule
   ],
   controllers: [AppController],
   providers: [AppService],

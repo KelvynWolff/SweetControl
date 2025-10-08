@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Pedido } from '../../pedidos/entities/pedido.entity';
 import { Produto } from '../../produtos/entities/produto.entity';
+import { Lote } from '../../lotes/entities/lote.entity';
 
 @Entity()
 export class ItemPedido {
@@ -29,4 +30,11 @@ export class ItemPedido {
   @ManyToOne(() => Produto)
   @JoinColumn({ name: 'idProduto' })
   produto: Produto;
+
+  @Column({ nullable: true })
+  idLote: number;
+
+  @ManyToOne(() => Lote)
+  @JoinColumn({ name: 'idLote' })
+  lote: Lote;
 }

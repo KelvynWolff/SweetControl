@@ -9,8 +9,13 @@ const ProductForm = () => {
   const isEditing = Boolean(id);
 
   const initialFormState = {
-    nome: '', preco: 0, unidadeMedida: '', estoque: 0,
-    custo: 0, margem: 0, descricao: '', ativo: true,
+    nome: '', 
+    preco: 0, 
+    unidadeMedida: '',
+    custo: 0, 
+    margem: 0, 
+    descricao: '', 
+    ativo: true,
   };
   
   const [formData, setFormData] = useState(initialFormState);
@@ -20,14 +25,11 @@ const ProductForm = () => {
       const fetchProduct = async () => {
         try {
           const productData = await getProductById(id);
-
           if (productData) {
             setFormData(productData);
-            console.log("Formulário atualizado com os dados da API.");
           } else {
             console.error("API retornou dados nulos ou indefinidos.");
           }
-
         } catch (error) {
           console.error("ERRO NA CHAMADA DA API:", error.response || error);
           alert("Falha ao buscar os dados do produto. Verifique o console.");
@@ -38,10 +40,9 @@ const ProductForm = () => {
     }
   }, [id, isEditing, navigate]);
 
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const parsedValue = type === 'checkbox' ? checked : (['preco', 'estoque', 'custo', 'margem'].includes(name) ? parseFloat(value) || 0 : value);
+    const parsedValue = type === 'checkbox' ? checked : (['preco', 'custo', 'margem'].includes(name) ? parseFloat(value) || 0 : value);
     setFormData({ ...formData, [name]: parsedValue });
   };
 
@@ -68,16 +69,19 @@ const ProductForm = () => {
       <form onSubmit={handleSubmit}>
         <label htmlFor="nome">Nome</label>
         <input name="nome" value={formData.nome} onChange={handleChange} required />
+        
         <label htmlFor="preco">Preço de Venda</label>
         <input name="preco" type="number" step="0.01" value={formData.preco} onChange={handleChange} required />
+        
         <label htmlFor="unidadeMedida">Unidade de Medida</label>
         <input name="unidadeMedida" value={formData.unidadeMedida} onChange={handleChange} required />
-        <label htmlFor="estoque">Estoque</label>
-        <input name="estoque" type="number" value={formData.estoque} onChange={handleChange} required />
+        
         <label htmlFor="custo">Preço de Custo</label>
         <input name="custo" type="number" step="0.01" value={formData.custo} onChange={handleChange} required />
+        
         <label htmlFor="margem">Margem</label>
         <input name="margem" type="number" step="0.01" value={formData.margem} onChange={handleChange} required />
+        
         <button type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
         <button type="button" onClick={() => navigate('/produtos')} style={{marginTop: '10px', backgroundColor: '#6c757d'}}>Cancelar</button>
       </form>

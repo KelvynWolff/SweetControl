@@ -25,6 +25,9 @@ import NotificacoesPage from './pages/notificacoes/NotificacoesPage';
 import Dashboard from './pages/Dashboard';
 
 import './App.css';
+import LotesPage from './pages/lotes/LotesPage';
+import PagamentosPage from './components/pagamentos/PagamentosPage';
+import NotasComprasPage from './pages/notas-compras/NotasComprasPage';
 
 const AuthStatus = () => {
   const auth = useAuth();
@@ -76,6 +79,7 @@ const AppContent = () => {
                     <li><Link to="/receitas">Receitas</Link></li>
                     <li><Link to="/promocoes">Promoções</Link></li>
                     <li><Link to="/producao">Produção</Link></li>
+                    <li><Link to="/lotes">Lotes</Link></li>
                   </ul>
                 </li>
                 <li className="dropdown">
@@ -98,6 +102,13 @@ const AppContent = () => {
                   <ul className="submenu">
                     <li><Link to="/pedidos">Pedidos</Link></li>
                     <li><Link to="/notificacoes">Notificações</Link></li>
+                    <li><Link to="/pagamentos">Pagamentos</Link></li>
+                  </ul>
+                </li>
+                <li className="dropdown">
+                  <span className="dropbtn">Entradas ▼</span>
+                  <ul className="submenu">
+                    <li><Link to="/entradas">Entrada</Link></li>
                   </ul>
                 </li>
               </ul>
@@ -128,6 +139,9 @@ const AppContent = () => {
           <Route path="/pedidos/*" element={<ProtectedRoute><PedidosPage /></ProtectedRoute>} />
           <Route path="/notificacoes" element={<ProtectedRoute><NotificacoesPage /></ProtectedRoute>} />
           <Route path="/producao/*" element={<ProtectedRoute><ProducaoPage /></ProtectedRoute>} />
+          <Route path="/lotes/*" element={<ProtectedRoute><LotesPage /></ProtectedRoute>} />
+          <Route path="/pagamentos/*" element={<ProtectedRoute><PagamentosPage /></ProtectedRoute>} />
+          <Route path="/notas-compras/*" element={<ProtectedRoute><NotasComprasPage /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>

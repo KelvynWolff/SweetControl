@@ -1,19 +1,16 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsInt, IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsDateString, IsNumber, IsPositive } from 'class-validator';
 
 export class CreateProducaoDto {
-  @IsInt()
-  @IsPositive()
+  @IsNumber()
+  @IsNotEmpty()
   idProduto: number;
 
   @IsNumber()
   @IsPositive()
+  @IsNotEmpty()
   quantidade: number;
-
+  
   @IsDateString()
-  @IsOptional()
-  dataValidade?: Date;
-
-  @IsString()
-  @IsOptional()
-  observacao?: string;
+  @IsNotEmpty({ message: 'O campo dataValidade não pode estar vazio.' })
+  dataValidade: Date;
 }

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getPedidoById, enviarEmailPedido } from '../../services/pedidosService';
+import { getPedidoById, enviarEmailPedido, updatePedidoStatus  } from '../../services/pedidosService';
 import './PedidoDetalhes.css';
 
 const PedidoDetalhes = () => {
     const [pedido, setPedido] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState('');
     const [loading, setLoading] = useState(true);
     const { id } = useParams();
 
@@ -12,6 +13,7 @@ const PedidoDetalhes = () => {
         getPedidoById(id)
             .then(data => {
                 setPedido(data);
+                setSelectedStatus(data.status);
                 setLoading(false);
             })
             .catch(err => {
@@ -33,6 +35,22 @@ const PedidoDetalhes = () => {
         }
     };
 
+    const handleStatusUpdate = async () => {
+        if (!id || selectedStatus === pedido.status) {
+            alert("Nenhuma alteração de status para salvar.");
+            return;
+        }
+        try {
+            const pedidoAtualizado = await updatePedidoStatus(id, selectedStatus);
+
+            setPedido(pedidoAtualizado);
+            alert("Status do pedido atualizado com sucesso!");
+        } catch (error) {
+            alert("Erro ao atualizar o status do pedido.");
+            console.error(error);
+        }
+    };
+
     if (loading) {
         return <p>Carregando detalhes...</p>;
     }
@@ -41,7 +59,7 @@ const PedidoDetalhes = () => {
         return <p>Pedido não encontrado.</p>;
     }
     
-    const totalPedido = pedido.itens.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
+    const totalPedido = pedido?.itens?.reduce((acc, item) => acc + item.valor, 0) || 0;
 
     return (
         <div className="pedido-detalhes-container">
@@ -49,7 +67,7 @@ const PedidoDetalhes = () => {
 
             <div className="card">
                 <h4>Informações do Pedido</h4>
-                <p><strong>Cliente:</strong> {pedido.cliente.pessoa.nome}</p>
+                <p><strong>Cliente:</strong> {pedido?.cliente?.pessoa?.nome ?? 'Nome não disponível'}</p>
                 <p><strong>Data do Pedido:</strong> {new Date(pedido.data).toLocaleDateString()}</p>
                 <p><strong>Data de Entrega:</strong> {new Date(pedido.dataEntrega).toLocaleDateString()}</p>
                 <p><strong>Endereço de Entrega:</strong> {pedido.enderecoEntrega || 'Retirada no local'}</p>
@@ -68,14 +86,14 @@ const PedidoDetalhes = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {pedido.itens.map(item => (
-                            <tr key={item.id}>
-                                <td>{item.produto.nome}</td>
-                                <td>{item.quantidade}</td>
-                                <td>R$ {Number(item.preco).toFixed(2)}</td>
-                                <td>R$ {Number(item.desconto || 0).toFixed(2)}</td>
-                                <td>R$ {(Number(item.preco) * item.quantidade).toFixed(2)}</td>
-                            </tr>
+                        {(pedido?.itens ?? []).map(item => (
+                        <tr key={item.id}>
+                            <td>{item.produto.nome}</td>
+                            <td>{item.quantidade}</td>
+                            <td>R$ {Number(item.preco).toFixed(2)}</td>
+                            <td>R$ {Number(item.desconto || 0).toFixed(2)}</td>
+                            <td>R$ {(Number(item.preco) * item.quantidade).toFixed(2)}</td>
+                        </tr>
                         ))}
                     </tbody>
                 </table>
@@ -83,13 +101,22 @@ const PedidoDetalhes = () => {
 
             <div className="card">
                 <h4>Pagamento</h4>
-                <p><strong>Forma de Pagamento:</strong> {pedido.pagamento.formaPagamento}</p>
+                <p><strong>Forma de Pagamento:</strong> {pedido?.pagamento?.formaPagamento ?? 'Não informado'}</p>
                 <p><strong>Valor Total:</strong> R$ {Number(totalPedido).toFixed(2)}</p>
             </div>
 
             <div className="card">
                 <h4>Status do Pedido</h4>
-                <p><strong>Status Atual:</strong> {pedido.status}</p>
+                <div className="status-update-section">
+                    <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Em Produção">Em Produção</option>
+                        <option value="Pronto">Pronto para Entrega</option>
+                        <option value="Entregue">Entregue</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                    <button onClick={handleStatusUpdate}>Atualizar Status</button>
+                </div>
             </div>
 
             <div className="card">

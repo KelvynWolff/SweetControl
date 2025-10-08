@@ -11,20 +11,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Produto = void 0;
 const typeorm_1 = require("typeorm");
-const promocao_entity_1 = require("../../promocoes/entities/promocao.entity");
 const receita_entity_1 = require("../../receitas/entities/receita.entity");
+const lote_entity_1 = require("../../lotes/entities/lote.entity");
 let Produto = class Produto {
     id;
     nome;
     preco;
     unidadeMedida;
-    estoque;
     custo;
     margem;
     descricao;
     ativo;
     receitas;
-    promocoes;
+    lotes;
 };
 exports.Produto = Produto;
 __decorate([
@@ -32,11 +31,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Produto.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100, nullable: false }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Produto.prototype, "nome", void 0);
 __decorate([
-    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: false }),
+    (0, typeorm_1.Column)({ type: 'double' }),
     __metadata("design:type", Number)
 ], Produto.prototype, "preco", void 0);
 __decorate([
@@ -44,15 +43,11 @@ __decorate([
     __metadata("design:type", String)
 ], Produto.prototype, "unidadeMedida", void 0);
 __decorate([
-    (0, typeorm_1.Column)('double'),
-    __metadata("design:type", Number)
-], Produto.prototype, "estoque", void 0);
-__decorate([
-    (0, typeorm_1.Column)('double'),
+    (0, typeorm_1.Column)({ type: 'double' }),
     __metadata("design:type", Number)
 ], Produto.prototype, "custo", void 0);
 __decorate([
-    (0, typeorm_1.Column)('double'),
+    (0, typeorm_1.Column)({ type: 'double' }),
     __metadata("design:type", Number)
 ], Produto.prototype, "margem", void 0);
 __decorate([
@@ -64,14 +59,14 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Produto.prototype, "ativo", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => receita_entity_1.Receita, (receita) => receita.produto),
+    (0, typeorm_1.OneToMany)(() => receita_entity_1.Receita, receita => receita.produto),
     __metadata("design:type", Array)
 ], Produto.prototype, "receitas", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => promocao_entity_1.Promocao, (promocao) => promocao.produto),
+    (0, typeorm_1.OneToMany)(() => lote_entity_1.Lote, lote => lote.produto),
     __metadata("design:type", Array)
-], Produto.prototype, "promocoes", void 0);
+], Produto.prototype, "lotes", void 0);
 exports.Produto = Produto = __decorate([
-    (0, typeorm_1.Entity)('produtos')
+    (0, typeorm_1.Entity)()
 ], Produto);
 //# sourceMappingURL=produto.entity.js.map

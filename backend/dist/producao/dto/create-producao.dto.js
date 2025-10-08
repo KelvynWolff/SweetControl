@@ -15,27 +15,22 @@ class CreateProducaoDto {
     idProduto;
     quantidade;
     dataValidade;
-    observacao;
 }
 exports.CreateProducaoDto = CreateProducaoDto;
 __decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateProducaoDto.prototype, "idProduto", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateProducaoDto.prototype, "quantidade", void 0);
 __decorate([
     (0, class_validator_1.IsDateString)(),
-    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNotEmpty)({ message: 'O campo dataValidade não pode estar vazio.' }),
     __metadata("design:type", Date)
 ], CreateProducaoDto.prototype, "dataValidade", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateProducaoDto.prototype, "observacao", void 0);
 //# sourceMappingURL=create-producao.dto.js.map

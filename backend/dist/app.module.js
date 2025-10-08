@@ -33,6 +33,9 @@ const notificacoes_module_1 = require("./notificacoes/notificacoes.module");
 const usuarios_module_1 = require("./usuarios/usuarios.module");
 const auth_module_1 = require("./auth/auth.module");
 const producao_module_1 = require("./producao/producao.module");
+const lotes_module_1 = require("./lotes/lotes.module");
+const pagamentos_module_1 = require("./pagamentos/pagamentos.module");
+const notas_compras_module_1 = require("./notas-compras/notas-compras.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -85,7 +88,10 @@ exports.AppModule = AppModule = __decorate([
             notificacoes_module_1.NotificacoesModule,
             usuarios_module_1.UsuariosModule,
             auth_module_1.AuthModule,
-            producao_module_1.ProducaoModule
+            producao_module_1.ProducaoModule,
+            lotes_module_1.LotesModule,
+            pagamentos_module_1.PagamentosModule,
+            notas_compras_module_1.NotasComprasModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

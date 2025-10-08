@@ -192,3 +192,33 @@
 .itens-table td:not(:first-child) {
   text-align: right;
 }
+
+.status-update-section {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.status-update-section select {
+  flex-grow: 1;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.status-update-section button {
+  padding: 8px 15px;
+  border: none;
+  background-color: #28a745;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.status-update-section button:hover {
+  background-color: #218838;
+}

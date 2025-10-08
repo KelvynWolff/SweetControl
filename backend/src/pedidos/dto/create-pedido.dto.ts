@@ -20,9 +20,9 @@ class CreatePagamentoDto {
   @IsPositive()
   valor: number;
 
-  @IsString()
-  @IsNotEmpty()
-  formaPagamento: string;
+  @IsDateString()
+  @IsOptional()
+  dataPagamento?: Date;
 }
 
 export class CreatePedidoDto {

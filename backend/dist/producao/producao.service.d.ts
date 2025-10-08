@@ -7,4 +7,6 @@ export declare class ProducaoService {
     constructor(producaoRepository: Repository<Producao>, dataSource: DataSource);
     create(createProducaoDto: CreateProducaoDto): Promise<Producao>;
     findAll(): Promise<Producao[]>;
+    private calcularEstoqueItem;
+    private registrarSaidaEstoque;
 }

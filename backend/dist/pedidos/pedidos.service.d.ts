@@ -9,7 +9,10 @@ export declare class PedidosService {
     create(createPedidoDto: CreatePedidoDto): Promise<Pedido>;
     findAll(): Promise<Pedido[]>;
     findOne(id: number): Promise<Pedido>;
+    updateStatus(id: number, status: string): Promise<Pedido>;
     update(id: number, updatePedidoDto: UpdatePedidoDto): Promise<Pedido>;
     remove(id: number): Promise<void>;
-    updateStatus(id: number, status: string): Promise<Pedido>;
+    private registrarSaidaEstoque;
+    private registrarEntradaEstoque;
+    private calcularEstoqueItem;
 }

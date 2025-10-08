@@ -12,6 +12,7 @@ const ProducaoForm = () => {
     const [selectedProduto, setSelectedProduto] = useState('');
     const [quantidade, setQuantidade] = useState(1);
     const [observacao, setObservacao] = useState('');
+    const [dataValidade, setDataValidade] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -27,6 +28,7 @@ const ProducaoForm = () => {
         const payload = {
             idProduto: parseInt(selectedProduto),
             quantidade: parseFloat(quantidade),
+            dataValidade: dataValidade,
             observacao,
         };
         try {
@@ -71,6 +73,16 @@ const ProducaoForm = () => {
                 <div className="form-group">
                     <label>Quantidade a Produzir:</label>
                     <input type="number" value={quantidade} onChange={e => setQuantidade(e.target.value)} min="1" required />
+                </div>
+
+                <div className="form-group">
+                    <label>Data de Validade:</label>
+                    <input 
+                        type="date" 
+                        value={dataValidade} 
+                        onChange={e => setDataValidade(e.target.value)} 
+                        required 
+                    />
                 </div>
                 
                 <div className="form-group">

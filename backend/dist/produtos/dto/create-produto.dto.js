@@ -15,7 +15,6 @@ class CreateProdutoDto {
     nome;
     preco;
     unidadeMedida;
-    estoque;
     custo;
     margem;
     descricao;
@@ -37,11 +36,6 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateProdutoDto.prototype, "unidadeMedida", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], CreateProdutoDto.prototype, "estoque", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsPositive)(),

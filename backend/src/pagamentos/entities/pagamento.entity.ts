@@ -15,7 +15,10 @@ export class Pagamento {
   @Column()
   formaPagamento: string;
 
-  @OneToOne(() => Pedido, pedido => pedido.pagamento, { onDelete: 'CASCADE' })
+  @Column({ type: 'date' })
+  dataPagamento: Date;
+
+  @OneToOne(() => Pedido, pedido => pedido.pagamento)
   @JoinColumn({ name: 'idPedido' })
   pedido: Pedido;
 }

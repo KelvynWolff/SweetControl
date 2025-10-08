@@ -26,29 +26,45 @@ let InsumosService = class InsumosService {
         const insumo = this.insumoRepository.create(createInsumoDto);
         return this.insumoRepository.save(insumo);
     }
-    findAll() {
-        return this.insumoRepository.find();
+    async findAll() {
+        const insumos = await this.insumoRepository.find({
+            relations: ['lotes', 'lotes.movimentacoes'],
+        });
+        return insumos.map(insumo => {
+            const estoqueAtual = insumo.lotes.reduce((totalLote, lote) => {
+                const saldoLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+                return totalLote + saldoLote;
+            }, 0);
+            const { lotes, ...result } = insumo;
+            return { ...result, estoqueAtual };
+        });
     }
     async findOne(id) {
-        const insumo = await this.insumoRepository.findOneBy({ id });
-        if (!insumo) {
-            throw new common_1.NotFoundException(`Insumo com o ID #${id} não encontrado.`);
-        }
-        return insumo;
-    }
-    async update(id, updateInsumoDto) {
-        const insumo = await this.insumoRepository.preload({
-            id: id,
-            ...updateInsumoDto,
+        const insumo = await this.insumoRepository.findOne({
+            where: { id },
+            relations: ['lotes', 'lotes.movimentacoes'],
         });
         if (!insumo) {
-            throw new common_1.NotFoundException(`Insumo com o ID #${id} não encontrado para atualização.`);
+            throw new common_1.NotFoundException(`Insumo com ID #${id} não encontrado.`);
+        }
+        const estoqueAtual = insumo.lotes.reduce((totalLote, lote) => {
+            const saldoLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+            return totalLote + saldoLote;
+        }, 0);
+        return { ...insumo, estoqueAtual };
+    }
+    async update(id, updateInsumoDto) {
+        const insumo = await this.insumoRepository.preload({ id, ...updateInsumoDto });
+        if (!insumo) {
+            throw new common_1.NotFoundException(`Insumo com ID #${id} não encontrado.`);
         }
         return this.insumoRepository.save(insumo);
     }
     async remove(id) {
-        const insumo = await this.findOne(id);
-        await this.insumoRepository.remove(insumo);
+        const result = await this.insumoRepository.delete(id);
+        if (result.affected === 0) {
+            throw new common_1.NotFoundException(`Insumo com o ID #${id} não encontrado.`);
+        }
     }
 };
 exports.InsumosService = InsumosService;

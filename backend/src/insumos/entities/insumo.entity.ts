@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Lote } from '../../lotes/entities/lote.entity';
 import { Receita } from '../../receitas/entities/receita.entity';
 
-@Entity('insumos')
+@Entity()
 export class Insumo {
   @PrimaryGeneratedColumn()
   id: number;
@@ -9,15 +10,16 @@ export class Insumo {
   @Column()
   nome: string;
 
-  @Column('double')
+  @Column({ type: 'double' })
   valor: number;
 
   @Column()
   unidadeMedida: string;
-  
-  @Column('double')
-  estoque: number;
 
-  @OneToMany(() => Receita, (receita) => receita.insumo)
+
+  @OneToMany(() => Lote, lote => lote.insumo)
+  lotes: Lote[];
+
+  @OneToMany(() => Receita, receita => receita.insumo)
   receitas: Receita[];
 }

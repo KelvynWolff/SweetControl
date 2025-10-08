@@ -13,6 +13,7 @@ exports.ItemPedido = void 0;
 const typeorm_1 = require("typeorm");
 const pedido_entity_1 = require("../../pedidos/entities/pedido.entity");
 const produto_entity_1 = require("../../produtos/entities/produto.entity");
+const lote_entity_1 = require("../../lotes/entities/lote.entity");
 let ItemPedido = class ItemPedido {
     id;
     idPedido;
@@ -22,6 +23,8 @@ let ItemPedido = class ItemPedido {
     desconto;
     pedido;
     produto;
+    idLote;
+    lote;
 };
 exports.ItemPedido = ItemPedido;
 __decorate([
@@ -58,6 +61,15 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'idProduto' }),
     __metadata("design:type", produto_entity_1.Produto)
 ], ItemPedido.prototype, "produto", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], ItemPedido.prototype, "idLote", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => lote_entity_1.Lote),
+    (0, typeorm_1.JoinColumn)({ name: 'idLote' }),
+    __metadata("design:type", lote_entity_1.Lote)
+], ItemPedido.prototype, "lote", void 0);
 exports.ItemPedido = ItemPedido = __decorate([
     (0, typeorm_1.Entity)()
 ], ItemPedido);

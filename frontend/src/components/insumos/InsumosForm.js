@@ -12,7 +12,6 @@ const InsumosForm = () => {
     nome: '',
     valor: 0,
     unidadeMedida: '',
-    estoque: 0,
   };
   
   const [formData, setFormData] = useState(initialFormState);
@@ -39,7 +38,7 @@ const InsumosForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const parsedValue = (name === 'valor' || name === 'estoque') ? parseFloat(value) || 0 : value;
+    const parsedValue = (name === 'valor') ? parseFloat(value) || 0 : value;
     setFormData({ ...formData, [name]: parsedValue });
   };
 
@@ -66,12 +65,12 @@ const InsumosForm = () => {
       <form onSubmit={handleSubmit}>
         <label htmlFor="nome">Nome</label>
         <input name="nome" value={formData.nome} onChange={handleChange} required />
+        
         <label htmlFor="valor">Valor</label>
         <input name="valor" type="number" step="0.01" value={formData.valor} onChange={handleChange} required />
+        
         <label htmlFor="unidadeMedida">Unidade de Medida</label>
         <input name="unidadeMedida" value={formData.unidadeMedida} onChange={handleChange} required />
-        <label htmlFor="estoque">Estoque</label>
-        <input name="estoque" type="number" step="0.01" value={formData.estoque} onChange={handleChange} required />
         
         <button type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
         <button type="button" onClick={() => navigate('/insumos')} style={{marginTop: '10px', backgroundColor: '#6c757d'}}>Cancelar</button>

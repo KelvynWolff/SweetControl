@@ -34,7 +34,7 @@ __decorate([
 ], CreateItemPedidoDto.prototype, "preco", void 0);
 class CreatePagamentoDto {
     valor;
-    formaPagamento;
+    dataPagamento;
 }
 __decorate([
     (0, class_validator_1.IsNumber)(),
@@ -42,10 +42,10 @@ __decorate([
     __metadata("design:type", Number)
 ], CreatePagamentoDto.prototype, "valor", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreatePagamentoDto.prototype, "formaPagamento", void 0);
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Date)
+], CreatePagamentoDto.prototype, "dataPagamento", void 0);
 class CreatePedidoDto {
     idCliente;
     status;

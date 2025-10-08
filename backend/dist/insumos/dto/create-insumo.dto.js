@@ -15,7 +15,6 @@ class CreateInsumoDto {
     nome;
     valor;
     unidadeMedida;
-    estoque;
 }
 exports.CreateInsumoDto = CreateInsumoDto;
 __decorate([
@@ -33,9 +32,4 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateInsumoDto.prototype, "unidadeMedida", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsPositive)(),
-    __metadata("design:type", Number)
-], CreateInsumoDto.prototype, "estoque", void 0);
 //# sourceMappingURL=create-insumo.dto.js.map

@@ -1,5 +1,19 @@
-import { CreatePedidoDto } from './create-pedido.dto';
-declare const UpdatePedidoDto_base: import("@nestjs/mapped-types").MappedType<Partial<CreatePedidoDto>>;
-export declare class UpdatePedidoDto extends UpdatePedidoDto_base {
+declare class UpdateItemPedidoDto {
+    idProduto?: number;
+    quantidade?: number;
+    preco?: number;
+}
+declare class UpdatePagamentoDto {
+    valor?: number;
+    formaPagamento?: string;
+}
+export declare class UpdatePedidoDto {
+    idCliente?: number;
+    status?: string;
+    dataEntrega?: Date;
+    enderecoEntrega?: string;
+    observacao?: string;
+    itens?: UpdateItemPedidoDto[];
+    pagamento?: UpdatePagamentoDto;
 }
 export {};

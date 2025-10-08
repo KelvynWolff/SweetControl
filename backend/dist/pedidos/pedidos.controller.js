@@ -17,13 +17,10 @@ const common_1 = require("@nestjs/common");
 const pedidos_service_1 = require("./pedidos.service");
 const create_pedido_dto_1 = require("./dto/create-pedido.dto");
 const update_pedido_dto_1 = require("./dto/update-pedido.dto");
-const notificacoes_service_1 = require("../notificacoes/notificacoes.service");
 let PedidosController = class PedidosController {
     pedidosService;
-    notificacoesService;
-    constructor(pedidosService, notificacoesService) {
+    constructor(pedidosService) {
         this.pedidosService = pedidosService;
-        this.notificacoesService = notificacoesService;
     }
     create(createPedidoDto) {
         return this.pedidosService.create(createPedidoDto);
@@ -34,19 +31,17 @@ let PedidosController = class PedidosController {
     findOne(id) {
         return this.pedidosService.findOne(id);
     }
+    update(id, updatePedidoDto) {
+        return this.pedidosService.update(id, updatePedidoDto);
+    }
+    remove(id) {
+        return this.pedidosService.remove(id);
+    }
     updateStatus(id, updatePedidoDto) {
         if (!updatePedidoDto.status) {
             throw new common_1.BadRequestException('O campo status é obrigatório para esta operação.');
         }
         return this.pedidosService.updateStatus(id, updatePedidoDto.status);
-    }
-    remove(id) {
-        return this.pedidosService.remove(id);
-    }
-    async enviarEmailConfirmacao(id) {
-        const pedido = await this.pedidosService.findOne(id);
-        await this.notificacoesService.criarEEnviarNotificacaoDePedido(pedido);
-        return { message: 'Notificação salva no histórico e email de confirmação enviado!' };
     }
 };
 exports.PedidosController = PedidosController;
@@ -71,13 +66,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PedidosController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':id/status'),
+    (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, update_pedido_dto_1.UpdatePedidoDto]),
     __metadata("design:returntype", void 0)
-], PedidosController.prototype, "updateStatus", null);
+], PedidosController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
@@ -86,15 +81,15 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PedidosController.prototype, "remove", null);
 __decorate([
-    (0, common_1.Post)(':id/enviar-email'),
+    (0, common_1.Patch)(':id/status'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], PedidosController.prototype, "enviarEmailConfirmacao", null);
+    __metadata("design:paramtypes", [Number, update_pedido_dto_1.UpdatePedidoDto]),
+    __metadata("design:returntype", void 0)
+], PedidosController.prototype, "updateStatus", null);
 exports.PedidosController = PedidosController = __decorate([
     (0, common_1.Controller)('pedidos'),
-    __metadata("design:paramtypes", [pedidos_service_1.PedidosService,
-        notificacoes_service_1.NotificacoesService])
+    __metadata("design:paramtypes", [pedidos_service_1.PedidosService])
 ], PedidosController);
 //# sourceMappingURL=pedidos.controller.js.map

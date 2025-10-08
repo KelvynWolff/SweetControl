@@ -12,12 +12,14 @@ const typeorm_1 = require("@nestjs/typeorm");
 const insumo_entity_1 = require("./entities/insumo.entity");
 const insumos_controller_1 = require("./insumos.controller");
 const insumos_service_1 = require("./insumos.service");
+const lote_entity_1 = require("../lotes/entities/lote.entity");
+const movimentacao_estoque_entity_1 = require("../movimentacao-estoque/entities/movimentacao-estoque.entity");
 let InsumosModule = class InsumosModule {
 };
 exports.InsumosModule = InsumosModule;
 exports.InsumosModule = InsumosModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([insumo_entity_1.Insumo])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([insumo_entity_1.Insumo, lote_entity_1.Lote, movimentacao_estoque_entity_1.MovimentacaoEstoque])],
         controllers: [insumos_controller_1.InsumosController],
         providers: [insumos_service_1.InsumosService],
     })

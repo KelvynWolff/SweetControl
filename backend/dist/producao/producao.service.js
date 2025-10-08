@@ -17,9 +17,9 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const producao_entity_1 = require("./entities/producao.entity");
-const produto_entity_1 = require("../produtos/entities/produto.entity");
-const insumo_entity_1 = require("../insumos/entities/insumo.entity");
 const receita_entity_1 = require("../receitas/entities/receita.entity");
+const lote_entity_1 = require("../lotes/entities/lote.entity");
+const movimentacao_estoque_entity_1 = require("../movimentacao-estoque/entities/movimentacao-estoque.entity");
 let ProducaoService = class ProducaoService {
     producaoRepository;
     dataSource;
@@ -32,28 +32,33 @@ let ProducaoService = class ProducaoService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const produtoRepo = queryRunner.manager.getRepository(produto_entity_1.Produto);
-            const insumoRepo = queryRunner.manager.getRepository(insumo_entity_1.Insumo);
             const receitaRepo = queryRunner.manager.getRepository(receita_entity_1.Receita);
-            const produto = await produtoRepo.findOneBy({ id: createProducaoDto.idProduto });
-            if (!produto) {
-                throw new common_1.NotFoundException(`Produto com ID #${createProducaoDto.idProduto} não encontrado.`);
-            }
-            const receitaItens = await receitaRepo.find({ where: { idProduto: produto.id } });
+            const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
+            const movEstoqueRepo = queryRunner.manager.getRepository(movimentacao_estoque_entity_1.MovimentacaoEstoque);
+            const receitaItens = await receitaRepo.find({ where: { idProduto: createProducaoDto.idProduto }, relations: ['insumo'] });
             if (receitaItens.length === 0) {
-                throw new common_1.UnprocessableEntityException(`O produto "${produto.nome}" não possui uma receita cadastrada.`);
+                throw new common_1.UnprocessableEntityException(`Produto não possui receita.`);
             }
             for (const item of receitaItens) {
-                const insumo = await insumoRepo.findOneBy({ id: item.idInsumo });
                 const quantidadeNecessaria = item.qtdInsumo * createProducaoDto.quantidade;
-                if (!insumo || insumo.estoque < quantidadeNecessaria) {
-                    throw new common_1.UnprocessableEntityException(`Estoque insuficiente para o insumo "${insumo?.nome || 'desconhecido'}".`);
+                const estoqueInsumo = await this.calcularEstoqueItem(item.idInsumo, 'insumo', queryRunner);
+                if (estoqueInsumo < quantidadeNecessaria) {
+                    throw new common_1.UnprocessableEntityException(`Estoque insuficiente para o insumo "${item.insumo.nome}".`);
                 }
-                insumo.estoque -= quantidadeNecessaria;
-                await queryRunner.manager.save(insumo);
+                await this.registrarSaidaEstoque(item.idInsumo, 'insumo', quantidadeNecessaria, queryRunner, movimentacao_estoque_entity_1.TipoMovimentacao.SAIDA_PRODUCAO);
             }
-            produto.estoque += createProducaoDto.quantidade;
-            await queryRunner.manager.save(produto);
+            const novoLoteProduto = loteRepo.create({
+                idProduto: createProducaoDto.idProduto,
+                codigoLote: Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 100),
+                dataValidade: createProducaoDto.dataValidade,
+            });
+            const loteSalvo = await queryRunner.manager.save(novoLoteProduto);
+            const movimentacaoEntrada = movEstoqueRepo.create({
+                idLote: loteSalvo.id,
+                tipo: movimentacao_estoque_entity_1.TipoMovimentacao.ENTRADA_PRODUCAO,
+                quantidade: createProducaoDto.quantidade,
+            });
+            await queryRunner.manager.save(movimentacaoEntrada);
             const producao = this.producaoRepository.create(createProducaoDto);
             const novaProducao = await queryRunner.manager.save(producao);
             await queryRunner.commitTransaction();
@@ -69,6 +74,33 @@ let ProducaoService = class ProducaoService {
     }
     findAll() {
         return this.producaoRepository.find({ relations: ['produto'], order: { data: 'DESC' } });
+    }
+    async calcularEstoqueItem(itemId, tipo, queryRunner) {
+        const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
+        const whereCondition = tipo === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
+        const lotes = await loteRepo.find({ where: whereCondition, relations: ['movimentacoes'] });
+        return lotes.reduce((total, lote) => {
+            const saldoLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+            return total + saldoLote;
+        }, 0);
+    }
+    async registrarSaidaEstoque(itemId, tipoItem, quantidadeTotalSaida, queryRunner, tipoMovimentacao) {
+        const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
+        const movEstoqueRepo = queryRunner.manager.getRepository(movimentacao_estoque_entity_1.MovimentacaoEstoque);
+        const whereCondition = tipoItem === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
+        const lotes = await loteRepo.find({ where: whereCondition, relations: ['movimentacoes'], order: { dataValidade: 'ASC' } });
+        let quantidadeRestante = quantidadeTotalSaida;
+        for (const lote of lotes) {
+            if (quantidadeRestante <= 0)
+                break;
+            const estoqueLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
+            if (estoqueLote > 0) {
+                const quantidadeASerRetirada = Math.min(estoqueLote, quantidadeRestante);
+                const movimentacao = movEstoqueRepo.create({ idLote: lote.id, tipo: tipoMovimentacao, quantidade: -quantidadeASerRetirada });
+                await queryRunner.manager.save(movimentacao);
+                quantidadeRestante -= quantidadeASerRetirada;
+            }
+        }
     }
 };
 exports.ProducaoService = ProducaoService;

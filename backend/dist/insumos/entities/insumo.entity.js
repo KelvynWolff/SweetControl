@@ -11,13 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Insumo = void 0;
 const typeorm_1 = require("typeorm");
+const lote_entity_1 = require("../../lotes/entities/lote.entity");
 const receita_entity_1 = require("../../receitas/entities/receita.entity");
 let Insumo = class Insumo {
     id;
     nome;
     valor;
     unidadeMedida;
-    estoque;
+    lotes;
     receitas;
 };
 exports.Insumo = Insumo;
@@ -30,7 +31,7 @@ __decorate([
     __metadata("design:type", String)
 ], Insumo.prototype, "nome", void 0);
 __decorate([
-    (0, typeorm_1.Column)('double'),
+    (0, typeorm_1.Column)({ type: 'double' }),
     __metadata("design:type", Number)
 ], Insumo.prototype, "valor", void 0);
 __decorate([
@@ -38,14 +39,14 @@ __decorate([
     __metadata("design:type", String)
 ], Insumo.prototype, "unidadeMedida", void 0);
 __decorate([
-    (0, typeorm_1.Column)('double'),
-    __metadata("design:type", Number)
-], Insumo.prototype, "estoque", void 0);
+    (0, typeorm_1.OneToMany)(() => lote_entity_1.Lote, lote => lote.insumo),
+    __metadata("design:type", Array)
+], Insumo.prototype, "lotes", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => receita_entity_1.Receita, (receita) => receita.insumo),
+    (0, typeorm_1.OneToMany)(() => receita_entity_1.Receita, receita => receita.insumo),
     __metadata("design:type", Array)
 ], Insumo.prototype, "receitas", void 0);
 exports.Insumo = Insumo = __decorate([
-    (0, typeorm_1.Entity)('insumos')
+    (0, typeorm_1.Entity)()
 ], Insumo);
 //# sourceMappingURL=insumo.entity.js.map

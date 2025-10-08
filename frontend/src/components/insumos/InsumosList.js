@@ -70,27 +70,23 @@ const InsumosList = () => {
             <th>Nome</th>
             <th>Valor</th>
             <th>Unidade de Medida</th>
-            <th>Estoque</th>
+            <th>Estoque Atual</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {filteredInsumos.length === 0 ? (
-            <tr><td colSpan="5">Nenhum insumo encontrado.</td></tr>
-          ) : (
-            filteredInsumos.map((insumo) => (
-              <tr key={insumo.id}>
-                <td>{insumo.nome}</td>
-                <td>R$ {Number(insumo.valor).toFixed(2)}</td>
-                <td>{insumo.unidadeMedida}</td>
-                <td>{insumo.estoque}</td>
-                <td>
-                  <button className="icon-btn" onClick={() => handleEdit(insumo)}>✏️</button>
-                  <button className="icon-btn-delete" onClick={() => handleDelete(insumo.id)}>🗑️</button>
-                </td>
-              </tr>
-            ))
-          )}
+          {filteredInsumos.map((insumo) => (
+            <tr key={insumo.id}>
+              <td>{insumo.nome}</td>
+              <td>R$ {Number(insumo.valor).toFixed(2)}</td>
+              <td>{insumo.unidadeMedida}</td>
+              <td>{insumo.estoqueAtual}</td>
+              <td>
+                <button className="icon-btn" onClick={() => handleEdit(insumo)}>✏️</button>
+                <button className="icon-btn-delete" onClick={() => handleDelete(insumo.id)}>🗑️</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
