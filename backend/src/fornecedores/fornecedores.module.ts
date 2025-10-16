@@ -12,5 +12,6 @@ import { FornecedoresService } from './fornecedores.service';
   imports: [TypeOrmModule.forFeature([Fornecedor, Pessoa, Endereco, Telefone, Email])],
   controllers: [FornecedoresController],
   providers: [FornecedoresService],
+  exports: [FornecedoresService],
 })
 export class FornecedoresModule {}

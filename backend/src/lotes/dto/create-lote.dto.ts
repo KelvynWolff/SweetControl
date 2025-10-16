@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsInt, IsPositive, IsDateString, IsOptional, Vali
 export class CreateLoteDto {
   @IsInt()
   @IsNotEmpty()
-  codigoLote: number;
+  codigoLote: string;
 
   @IsDateString()
   @IsNotEmpty()

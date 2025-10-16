@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { PedidosService } from './pedidos.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { UpdatePedidoDto } from './dto/update-pedido.dto';
@@ -30,13 +30,5 @@ export class PedidosController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.pedidosService.remove(id);
-  }
-
-  @Patch(':id/status')
-  updateStatus(@Param('id', ParseIntPipe) id: number, @Body() updatePedidoDto: UpdatePedidoDto) {
-    if (!updatePedidoDto.status) {
-      throw new BadRequestException('O campo status é obrigatório para esta operação.');
-    }
-    return this.pedidosService.updateStatus(id, updatePedidoDto.status);
   }
 }

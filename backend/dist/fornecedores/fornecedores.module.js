@@ -24,6 +24,7 @@ exports.FornecedoresModule = FornecedoresModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([fornecedor_entity_1.Fornecedor, pessoa_entity_1.Pessoa, endereco_entity_1.Endereco, telefone_entity_1.Telefone, email_entity_1.Email])],
         controllers: [fornecedores_controller_1.FornecedoresController],
         providers: [fornecedores_service_1.FornecedoresService],
+        exports: [fornecedores_service_1.FornecedoresService],
     })
 ], FornecedoresModule);
 //# sourceMappingURL=fornecedores.module.js.map

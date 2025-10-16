@@ -22,7 +22,7 @@ exports.CreateLoteDto = CreateLoteDto;
 __decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], CreateLoteDto.prototype, "codigoLote", void 0);
 __decorate([
     (0, class_validator_1.IsDateString)(),

@@ -146,7 +146,7 @@ const FuncionariosForm = () => {
           <select value={selectedCidade} onChange={e => setSelectedCidade(e.target.value)} required disabled={!selectedEstado}>
             <option value="">Selecione uma Cidade</option>
             {cidades
-              .filter(c => c.estado === selectedEstado) // Filtra cidades pelo estado selecionado
+              .filter(c => c.estado === selectedEstado)
               .map(c => <option key={c.codigobge} value={c.codigobge}>{c.nome}</option>)
             }
           </select>

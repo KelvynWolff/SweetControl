@@ -20,6 +20,7 @@ exports.CidadesModule = CidadesModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([cidade_entity_1.Cidade])],
         controllers: [cidades_controller_1.CidadesController],
         providers: [cidades_service_1.CidadesService],
+        exports: [cidades_service_1.CidadesService],
     })
 ], CidadesModule);
 //# sourceMappingURL=cidades.module.js.map

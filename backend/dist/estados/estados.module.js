@@ -20,6 +20,7 @@ exports.EstadosModule = EstadosModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([estado_entity_1.Estado])],
         controllers: [estados_controller_1.EstadosController],
         providers: [estados_service_1.EstadosService],
+        exports: [estados_service_1.EstadosService],
     })
 ], EstadosModule);
 //# sourceMappingURL=estados.module.js.map

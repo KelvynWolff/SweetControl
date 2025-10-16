@@ -1,5 +1,5 @@
 export declare class CreateLoteDto {
-    codigoLote: number;
+    codigoLote: string;
     dataValidade: Date;
     quantidadeInicial: number;
     idProduto?: number;

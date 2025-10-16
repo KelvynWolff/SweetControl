@@ -16,6 +16,7 @@ exports.NotasComprasController = void 0;
 const common_1 = require("@nestjs/common");
 const notas_compras_service_1 = require("./notas-compras.service");
 const create_nota_compra_dto_1 = require("./dto/create-nota-compra.dto");
+const platform_express_1 = require("@nestjs/platform-express");
 let NotasComprasController = class NotasComprasController {
     notasComprasService;
     constructor(notasComprasService) {
@@ -26,6 +27,15 @@ let NotasComprasController = class NotasComprasController {
     }
     findAll() {
         return this.notasComprasService.findAll();
+    }
+    findOne(id) {
+        return this.notasComprasService.findOne(id);
+    }
+    async processXml(file) {
+        return this.notasComprasService.processXml(file.buffer);
+    }
+    remove(id) {
+        return this.notasComprasService.remove(id);
     }
 };
 exports.NotasComprasController = NotasComprasController;
@@ -42,6 +52,28 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], NotasComprasController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], NotasComprasController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)('upload-xml'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotasComprasController.prototype, "processXml", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], NotasComprasController.prototype, "remove", null);
 exports.NotasComprasController = NotasComprasController = __decorate([
     (0, common_1.Controller)('notas-compras'),
     __metadata("design:paramtypes", [notas_compras_service_1.NotasComprasService])

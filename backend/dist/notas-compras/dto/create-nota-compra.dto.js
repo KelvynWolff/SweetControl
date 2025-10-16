@@ -14,6 +14,7 @@ const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class CreateItemNotaDto {
     quantidade;
+    precoCompra;
     idProduto;
     idInsumo;
     codigoLote;
@@ -25,28 +26,31 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateItemNotaDto.prototype, "quantidade", void 0);
 __decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsPositive)(),
+    __metadata("design:type", Number)
+], CreateItemNotaDto.prototype, "precoCompra", void 0);
+__decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.ValidateIf)(o => !o.idInsumo),
     __metadata("design:type", Number)
 ], CreateItemNotaDto.prototype, "idProduto", void 0);
 __decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsPositive)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.ValidateIf)(o => !o.idProduto),
     __metadata("design:type", Number)
 ], CreateItemNotaDto.prototype, "idInsumo", void 0);
 __decorate([
-    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], CreateItemNotaDto.prototype, "codigoLote", void 0);
 __decorate([
-    (0, class_validator_1.IsDateString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Date)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)({}, { message: 'dataValidade deve estar no formato ISO 8601 (YYYY-MM-DD)' }),
+    __metadata("design:type", String)
 ], CreateItemNotaDto.prototype, "dataValidade", void 0);
 class CreateNotaCompraDto {
     chaveAcesso;
@@ -67,8 +71,8 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateNotaCompraDto.prototype, "idFornecedor", void 0);
 __decorate([
-    (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", Date)
+    (0, class_validator_1.IsDateString)({}, { message: 'data deve estar no formato ISO 8601 (YYYY-MM-DD)' }),
+    __metadata("design:type", String)
 ], CreateNotaCompraDto.prototype, "data", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),

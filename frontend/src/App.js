@@ -142,6 +142,7 @@ const AppContent = () => {
           <Route path="/lotes/*" element={<ProtectedRoute><LotesPage /></ProtectedRoute>} />
           <Route path="/pagamentos/*" element={<ProtectedRoute><PagamentosPage /></ProtectedRoute>} />
           <Route path="/notas-compras/*" element={<ProtectedRoute><NotasComprasPage /></ProtectedRoute>} />
+          <Route path="/entradas/*" element={<ProtectedRoute><NotasComprasPage /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>

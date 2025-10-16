@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { NotasCompras } from '../../notas-compras/entities/notas-compras.entity';
 import { Produto } from '../../produtos/entities/produto.entity';
 import { Insumo } from '../../insumos/entities/insumo.entity';
+import { Lote } from 'src/lotes/entities/lote.entity';
 
 @Entity()
 export class ItensNotasCompras {
@@ -17,6 +18,9 @@ export class ItensNotasCompras {
   @Column({ nullable: true })
   idInsumo: number | null;
 
+  @Column({ nullable: true })
+  idLote: number | null;
+
   @Column({ type: 'double' })
   quantidade: number;
 
@@ -31,4 +35,8 @@ export class ItensNotasCompras {
   @ManyToOne(() => Insumo, { nullable: true })
   @JoinColumn({ name: 'idInsumo' })
   insumo: Insumo;
+
+  @ManyToOne(() => Lote, { nullable: true })
+  @JoinColumn({ name: 'idLote' })
+  lote: Lote;
 }

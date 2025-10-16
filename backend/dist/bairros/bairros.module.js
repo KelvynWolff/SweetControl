@@ -20,6 +20,7 @@ exports.BairrosModule = BairrosModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([bairro_entity_1.Bairro])],
         controllers: [bairros_controller_1.BairrosController],
         providers: [bairros_service_1.BairrosService],
+        exports: [bairros_service_1.BairrosService],
     })
 ], BairrosModule);
 //# sourceMappingURL=bairros.module.js.map

@@ -18,6 +18,7 @@ let Lote = class Lote {
     id;
     codigoLote;
     dataValidade;
+    custoUnitario;
     idProduto;
     idInsumo;
     produto;
@@ -31,12 +32,16 @@ __decorate([
 ], Lote.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Lote.prototype, "codigoLote", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'date' }),
     __metadata("design:type", Date)
 ], Lote.prototype, "dataValidade", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'double', default: 0 }),
+    __metadata("design:type", Number)
+], Lote.prototype, "custoUnitario", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Object)
@@ -60,7 +65,6 @@ __decorate([
     __metadata("design:type", Array)
 ], Lote.prototype, "movimentacoes", void 0);
 exports.Lote = Lote = __decorate([
-    (0, typeorm_1.Entity)(),
-    (0, typeorm_1.Unique)(['codigoLote', 'idProduto'])
+    (0, typeorm_1.Entity)()
 ], Lote);
 //# sourceMappingURL=lote.entity.js.map

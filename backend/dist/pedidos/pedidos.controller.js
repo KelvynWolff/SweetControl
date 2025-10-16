@@ -37,12 +37,6 @@ let PedidosController = class PedidosController {
     remove(id) {
         return this.pedidosService.remove(id);
     }
-    updateStatus(id, updatePedidoDto) {
-        if (!updatePedidoDto.status) {
-            throw new common_1.BadRequestException('O campo status é obrigatório para esta operação.');
-        }
-        return this.pedidosService.updateStatus(id, updatePedidoDto.status);
-    }
 };
 exports.PedidosController = PedidosController;
 __decorate([
@@ -80,14 +74,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], PedidosController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Patch)(':id/status'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, update_pedido_dto_1.UpdatePedidoDto]),
-    __metadata("design:returntype", void 0)
-], PedidosController.prototype, "updateStatus", null);
 exports.PedidosController = PedidosController = __decorate([
     (0, common_1.Controller)('pedidos'),
     __metadata("design:paramtypes", [pedidos_service_1.PedidosService])

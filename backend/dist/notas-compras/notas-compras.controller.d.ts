@@ -5,4 +5,7 @@ export declare class NotasComprasController {
     constructor(notasComprasService: NotasComprasService);
     create(createNotaCompraDto: CreateNotaCompraDto): Promise<import("./entities/notas-compras.entity").NotasCompras>;
     findAll(): Promise<import("./entities/notas-compras.entity").NotasCompras[]>;
+    findOne(id: number): Promise<import("./entities/notas-compras.entity").NotasCompras>;
+    processXml(file: Express.Multer.File): Promise<any>;
+    remove(id: number): Promise<void>;
 }

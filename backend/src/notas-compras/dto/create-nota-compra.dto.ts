@@ -1,30 +1,42 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber, IsPositive, IsString, ValidateNested, IsInt, IsDateString, IsOptional, ValidateIf } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+  ValidateNested,
+  IsInt,
+  IsDateString,
+  IsOptional,
+} from 'class-validator';
 
 class CreateItemNotaDto {
   @IsNumber()
   @IsPositive()
   quantidade: number;
 
+  @IsNumber()
+  @IsPositive()
+  precoCompra: number;
+
   @IsInt()
   @IsPositive()
   @IsOptional()
-  @ValidateIf(o => !o.idInsumo)
   idProduto?: number;
 
   @IsInt()
   @IsPositive()
   @IsOptional()
-  @ValidateIf(o => !o.idProduto)
   idInsumo?: number;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  codigoLote: number;
+  codigoLote: string;
 
-  @IsDateString()
-  @IsNotEmpty()
-  dataValidade: Date;
+  @IsOptional()
+  @IsDateString({}, { message: 'dataValidade deve estar no formato ISO 8601 (YYYY-MM-DD)' })
+  dataValidade?: string;
 }
 
 export class CreateNotaCompraDto {
@@ -36,13 +48,13 @@ export class CreateNotaCompraDto {
   @IsPositive()
   idFornecedor: number;
 
-  @IsDateString()
-  data: Date;
+  @IsDateString({}, { message: 'data deve estar no formato ISO 8601 (YYYY-MM-DD)' })
+  data: string;
 
   @IsNumber()
   @IsPositive()
   valorTotal: number;
-  
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateItemNotaDto)

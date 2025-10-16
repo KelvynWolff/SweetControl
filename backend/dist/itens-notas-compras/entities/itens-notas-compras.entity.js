@@ -14,15 +14,18 @@ const typeorm_1 = require("typeorm");
 const notas_compras_entity_1 = require("../../notas-compras/entities/notas-compras.entity");
 const produto_entity_1 = require("../../produtos/entities/produto.entity");
 const insumo_entity_1 = require("../../insumos/entities/insumo.entity");
+const lote_entity_1 = require("../../lotes/entities/lote.entity");
 let ItensNotasCompras = class ItensNotasCompras {
     id;
     idNotasCompras;
     idProduto;
     idInsumo;
+    idLote;
     quantidade;
     notaCompra;
     produto;
     insumo;
+    lote;
 };
 exports.ItensNotasCompras = ItensNotasCompras;
 __decorate([
@@ -42,6 +45,10 @@ __decorate([
     __metadata("design:type", Object)
 ], ItensNotasCompras.prototype, "idInsumo", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Object)
+], ItensNotasCompras.prototype, "idLote", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'double' }),
     __metadata("design:type", Number)
 ], ItensNotasCompras.prototype, "quantidade", void 0);
@@ -60,6 +67,11 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'idInsumo' }),
     __metadata("design:type", insumo_entity_1.Insumo)
 ], ItensNotasCompras.prototype, "insumo", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => lote_entity_1.Lote, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'idLote' }),
+    __metadata("design:type", lote_entity_1.Lote)
+], ItensNotasCompras.prototype, "lote", void 0);
 exports.ItensNotasCompras = ItensNotasCompras = __decorate([
     (0, typeorm_1.Entity)()
 ], ItensNotasCompras);

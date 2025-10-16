@@ -35,23 +35,27 @@ let ProducaoService = class ProducaoService {
             const receitaRepo = queryRunner.manager.getRepository(receita_entity_1.Receita);
             const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
             const movEstoqueRepo = queryRunner.manager.getRepository(movimentacao_estoque_entity_1.MovimentacaoEstoque);
-            const receitaItens = await receitaRepo.find({ where: { idProduto: createProducaoDto.idProduto }, relations: ['insumo'] });
-            if (receitaItens.length === 0) {
+            const receitaItens = await receitaRepo.find({
+                where: { idProduto: createProducaoDto.idProduto },
+                relations: ['insumo'],
+            });
+            if (receitaItens.length === 0)
                 throw new common_1.UnprocessableEntityException(`Produto não possui receita.`);
-            }
             for (const item of receitaItens) {
                 const quantidadeNecessaria = item.qtdInsumo * createProducaoDto.quantidade;
                 const estoqueInsumo = await this.calcularEstoqueItem(item.idInsumo, 'insumo', queryRunner);
-                if (estoqueInsumo < quantidadeNecessaria) {
+                if (estoqueInsumo < quantidadeNecessaria)
                     throw new common_1.UnprocessableEntityException(`Estoque insuficiente para o insumo "${item.insumo.nome}".`);
-                }
                 await this.registrarSaidaEstoque(item.idInsumo, 'insumo', quantidadeNecessaria, queryRunner, movimentacao_estoque_entity_1.TipoMovimentacao.SAIDA_PRODUCAO);
             }
-            const novoLoteProduto = loteRepo.create({
-                idProduto: createProducaoDto.idProduto,
-                codigoLote: Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 100),
+            const novoLoteProdutoData = {
+                codigoLote: String(Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 100)),
                 dataValidade: createProducaoDto.dataValidade,
-            });
+            };
+            if (createProducaoDto.idProduto) {
+                novoLoteProdutoData.produto = { id: createProducaoDto.idProduto };
+            }
+            const novoLoteProduto = loteRepo.create(novoLoteProdutoData);
             const loteSalvo = await queryRunner.manager.save(novoLoteProduto);
             const movimentacaoEntrada = movEstoqueRepo.create({
                 idLote: loteSalvo.id,
@@ -79,10 +83,7 @@ let ProducaoService = class ProducaoService {
         const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);
         const whereCondition = tipo === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
         const lotes = await loteRepo.find({ where: whereCondition, relations: ['movimentacoes'] });
-        return lotes.reduce((total, lote) => {
-            const saldoLote = lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0);
-            return total + saldoLote;
-        }, 0);
+        return lotes.reduce((total, lote) => total + lote.movimentacoes.reduce((acc, mov) => acc + mov.quantidade, 0), 0);
     }
     async registrarSaidaEstoque(itemId, tipoItem, quantidadeTotalSaida, queryRunner, tipoMovimentacao) {
         const loteRepo = queryRunner.manager.getRepository(lote_entity_1.Lote);

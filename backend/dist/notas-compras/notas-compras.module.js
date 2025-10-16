@@ -15,12 +15,16 @@ const lote_entity_1 = require("../lotes/entities/lote.entity");
 const movimentacao_estoque_entity_1 = require("../movimentacao-estoque/entities/movimentacao-estoque.entity");
 const notas_compras_controller_1 = require("./notas-compras.controller");
 const notas_compras_service_1 = require("./notas-compras.service");
+const fornecedores_module_1 = require("../fornecedores/fornecedores.module");
+const estados_module_1 = require("../estados/estados.module");
+const cidades_module_1 = require("../cidades/cidades.module");
+const bairros_module_1 = require("../bairros/bairros.module");
 let NotasComprasModule = class NotasComprasModule {
 };
 exports.NotasComprasModule = NotasComprasModule;
 exports.NotasComprasModule = NotasComprasModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([notas_compras_entity_1.NotasCompras, itens_notas_compras_entity_1.ItensNotasCompras, lote_entity_1.Lote, movimentacao_estoque_entity_1.MovimentacaoEstoque])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([notas_compras_entity_1.NotasCompras, itens_notas_compras_entity_1.ItensNotasCompras, lote_entity_1.Lote, movimentacao_estoque_entity_1.MovimentacaoEstoque]), fornecedores_module_1.FornecedoresModule, fornecedores_module_1.FornecedoresModule, estados_module_1.EstadosModule, cidades_module_1.CidadesModule, bairros_module_1.BairrosModule],
         controllers: [notas_compras_controller_1.NotasComprasController],
         providers: [notas_compras_service_1.NotasComprasService],
     })

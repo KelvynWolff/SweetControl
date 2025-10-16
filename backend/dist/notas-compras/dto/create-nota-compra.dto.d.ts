@@ -1,14 +1,15 @@
 declare class CreateItemNotaDto {
     quantidade: number;
+    precoCompra: number;
     idProduto?: number;
     idInsumo?: number;
-    codigoLote: number;
-    dataValidade: Date;
+    codigoLote: string;
+    dataValidade?: string;
 }
 export declare class CreateNotaCompraDto {
     chaveAcesso: string;
     idFornecedor: number;
-    data: Date;
+    data: string;
     valorTotal: number;
     itens: CreateItemNotaDto[];
 }

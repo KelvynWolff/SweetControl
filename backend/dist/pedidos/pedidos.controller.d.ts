@@ -9,5 +9,4 @@ export declare class PedidosController {
     findOne(id: number): Promise<import("./entities/pedido.entity").Pedido>;
     update(id: number, updatePedidoDto: UpdatePedidoDto): Promise<import("./entities/pedido.entity").Pedido>;
     remove(id: number): Promise<void>;
-    updateStatus(id: number, updatePedidoDto: UpdatePedidoDto): Promise<import("./entities/pedido.entity").Pedido>;
 }
