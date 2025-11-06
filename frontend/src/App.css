@@ -1,142 +1,181 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+/* ====== GLOBAL STYLES ====== */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #fff7e5;
+  font-family: var(
+    --font-body,
+    Inter,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial
+  );
+  background: var(--bg, #0b0d17);
+  color: var(--text, #f5f6fa);
 }
 
-
-.App {
-  max-width: 900px;
-  margin: 40px auto;
-}
-
-header {
-  background-color: #0d3b66;
-  color: #ffeed0;
-  padding: 1rem;
-  text-align: center;
-  border: 4px solid #000;
-  border-bottom: none;
-  font-family: 'Press Start 2P', cursive;
-}
-
+/* ====== HEADER ====== */
 header h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
+.main-nav {
+}
 .main-nav > ul {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem 1rem;
-  margin: 1rem 0 0;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
+.main-nav li {
+  list-style: none;
+}
+.main-nav li::marker {
+  content: '';
+}
+.main-nav > ul > li {
+  position: relative;
+}
 
-.main-nav a {
-  color: #0d3b66;
-  background-color: #ffd166;
+/* Links 1º nível */
+.main-nav a,
+.dropbtn {
+  color: var(--text);
   text-decoration: none;
-  padding: 0.5rem 1rem;
-  border: 3px solid #000;
-  transition: background-color 0.2s, transform 0.1s;
-  display: inline-block;
-  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.1s ease, color 0.15s ease;
+}
+.main-nav a:hover,
+.dropbtn:hover {
+  background: #151926;
+  transform: translateY(-1px);
 }
 
-.main-nav a:hover {
-  background-color: #06d6a0;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-main {
-  background: #ffeed0;
-  padding: 2rem;
-  border: 4px solid #000;
-  border-top: none;
-}
-
-hr {
-  border: none;
-  border-top: 1px solid #e0e0e0;
-  margin: 40px 0;
-}
-
+/* Dropdown */
 .dropdown {
   position: relative;
   display: inline-block;
 }
-
+.dropdown::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 10px;
+}
 .dropbtn {
   cursor: pointer;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
 }
 
+/* Submenu */
 .submenu {
   display: none;
   position: absolute;
-  background-color: #ffd166;
+  top: 100%;
+  left: 0;
   min-width: 220px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-  border: 3px solid #000;
-  padding: 0;
-  flex-direction: column; 
-  align-items: stretch;
+  z-index: 50;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 8px;
+  list-style: none;
 }
-
-.dropdown:hover .submenu {
+.dropdown:hover .submenu,
+.dropdown:focus-within .submenu {
   display: block;
+  animation: menuIn 0.14s ease forwards;
+}
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .submenu a {
-  color: #0d3b66;
-  padding: 12px 16px;
-  text-decoration: none;
   display: block;
-  text-align: left;
-  border: none;
-  border-bottom: 2px solid #0d3b66;
-  background-color: #ffd166;
-  font-family: 'Helvetica Neue', sans-serif;
-}
-
-.submenu li:last-child a {
-  border-bottom: none;
-}
-
-.submenu a:hover {
-  background-color: #06d6a0;
-  color: #fff;
-  transform: none;
-}
-
-.submenu .separator hr {
-  margin: 0;
-  border-top: 2px solid #000;
-}
-
-.btn {
-  background-color: #007bff;
-  padding: 0px 6px;
-  text-decoration: none;
+  padding: 10px 12px;
   border-radius: 10px;
-  color: white;
-  font-weight: bold;
-  margin-right: 5px;
-  margin-bottom: 5px;
+  color: var(--text);
+  transition: background-color 0.15s ease, transform 0.1s ease, color 0.15s ease;
+}
+.submenu a:hover {
+  background: #171a22;
+  transform: translateX(2px);
 }
 
-.btn:hover {
-  cursor: pointer
+/* Link ativo */
+.main-nav a.is-active,
+.submenu a.is-active {
+  background: #171a22;
+  color: var(--text);
+  border-color: #242a38;
+}
+
+/* Ativo no dropdown - destaca o botão principal se algum submenu estiver ativo */
+.dropdown:has(.submenu a.is-active) > .dropbtn {
+  color: var(--secondary);
+}
+
+/* ====== MAIN ====== */
+main {
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+/* ====== TABS ====== */
+.tabs {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  margin: 12px 0 18px;
+  padding-bottom: 6px;
+}
+.tabs .tab {
+  text-decoration: none;
+  color: var(--muted);
+  padding: 8px 2px;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+.tabs .tab:hover {
+  color: var(--text);
+}
+.tabs .tab.is-active {
+  color: var(--text);
+  box-shadow: 0 2px 0 0 var(--primary);
+}
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
 }

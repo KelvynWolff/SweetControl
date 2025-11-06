@@ -1,18 +1,32 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, NavLink } from 'react-router-dom';
 import ProducaoList from '../../components/producao/ProducaoList';
 import ProducaoForm from '../../components/producao/ProducaoForm';
 
 function ProducaoPage() {
   return (
-    <div>
-      <nav style={{ marginBottom: '20px', padding: '10px', background: '#f4f4f4' }}>
-        <Link to="/producao">Histórico de Produção</Link>
-        <span style={{ margin: '0 10px' }}>|</span>
-        <Link to="/producao/novo">Registrar Nova Produção</Link>
+    <div className="container" style={{ display: 'grid', gap: 16 }}>
+      <nav className="tabs">
+        <NavLink
+          to="/producao"
+          end
+          className={({ isActive }) => `tab ${isActive ? 'is-active' : ''}`}
+        >
+          Histórico de Produção
+        </NavLink>
+
+        <NavLink
+          to="/producao/novo"
+          className={({ isActive }) => `tab ${isActive ? 'is-active' : ''}`}
+        >
+          Registrar Nova Produção
+        </NavLink>
       </nav>
+      /* Rotas aninhadas da página de Produção */
       <Routes>
-        <Route path="/" element={<ProducaoList />} />
+        /* Rota padrão da seção */
+        <Route index element={<ProducaoList />} />
+        /* Formulário de criação */
         <Route path="novo" element={<ProducaoForm />} />
       </Routes>
     </div>

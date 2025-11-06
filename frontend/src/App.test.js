@@ -9,7 +9,7 @@ jest.mock(
     Route: () => null,
     Link: ({ children }) => <span>{children}</span>,
   }),
-  { virtual: true }
+  { virtual: true },
 );
 
 jest.mock('./pages/produtos/ProdutosPage', () => () => <div />);
@@ -29,7 +29,6 @@ jest.mock('./pages/funcionarios/FuncionariosPage', () => () => <div />);
 test('renders application title', () => {
   render(<App />);
   expect(
-    screen.getByRole('heading', { name: /sweet control/i })
+    screen.getByRole('heading', { name: /sweet control/i }),
   ).toBeInTheDocument();
 });
-

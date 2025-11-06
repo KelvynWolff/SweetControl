@@ -1,21 +1,19 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
+import PedidosList from '../../components/pedidos/PedidosList';
+import PedidosForm from '../../components/pedidos/PedidosForm';
+import PedidoDetalhes from '../../components/pedidos/PedidoDetalhes';
 
-import ProductList from '../../components/produtos/ProductList';
-import ProductForm from '../../components/produtos/ProductForm';
-
-function ProdutosPage() {
+function PedidosPage() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<ProductList />} />
-        
-        <Route path="novo" element={<ProductForm />} />
-
-        <Route path="editar/:id" element={<ProductForm />} />
+        <Route path="/" element={<PedidosList />} />
+        <Route path="novo" element={<PedidosForm />} />
+        <Route path="detalhes/:id" element={<PedidoDetalhes />} />
       </Routes>
     </div>
   );
 }
 
-export default ProdutosPage;
+export default PedidosPage;
