@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { NotasCompras } from './entities/notas-compras.entity';
 import { CreateNotaCompraDto } from './dto/create-nota-compra.dto';
-import { FornecedoresService } from 'src/fornecedores/fornecedores.service';
+import { FornecedoresService } from '../fornecedores/fornecedores.service';
 export declare class NotasComprasService {
     private dataSource;
     private fornecedoresService;

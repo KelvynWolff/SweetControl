@@ -5,6 +5,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const notas_compras_service_1 = require("./notas-compras.service");
 const notas_compras_entity_1 = require("./entities/notas-compras.entity");
 const typeorm_2 = require("typeorm");
+const fornecedores_service_1 = require("../fornecedores/fornecedores.service");
 describe('NotasComprasService', () => {
     let service;
     beforeEach(async () => {
@@ -13,6 +14,7 @@ describe('NotasComprasService', () => {
                 notas_compras_service_1.NotasComprasService,
                 { provide: (0, typeorm_1.getRepositoryToken)(notas_compras_entity_1.NotasCompras), useValue: {} },
                 { provide: typeorm_2.DataSource, useValue: { createQueryRunner: jest.fn() } },
+                { provide: fornecedores_service_1.FornecedoresService, useValue: { create: jest.fn() } },
             ],
         }).compile();
         service = module.get(notas_compras_service_1.NotasComprasService);

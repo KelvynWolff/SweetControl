@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PedidosService } from './pedidos.service';
 import { Pedido } from './entities/pedido.entity';
+import { DataSource } from 'typeorm';
 
 describe('PedidosService', () => {
   let service: PedidosService;
@@ -17,6 +18,21 @@ describe('PedidosService', () => {
           useValue: {
             create: jest.fn(),
             save: jest.fn(),
+          },
+        },
+        {
+          provide: DataSource,
+          useValue: {
+            createQueryRunner: jest.fn(() => ({
+              connect: jest.fn(),
+              startTransaction: jest.fn(),
+              commitTransaction: jest.fn(),
+              rollbackTransaction: jest.fn(),
+              release: jest.fn(),
+              manager: {
+                getRepository: jest.fn(),
+              },
+            })),
           },
         },
       ],
