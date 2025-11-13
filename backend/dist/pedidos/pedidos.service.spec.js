@@ -4,6 +4,7 @@ const testing_1 = require("@nestjs/testing");
 const typeorm_1 = require("@nestjs/typeorm");
 const pedidos_service_1 = require("./pedidos.service");
 const pedido_entity_1 = require("./entities/pedido.entity");
+const typeorm_2 = require("typeorm");
 describe('PedidosService', () => {
     let service;
     let repository;
@@ -16,6 +17,21 @@ describe('PedidosService', () => {
                     useValue: {
                         create: jest.fn(),
                         save: jest.fn(),
+                    },
+                },
+                {
+                    provide: typeorm_2.DataSource,
+                    useValue: {
+                        createQueryRunner: jest.fn(() => ({
+                            connect: jest.fn(),
+                            startTransaction: jest.fn(),
+                            commitTransaction: jest.fn(),
+                            rollbackTransaction: jest.fn(),
+                            release: jest.fn(),
+                            manager: {
+                                getRepository: jest.fn(),
+                            },
+                        })),
                     },
                 },
             ],

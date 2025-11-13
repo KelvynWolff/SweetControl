@@ -7,14 +7,14 @@ import { MovimentacaoEstoque, TipoMovimentacao } from '../movimentacao-estoque/e
 import { CreateNotaCompraDto } from './dto/create-nota-compra.dto';
 import { NotFoundException } from '@nestjs/common';
 import { parseStringPromise } from 'xml2js';
-import { Fornecedor } from 'src/fornecedores/entities/fornecedor.entity';
-import { FornecedoresService } from 'src/fornecedores/fornecedores.service';
-import { Produto } from 'src/produtos/entities/produto.entity';
-import { Insumo } from 'src/insumos/entities/insumo.entity';
-import { Cidade } from 'src/cidades/entities/cidade.entity';
-import { Bairro } from 'src/bairros/entities/bairro.entity';
-import { Estado } from 'src/estados/entities/estado.entity';
-import { Pessoa } from 'src/pessoas/entities/pessoa.entity';
+import { Fornecedor } from '../fornecedores/entities/fornecedor.entity';
+import { FornecedoresService } from '../fornecedores/fornecedores.service';
+import { Produto } from '../produtos/entities/produto.entity';
+import { Insumo } from '../insumos/entities/insumo.entity';
+import { Cidade } from '../cidades/entities/cidade.entity';
+import { Bairro } from '../bairros/entities/bairro.entity';
+import { Estado } from '../estados/entities/estado.entity';
+import { Pessoa } from '../pessoas/entities/pessoa.entity';
 
 @Injectable()
 export class NotasComprasService {
