@@ -1,91 +1,126 @@
-.list-container {
+/* ====================================================== */
+/*                 TABLES – SWEET CONTROL THEME           */
+/* ====================================================== */
+
+/* Wrapper que permite scroll horizontal no mobile */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
   background: var(--surface);
-  color: var(--text);
-  padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  padding: 10px;
   border: 1px solid var(--border);
-  overflow-x: auto;
 }
 
-.list-container h2 {
-  margin: 0 0 10px 0;
-  color: var(--text);
-}
-
+/* Tabela padrão */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 14px;
-}
-
-th,
-td {
-  padding: 12px 14px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
 }
 
 /* Cabeçalho */
+thead tr {
+  background: var(--primary);
+  color: #fff;
+}
+
 thead th {
-  background: linear-gradient(to bottom, #18202c, #141a24);
-  color: var(--text);
-  font-weight: 700;
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Linhas */
-tbody tr:nth-child(odd) {
-  background: #121722;
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s ease;
 }
+
+/* Alternância suave */
 tbody tr:nth-child(even) {
-  background: #131a25;
+  background: var(--surface-2);
 }
+
+/* Células */
+td {
+  padding: 12px 14px;
+  color: var(--text);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Hover */
 tbody tr:hover {
-  background: #171f2c;
+  background: rgba(244, 155, 26, 0.15); /* primary com 15% */
 }
 
-/* Ações */
-.icon-btn,
-.icon-btn-delete {
-  background: none;
+/* Colunas de ações */
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Botões dentro de tabelas */
+.table-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius);
   border: none;
+  font-size: 0.85rem;
   cursor: pointer;
-  font-size: 18px;
-  margin: 0 5px;
-  padding: 5px;
-  color: var(--text);
-  transition: transform 0.1s ease, color 0.15s ease, opacity 0.15s ease;
-}
-.icon-btn:hover {
-  color: var(--accent);
-  transform: translateY(-1px);
-}
-.icon-btn-delete:hover {
-  color: var(--danger);
+  font-weight: 600;
+  transition: 0.2s;
 }
 
-/* Busca */
-.search-input {
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 14px;
-  font-size: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: #0f131b;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease,
-    background-color 0.18s ease;
+/* Botão editar */
+.table-btn-edit {
+  background: var(--accent-blue);
+  color: #fff;
 }
-.search-input::placeholder {
-  color: #9aa3b2;
+
+.table-btn-edit:hover {
+  opacity: 0.9;
 }
-.search-input:focus {
-  border-color: #2a87ff;
-  box-shadow: 0 0 0 3px rgba(42, 135, 255, 0.25);
-  background: #0d1117;
+
+/* Botão excluir */
+.table-btn-delete {
+  background: var(--danger);
+  color: #fff;
+}
+
+.table-btn-delete:hover {
+  opacity: 0.9;
+}
+
+/* Botão visualizar */
+.table-btn-view {
+  background: var(--primary-dark);
+  color: #fff;
+}
+
+.table-btn-view:hover {
+  opacity: 0.9;
+}
+
+/* Footer da tabela */
+.table-footer {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  thead {
+    font-size: 0.85rem;
+  }
+  td,
+  th {
+    padding: 10px;
+  }
 }

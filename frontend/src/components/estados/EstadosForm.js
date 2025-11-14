@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getEstadoBySigla, updateEstado, createEstado } from '../../services/estadosService';
+import {
+  getEstadoBySigla,
+  updateEstado,
+  createEstado,
+} from '../../services/estadosService';
 import '../forms.css';
 
 const EstadosForm = () => {
@@ -13,9 +17,9 @@ const EstadosForm = () => {
   useEffect(() => {
     if (isEditing) {
       getEstadoBySigla(sigla)
-        .then(data => setFormData(data))
-        .catch(err => {
-          alert("Estado não encontrado.");
+        .then((data) => setFormData(data))
+        .catch(() => {
+          alert('Estado não encontrado.');
           navigate('/estados');
         });
     }
@@ -23,14 +27,16 @@ const EstadosForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
+
+    setFormData((prev) => ({
+      ...prev,
       [name]: name === 'sigla' ? value.toUpperCase() : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       if (isEditing) {
         await updateEstado(sigla, { nome: formData.nome });
@@ -39,8 +45,9 @@ const EstadosForm = () => {
         await createEstado(formData);
         alert('Estado criado com sucesso!');
       }
+
       navigate('/estados');
-    } catch (error) {
+    } catch {
       alert('Erro ao salvar estado.');
     }
   };
@@ -48,25 +55,45 @@ const EstadosForm = () => {
   return (
     <div className="form-container">
       <h3>{isEditing ? `Editar Estado: ${sigla}` : 'Cadastrar Novo Estado'}</h3>
+
       <form onSubmit={handleSubmit}>
-        <input
-          name="sigla"
-          value={formData.sigla}
-          onChange={handleChange}
-          placeholder="Sigla (ex: SP)"
-          maxLength="2"
-          required
-          disabled={isEditing}
-        />
-        <input
-          name="nome"
-          value={formData.nome}
-          onChange={handleChange}
-          placeholder="Nome do Estado (ex: São Paulo)"
-          required
-        />
-        <button style={{marginTop: '10px'}} type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
-        <button style={{marginTop: '10px', backgroundColor: '#6c757d'}} type="button" onClick={() => navigate('/estados')}>Cancelar</button>
+        <fieldset>
+          <legend>Informações do Estado</legend>
+
+          <div className="form-row">
+            <input
+              name="sigla"
+              value={formData.sigla}
+              onChange={handleChange}
+              placeholder="Sigla (ex: SP)"
+              maxLength="2"
+              required
+              disabled={isEditing}
+            />
+
+            <input
+              name="nome"
+              value={formData.nome}
+              onChange={handleChange}
+              placeholder="Nome do Estado (ex: São Paulo)"
+              required
+            />
+          </div>
+        </fieldset>
+
+        <div className="form-actions">
+          <button type="submit">
+            {isEditing ? 'Salvar Alterações' : 'Cadastrar'}
+          </button>
+
+          <button
+            type="button"
+            className="form-button-secondary"
+            onClick={() => navigate('/estados')}
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </div>
   );

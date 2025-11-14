@@ -1,3 +1,8 @@
+/* ====================================================== */
+/*                   TABS – SWEET CONTROL                 */
+/* ====================================================== */
+
+/* Container das abas */
 .tabs {
   display: flex;
   gap: 14px;
@@ -5,21 +10,58 @@
   border-bottom: 1px solid var(--border);
   margin: 12px 0 18px;
   padding-bottom: 6px;
+  overflow-x: auto;
 }
 
+/* Aba individual */
 .tabs .tab {
   text-decoration: none;
   color: var(--muted);
-  padding: 8px 2px;
-  border-radius: 6px;
-  transition: color 0.15s ease;
+  padding: 10px 4px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
 
+/* Hover */
 .tabs .tab:hover {
   color: var(--text);
+  background: var(--surface-2);
+  transform: translateY(-1px);
 }
 
+/* Aba ativa */
 .tabs .tab.is-active {
-  color: var(--text);
-  box-shadow: 0 2px 0 0 var(--primary);
+  color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 2px 0 0 var(--primary); /* Linha embaixo */
+  font-weight: 700;
+}
+
+/* Efeito ao focar via teclado */
+.tabs .tab:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 4px;
+}
+
+/* Divisor entre grupos (caso use) */
+.tabs-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .tabs {
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  .tabs .tab {
+    padding: 8px 4px;
+    font-size: 0.9rem;
+  }
 }

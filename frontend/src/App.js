@@ -77,27 +77,11 @@ const AppContent = () => {
   return (
     <div className="App">
       {/* HEADER */}
-      <header
-        style={{
-          background: 'var(--surface)',
-          padding: '8px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '14px',
-          borderBottom: '3px solid var(--primary)',
-          boxShadow: 'var(--shadow)',
-        }}
-      >
-        {/* LOGO (coloque o arquivo em /public) */}
+      <header className="navbar">
         <img
-          src={'/Logo Sweet Control.jpg'}
+          src="/Logo Sweet Control.jpg"
           alt="Sweet Control"
-          style={{
-            height: 32,
-            width: 'auto',
-            borderRadius: 8,
-            objectFit: 'contain',
-          }}
+          className="navbar-logo"
           onError={(e) => {
             if (!e.currentTarget.dataset.fallback) {
               e.currentTarget.src = '/Logo Sweet Control.png';
@@ -106,19 +90,13 @@ const AppContent = () => {
           }}
         />
 
-        <h1
-          className="title-pixel"
-          style={{ fontSize: '1rem', marginRight: 8 }}
-        >
-          SWEET CONTROL
-        </h1>
+        <h1 className="navbar-title">SWEET CONTROL</h1>
 
         {isAuthenticated && (
           <>
-            <nav style={{ flexGrow: 1 }}>
+            <nav className="main-nav-wrapper">
               <ul className="main-nav">
                 <li>
-                  {/* end garante ativo SOMENTE em "/" */}
                   <NavLink to="/" end className={activeClass}>
                     Dashboard
                   </NavLink>
@@ -178,9 +156,11 @@ const AppContent = () => {
                         Funcionários
                       </NavLink>
                     </li>
+
                     <li className="separator">
                       <hr />
                     </li>
+
                     <li>
                       <NavLink to="/estados" className={activeClass}>
                         Estados
@@ -254,7 +234,7 @@ const AppContent = () => {
       </header>
 
       {/* CONTEÚDO */}
-      <main className="container" style={{ paddingTop: '24px' }}>
+      <main className="container main-content">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
