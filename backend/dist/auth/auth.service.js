@@ -11,8 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_1 = require("@nestjs/jwt");
 const usuarios_service_1 = require("../usuarios/usuarios.service");
+const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 let AuthService = class AuthService {
     usuariosService;
@@ -21,18 +21,27 @@ let AuthService = class AuthService {
         this.usuariosService = usuariosService;
         this.jwtService = jwtService;
     }
-    async validateUser(login, pass) {
-        const user = await this.usuariosService.findOneByLogin(login);
-        if (user && await bcrypt.compare(pass, user.senha)) {
+    async validateUser(username, pass) {
+        const user = await this.usuariosService.findOneByLogin(username);
+        if (user && (await bcrypt.compare(pass, user.senha))) {
             const { senha, ...result } = user;
             return result;
         }
         return null;
     }
     async login(user) {
-        const payload = { username: user.login, sub: user.id };
+        const payload = {
+            username: user.login,
+            sub: user.id,
+            role: user.role
+        };
         return {
             access_token: this.jwtService.sign(payload),
+            user: {
+                id: user.id,
+                nome: user.nome,
+                role: user.role
+            }
         };
     }
 };

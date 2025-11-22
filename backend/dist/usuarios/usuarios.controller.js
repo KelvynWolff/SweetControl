@@ -17,6 +17,10 @@ const common_1 = require("@nestjs/common");
 const usuarios_service_1 = require("./usuarios.service");
 const create_usuario_dto_1 = require("./dto/create-usuario.dto");
 const update_usuario_dto_1 = require("./dto/update-usuario.dto");
+const usuario_entity_1 = require("./entities/usuario.entity");
+const roles_decorator_1 = require("../auth/roles.decorator");
+const roles_guard_1 = require("../auth/roles.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let UsuariosController = class UsuariosController {
     usuariosService;
     constructor(usuariosService) {
@@ -36,6 +40,15 @@ let UsuariosController = class UsuariosController {
     }
     remove(id) {
         return this.usuariosService.remove(id);
+    }
+    updateRole(id, role) {
+        return this.usuariosService.updateRole(id, role);
+    }
+    findUnlinked() {
+        return this.usuariosService.findUnlinked();
+    }
+    linkFuncionario(id, body) {
+        return this.usuariosService.linkFuncionario(id, body.idFuncionario, body.role);
     }
 };
 exports.UsuariosController = UsuariosController;
@@ -74,6 +87,34 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], UsuariosController.prototype, "remove", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(usuario_entity_1.UserRole.SUPERVISOR),
+    (0, common_1.Patch)(':id/role'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "updateRole", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(usuario_entity_1.UserRole.SUPERVISOR),
+    (0, common_1.Get)('unlinked'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "findUnlinked", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(usuario_entity_1.UserRole.SUPERVISOR),
+    (0, common_1.Patch)(':id/link'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "linkFuncionario", null);
 exports.UsuariosController = UsuariosController = __decorate([
     (0, common_1.Controller)('usuarios'),
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),

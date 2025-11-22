@@ -9,8 +9,11 @@ export class Notificacao {
   @Column({ nullable: true })
   idPedido: number;
 
-  @Column('text')
+  @Column()
   mensagem: string;
+
+  @Column({ default: false })
+  lida: boolean;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data: Date;

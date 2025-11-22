@@ -42,7 +42,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Pagamento.prototype, "dataPagamento", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => pedido_entity_1.Pedido, pedido => pedido.pagamento),
+    (0, typeorm_1.ManyToOne)(() => pedido_entity_1.Pedido, pedido => pedido.pagamentos),
     (0, typeorm_1.JoinColumn)({ name: 'idPedido' }),
     __metadata("design:type", pedido_entity_1.Pedido)
 ], Pagamento.prototype, "pedido", void 0);

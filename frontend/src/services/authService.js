@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/auth';
@@ -18,4 +19,20 @@ export const logout = () => {
 export const register = async (userData) => {
   const response = await axios.post(USERS_API_URL, userData);
   return response.data;
+};
+
+export const getCurrentUserRole = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.role;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const isSupervisor = () => {
+  return getCurrentUserRole() === 'supervisor';
 };

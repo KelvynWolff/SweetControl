@@ -11,6 +11,7 @@ export declare class PedidosService {
     findOne(id: number): Promise<Pedido>;
     update(id: number, updatePedidoDto: UpdatePedidoDto): Promise<Pedido>;
     remove(id: number): Promise<void>;
+    updateStatus(id: number, status: string): Promise<Pedido>;
     private registrarSaidaEstoque;
     private registrarEntradaEstoque;
     private calcularEstoqueItem;

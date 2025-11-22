@@ -31,8 +31,8 @@ export class CreatePedidoDto {
   idCliente: number;
 
   @IsString()
-  @IsNotEmpty()
-  status: string;
+  @IsOptional()
+  status?: string;
 
   @IsDateString()
   dataEntrega: Date;

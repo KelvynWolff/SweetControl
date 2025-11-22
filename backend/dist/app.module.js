@@ -36,12 +36,14 @@ const producao_module_1 = require("./producao/producao.module");
 const lotes_module_1 = require("./lotes/lotes.module");
 const pagamentos_module_1 = require("./pagamentos/pagamentos.module");
 const notas_compras_module_1 = require("./notas-compras/notas-compras.module");
+const dashboard_module_1 = require("./dashboard/dashboard.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            dashboard_module_1.DashboardModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),

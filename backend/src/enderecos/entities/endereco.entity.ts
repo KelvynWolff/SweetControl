@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Pessoa } from '../../pessoas/entities/pessoa.entity';
 import { Bairro } from '../../bairros/entities/bairro.entity';
+import { Cidade } from '../../cidades/entities/cidade.entity';
 
 @Entity()
 export class Endereco {
@@ -29,4 +30,11 @@ export class Endereco {
   @ManyToOne(() => Bairro)
   @JoinColumn({ name: 'idBairro' })
   bairro: Bairro;
+
+  @Column()
+  idCidade: number;
+
+  @ManyToOne(() => Cidade)
+  @JoinColumn({ name: 'idCidade' })
+  cidade: Cidade;
 }

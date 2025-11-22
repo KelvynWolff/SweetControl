@@ -26,11 +26,10 @@ let EmailsService = class EmailsService {
         this.transporter = nodemailer.createTransport({
             host: 'smtp.ethereal.email',
             port: 587,
-            secure: false,
             auth: {
-                user: 'jerrold.upton@ethereal.email',
-                pass: 'kMKTDjVkmHF7ceXAQW',
-            },
+                user: 'user_ethereal',
+                pass: 'pass_ethereal'
+            }
         });
     }
     create(createEmailDto) {
@@ -38,45 +37,67 @@ let EmailsService = class EmailsService {
         return this.emailRepository.save(email);
     }
     findAll() {
-        return this.emailRepository.find({ relations: ['pessoa'] });
+        return this.emailRepository.find();
     }
     async findOne(id) {
-        const email = await this.emailRepository.findOne({ where: { id }, relations: ['pessoa'] });
+        const email = await this.emailRepository.findOneBy({ id });
         if (!email) {
-            throw new common_1.NotFoundException(`Email com o ID #${id} não encontrado.`);
+            throw new common_1.NotFoundException(`Email com ID #${id} não encontrado.`);
         }
         return email;
     }
     async update(id, updateEmailDto) {
-        const email = await this.emailRepository.preload({ id, ...updateEmailDto });
+        const email = await this.emailRepository.preload({
+            id,
+            ...updateEmailDto,
+        });
         if (!email) {
-            throw new common_1.NotFoundException(`Email com o ID #${id} não encontrado.`);
+            throw new common_1.NotFoundException(`Email com ID #${id} não encontrado.`);
         }
         return this.emailRepository.save(email);
     }
     async remove(id) {
-        const email = await this.findOne(id);
-        await this.emailRepository.remove(email);
+        const result = await this.emailRepository.delete(id);
+        if (result.affected === 0) {
+            throw new common_1.NotFoundException(`Email com ID #${id} não encontrado.`);
+        }
     }
-    async enviarEmailPedido(pedido, emailCliente) {
-        console.log(`--- [EmailsService] Preparando para enviar email para ${emailCliente}... ---`);
+    async enviarEmailPedido(pedido) {
+        const emailDestino = pedido.cliente?.pessoa?.emails?.[0]?.email;
+        if (!emailDestino) {
+            console.warn(`Cliente do pedido #${pedido.id} não possui e-mail cadastrado.`);
+            return { message: 'Cliente sem e-mail cadastrado.' };
+        }
+        const totalItens = pedido.itens ? pedido.itens.reduce((acc, item) => acc + (Number(item.preco) * item.quantidade), 0) : 0;
+        const totalPago = pedido.pagamentos ? pedido.pagamentos.reduce((acc, p) => acc + Number(p.valor), 0) : 0;
         const htmlContent = `
       <h1>Olá, ${pedido.cliente.pessoa.nome}!</h1>
       <p>Seu pedido #${pedido.id} foi recebido com sucesso.</p>
-      <p>Status: ${pedido.status}</p>
+      <p><strong>Status:</strong> ${pedido.status}</p>
+      
+      <h3>Resumo do Pedido:</h3>
       <ul>
-        ${pedido.itens.map(item => `<li>${item.produto.nome} (x${item.quantidade})</li>`).join('')}
+        ${pedido.itens.map(item => `<li>${item.produto.nome} - ${item.quantidade}x - R$ ${Number(item.preco).toFixed(2)}</li>`).join('')}
       </ul>
-      <p>Total: R$ ${pedido.pagamento.valor.toFixed(2)}</p>
+      
+      <p><strong>Valor Total do Pedido:</strong> R$ ${totalItens.toFixed(2)}</p>
+      <p><strong>Total Pago:</strong> R$ ${totalPago.toFixed(2)}</p>
+      
+      <p>Obrigado pela preferência!</p>
     `;
-        const info = await this.transporter.sendMail({
-            to: emailCliente,
-            from: '"Sweet Control" <noreply@sweetcontrol.com>',
-            subject: `Confirmação do Pedido #${pedido.id}`,
-            html: htmlContent,
-        });
-        console.log('--- [EmailsService] Email enviado com sucesso! ---');
-        console.log('URL de Visualização (Ethereal):', nodemailer.getTestMessageUrl(info));
+        try {
+            await this.transporter.sendMail({
+                from: '"Sweet Control" <noreply@sweetcontrol.com>',
+                to: emailDestino,
+                subject: `Confirmação do Pedido #${pedido.id}`,
+                html: htmlContent,
+            });
+            return { message: 'Email enviado com sucesso!' };
+        }
+        catch (error) {
+            console.error("Erro ao enviar email:", error);
+            return { message: 'Erro ao tentar enviar o email.', error: error.message };
+        }
     }
 };
 exports.EmailsService = EmailsService;

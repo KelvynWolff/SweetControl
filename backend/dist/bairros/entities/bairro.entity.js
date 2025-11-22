@@ -33,7 +33,7 @@ __decorate([
 ], Bairro.prototype, "ibgeCidade", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => cidade_entity_1.Cidade),
-    (0, typeorm_1.JoinColumn)({ name: 'ibgeCidade', referencedColumnName: 'codigobge' }),
+    (0, typeorm_1.JoinColumn)({ name: 'ibgeCidade' }),
     __metadata("design:type", cidade_entity_1.Cidade)
 ], Bairro.prototype, "cidade", void 0);
 exports.Bairro = Bairro = __decorate([

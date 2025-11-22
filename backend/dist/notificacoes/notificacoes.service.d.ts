@@ -1,16 +1,16 @@
 import { Repository } from 'typeorm';
 import { Notificacao } from './entities/notificacao.entity';
+import { EmailsService } from '../emails/emails.service';
 import { CreateNotificacaoDto } from './dto/create-notificacao.dto';
 import { UpdateNotificacaoDto } from './dto/update-notificacao.dto';
-import { EmailsService } from '../emails/emails.service';
-import { Pedido } from '../pedidos/entities/pedido.entity';
 export declare class NotificacoesService {
     private readonly notificacaoRepository;
-    private readonly emailService;
-    constructor(notificacaoRepository: Repository<Notificacao>, emailService: EmailsService);
+    private readonly emailsService;
+    constructor(notificacaoRepository: Repository<Notificacao>, emailsService: EmailsService);
     create(createNotificacaoDto: CreateNotificacaoDto): Promise<Notificacao>;
-    criarEEnviarNotificacaoDePedido(pedido: Pedido): Promise<Notificacao>;
     findAll(): Promise<Notificacao[]>;
+    findOne(id: number): Promise<Notificacao | null>;
     markAsRead(id: number, updateNotificacaoDto: UpdateNotificacaoDto): Promise<Notificacao>;
     remove(id: number): Promise<void>;
+    criarNotificacaoPedido(pedido: any): Promise<void>;
 }

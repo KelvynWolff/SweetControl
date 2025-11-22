@@ -26,3 +26,18 @@ export const deleteFuncionario = async (id) => {
   const response = await axios.delete(`${API_URL}/${id}`);
   return response.data;
 };
+
+export const updateUsuarioRole = async (id, role) => {
+  const token = localStorage.getItem('token');
+  
+  const response = await axios.patch(
+    `${API_URL}/${id}/role`, 
+    { role },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};

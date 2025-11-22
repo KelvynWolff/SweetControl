@@ -11,5 +11,5 @@ export declare class Pedido {
     observacao: string;
     cliente: Cliente;
     itens: ItemPedido[];
-    pagamento: Pagamento;
+    pagamentos: Pagamento[];
 }

@@ -1,61 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { getNotificacoes, deleteNotificacao } from '../../services/notificacoesService';
+import axios from 'axios';
 import './NotificacoesPage.css';
 
 const NotificacoesPage = () => {
   const [notificacoes, setNotificacoes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchNotificacoes = () => {
-    setIsLoading(true);
-    getNotificacoes()
-      .then(setNotificacoes)
-      .catch(err => alert("Erro ao carregar notificações."))
-      .finally(() => setIsLoading(false));
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchNotificacoes = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/notificacoes', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        setNotificacoes(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar notificações", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchNotificacoes();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Tem certeza que deseja apagar esta notificação?")) {
-      try {
-        await deleteNotificacao(id);
-        setNotificacoes(notificacoes.filter(not => not.id !== id));
-      } catch (error) {
-        alert("Erro ao apagar notificação.");
-      }
-    }
+  if (loading) {
+    return <div className="list-container"><p>Carregando notificações...</p></div>;
   }
 
   return (
-    <div className="notificacoes-container">
+    <div className="list-container">
       <h2>Histórico de Notificações</h2>
-      <div className="card">
-        {isLoading ? <p>Carregando...</p> : (
-          <ul className="notificacoes-list">
-            {notificacoes.map(not => (
-              <li key={not.id}>
-                <div className="not-content">
-                  <p>{not.mensagem}</p>
-                  
-                  {not.pedido && (
-                    <div className="not-details">
-                      <span>Pedido: #{not.pedido.id}</span>
-                      <span>Cliente: {not.pedido.cliente.pessoa.nome}</span>
-                      <span>Email enviado para: {not.pedido.cliente.pessoa.emails?.[0]?.email || 'N/A'}</span>
-                    </div>
-                  )}
 
-                  <span className="not-date">{new Date(not.data).toLocaleString()}</span>
-                </div>
-                <button onClick={() => handleDelete(not.id)} className="delete-btn">×</button>
-              </li>
+      {notificacoes.length === 0 ? (
+        <div style={{ 
+            textAlign: 'center', 
+            padding: '40px', 
+            color: '#666', 
+            backgroundColor: '#f9f9f9', 
+            borderRadius: '8px',
+            border: '1px dashed #ccc',
+            marginTop: '20px'
+        }}>
+            <h3>Nenhuma notificação encontrada</h3>
+            <p>Você não possui registros no histórico de notificações no momento.</p>
+        </div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Mensagem</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {notificacoes.map((notificacao) => (
+              <tr key={notificacao.id}>
+                <td>{new Date(notificacao.data).toLocaleDateString()}</td>
+                <td>{notificacao.mensagem}</td>
+                <td>{notificacao.lida ? 'Lida' : 'Não lida'}</td>
+              </tr>
             ))}
-          </ul>
-        )}
-      </div>
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

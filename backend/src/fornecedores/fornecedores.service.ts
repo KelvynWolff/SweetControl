@@ -31,34 +31,63 @@ export class FornecedoresService {
       const telefoneRepo = queryRunner.manager.getRepository(Telefone);
       const emailRepo = queryRunner.manager.getRepository(Email);
 
-      const pessoa = pessoaRepo.create({
-        nome: createFornecedorDto.nome,
-        cpfCnpj: createFornecedorDto.cpfCnpj,
-        idCidade: createFornecedorDto.endereco.idCidade,
+      let pessoa = await pessoaRepo.findOne({ 
+        where: { cpfCnpj: createFornecedorDto.cpfCnpj } 
       });
-      const novaPessoa = await queryRunner.manager.save(pessoa);
 
-      const fornecedor = fornecedorRepo.create({ idPessoa: novaPessoa.id });
-      const novoFornecedor = await queryRunner.manager.save(fornecedor);
+      if (pessoa) {
+        pessoa.nome = createFornecedorDto.nome;
+        await pessoaRepo.save(pessoa);
+      } else {
+        const novaPessoa = pessoaRepo.create({
+          nome: createFornecedorDto.nome,
+          cpfCnpj: createFornecedorDto.cpfCnpj,
+          idCidade: createFornecedorDto.endereco.idCidade,
+        });
+        pessoa = await pessoaRepo.save(novaPessoa);
+      }
 
-      const endereco = enderecoRepo.create({ ...createFornecedorDto.endereco, idPessoa: novaPessoa.id });
-      await queryRunner.manager.save(endereco);
+      let endereco = await enderecoRepo.findOne({ where: { idPessoa: pessoa.id } });
+      if (endereco) {
+        enderecoRepo.merge(endereco, {
+             ...createFornecedorDto.endereco, 
+             idCidade: createFornecedorDto.endereco.idCidade 
+        });
+        await enderecoRepo.save(endereco);
+      } else {
+        const novoEndereco = enderecoRepo.create({
+            ...createFornecedorDto.endereco,
+            idPessoa: pessoa.id
+        });
+        await enderecoRepo.save(novoEndereco);
+      }
 
+      let fornecedor = await fornecedorRepo.findOne({ where: { idPessoa: pessoa.id } });
+      
+      if (!fornecedor) {
+        const novoFornecedor = fornecedorRepo.create({ idPessoa: pessoa.id });
+        fornecedor = await fornecedorRepo.save(novoFornecedor);
+      }
+
+      await telefoneRepo.delete({ idPessoa: pessoa.id });
       for (const tel of createFornecedorDto.telefones) {
         if (tel.numero) {
-            const telefone = telefoneRepo.create({ ...tel, idPessoa: novaPessoa.id });
-            await queryRunner.manager.save(telefone);
+          const telefone = telefoneRepo.create({ ...tel, idPessoa: pessoa.id });
+          await queryRunner.manager.save(telefone);
         }
-    }
+      }
+
+      await emailRepo.delete({ idPessoa: pessoa.id });
       for (const mail of createFornecedorDto.emails) {
         if (mail.email) {
-          const email = emailRepo.create({ ...mail, idPessoa: novaPessoa.id });
+          const email = emailRepo.create({ ...mail, idPessoa: pessoa.id });
           await queryRunner.manager.save(email);
         }
       }
 
       await queryRunner.commitTransaction();
-      return this.findOne(novoFornecedor.id);
+      return this.findOne(fornecedor.id);
+
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
@@ -68,11 +97,23 @@ export class FornecedoresService {
   }
 
   findAll(): Promise<Fornecedor[]> {
-    return this.fornecedorRepository.find({ relations: ['pessoa', 'pessoa.cidade'] });
+    return this.fornecedorRepository.find({ 
+        relations: ['pessoa', 'pessoa.cidade'] 
+    });
   }
 
   async findOne(id: number): Promise<Fornecedor> {
-    const fornecedor = await this.fornecedorRepository.findOne({ where: { id }, relations: ['pessoa', 'pessoa.cidade'] });
+    const fornecedor = await this.fornecedorRepository.findOne({ 
+        where: { id }, 
+        relations: [
+            'pessoa', 
+            'pessoa.cidade', 
+            'pessoa.enderecos',
+            'pessoa.enderecos.cidade',
+            'pessoa.telefones', 
+            'pessoa.emails'
+        ] 
+    });
     if (!fornecedor) {
       throw new NotFoundException(`Fornecedor com o ID #${id} não encontrado.`);
     }
@@ -81,22 +122,21 @@ export class FornecedoresService {
   
   async update(id: number, updateFornecedorDto: UpdateFornecedorDto): Promise<Fornecedor> {
     const fornecedor = await this.findOne(id);
+    
     const pessoaAtualizada = await this.pessoaRepository.preload({
         id: fornecedor.idPessoa,
-        ...updateFornecedorDto,
+        nome: updateFornecedorDto.nome,
     });
-
-    if (!pessoaAtualizada) {
-      throw new NotFoundException(`Pessoa associada ao fornecedor #${id} não foi encontrada para atualização.`);
-    }
     
-    await this.pessoaRepository.save(pessoaAtualizada);
+    if (pessoaAtualizada) {
+        await this.pessoaRepository.save(pessoaAtualizada);
+    }
+
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
     const fornecedor = await this.findOne(id);
     await this.fornecedorRepository.remove(fornecedor);
-    await this.pessoaRepository.delete(fornecedor.idPessoa);
   }
 }

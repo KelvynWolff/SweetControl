@@ -9,18 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Usuario = void 0;
+exports.Usuario = exports.UserRole = void 0;
 const typeorm_1 = require("typeorm");
 const class_transformer_1 = require("class-transformer");
 const bcrypt = require("bcrypt");
+const funcionario_entity_1 = require("../../funcionarios/entities/funcionario.entity");
+var UserRole;
+(function (UserRole) {
+    UserRole["USER"] = "user";
+    UserRole["SUPERVISOR"] = "supervisor";
+})(UserRole || (exports.UserRole = UserRole = {}));
 let Usuario = class Usuario {
     id;
     login;
     senha;
     nome;
     dataValidade;
+    role;
+    funcionario;
     async hashPassword() {
-        this.senha = await bcrypt.hash(this.senha, 10);
+        if (this.senha) {
+            this.senha = await bcrypt.hash(this.senha, 10);
+        }
     }
 };
 exports.Usuario = Usuario;
@@ -45,6 +55,19 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'date' }),
     __metadata("design:type", Date)
 ], Usuario.prototype, "dataValidade", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: UserRole,
+        default: UserRole.USER,
+    }),
+    __metadata("design:type", String)
+], Usuario.prototype, "role", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario),
+    (0, typeorm_1.JoinColumn)({ name: 'idFuncionario' }),
+    __metadata("design:type", funcionario_entity_1.Funcionario)
+], Usuario.prototype, "funcionario", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),

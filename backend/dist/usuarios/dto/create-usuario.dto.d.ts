@@ -3,4 +3,5 @@ export declare class CreateUsuarioDto {
     senha: string;
     nome: string;
     dataValidade: Date;
+    idFuncionario?: number;
 }

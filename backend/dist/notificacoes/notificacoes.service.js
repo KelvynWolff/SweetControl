@@ -20,54 +20,47 @@ const notificacao_entity_1 = require("./entities/notificacao.entity");
 const emails_service_1 = require("../emails/emails.service");
 let NotificacoesService = class NotificacoesService {
     notificacaoRepository;
-    emailService;
-    constructor(notificacaoRepository, emailService) {
+    emailsService;
+    constructor(notificacaoRepository, emailsService) {
         this.notificacaoRepository = notificacaoRepository;
-        this.emailService = emailService;
+        this.emailsService = emailsService;
     }
     create(createNotificacaoDto) {
         const notificacao = this.notificacaoRepository.create(createNotificacaoDto);
         return this.notificacaoRepository.save(notificacao);
     }
-    async criarEEnviarNotificacaoDePedido(pedido) {
-        const emailDoCliente = pedido.cliente?.pessoa?.emails?.[0]?.email;
-        if (!emailDoCliente) {
-            throw new common_1.NotFoundException('Cliente não possui um email válido para envio.');
-        }
-        const mensagem = `O seu pedido #${pedido.id} foi recebido e está com o status: ${pedido.status}.`;
-        const notificacao = this.notificacaoRepository.create({
-            mensagem,
-            idPedido: pedido.id,
-        });
-        const notificacaoSalva = await this.notificacaoRepository.save(notificacao);
-        await this.emailService.enviarEmailPedido(pedido, emailDoCliente);
-        return notificacaoSalva;
-    }
     findAll() {
-        return this.notificacaoRepository.find({
-            relations: [
-                'pedido',
-                'pedido.cliente',
-                'pedido.cliente.pessoa',
-                'pedido.cliente.pessoa.emails'
-            ],
-            order: { data: 'DESC' },
-        });
+        return this.notificacaoRepository.find({ order: { data: 'DESC' } });
+    }
+    findOne(id) {
+        return this.notificacaoRepository.findOneBy({ id });
     }
     async markAsRead(id, updateNotificacaoDto) {
-        const notificacao = await this.notificacaoRepository.preload({
-            id: id,
-            status_leitura: updateNotificacaoDto.status_leitura,
-        });
+        const notificacao = await this.findOne(id);
         if (!notificacao) {
-            throw new common_1.NotFoundException(`Notificação com o ID #${id} não encontrada.`);
+            throw new common_1.NotFoundException(`Notificação #${id} não encontrada`);
         }
+        this.notificacaoRepository.merge(notificacao, updateNotificacaoDto);
         return this.notificacaoRepository.save(notificacao);
     }
     async remove(id) {
         const result = await this.notificacaoRepository.delete(id);
         if (result.affected === 0) {
-            throw new common_1.NotFoundException(`Notificação com o ID #${id} não encontrada.`);
+            throw new common_1.NotFoundException(`Notificação #${id} não encontrada`);
+        }
+    }
+    async criarNotificacaoPedido(pedido) {
+        const novaNotificacao = this.notificacaoRepository.create({
+            mensagem: `Novo pedido #${pedido.id} realizado.`,
+            data: new Date(),
+            lida: false,
+        });
+        await this.notificacaoRepository.save(novaNotificacao);
+        try {
+            await this.emailsService.enviarEmailPedido(pedido);
+        }
+        catch (error) {
+            console.error("Falha ao enviar notificação por email:", error.message);
         }
     }
 };

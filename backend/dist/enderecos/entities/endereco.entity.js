@@ -13,6 +13,7 @@ exports.Endereco = void 0;
 const typeorm_1 = require("typeorm");
 const pessoa_entity_1 = require("../../pessoas/entities/pessoa.entity");
 const bairro_entity_1 = require("../../bairros/entities/bairro.entity");
+const cidade_entity_1 = require("../../cidades/entities/cidade.entity");
 let Endereco = class Endereco {
     id;
     rua;
@@ -22,6 +23,8 @@ let Endereco = class Endereco {
     idPessoa;
     pessoa;
     bairro;
+    idCidade;
+    cidade;
 };
 exports.Endereco = Endereco;
 __decorate([
@@ -58,6 +61,15 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'idBairro' }),
     __metadata("design:type", bairro_entity_1.Bairro)
 ], Endereco.prototype, "bairro", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Endereco.prototype, "idCidade", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => cidade_entity_1.Cidade),
+    (0, typeorm_1.JoinColumn)({ name: 'idCidade' }),
+    __metadata("design:type", cidade_entity_1.Cidade)
+], Endereco.prototype, "cidade", void 0);
 exports.Endereco = Endereco = __decorate([
     (0, typeorm_1.Entity)()
 ], Endereco);

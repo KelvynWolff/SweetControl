@@ -28,7 +28,17 @@ let PagamentosService = class PagamentosService {
     async create(createPagamentoDto) {
         const pagamento = this.pagamentoRepository.create(createPagamentoDto);
         const novoPagamento = await this.pagamentoRepository.save(pagamento);
-        await this.pedidoRepository.update(createPagamentoDto.idPedido, { status: 'Pago' });
+        const pedido = await this.pedidoRepository.findOne({
+            where: { id: createPagamentoDto.idPedido },
+            relations: ['itens', 'pagamentos']
+        });
+        if (pedido) {
+            const totalPedido = pedido.itens.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
+            const totalPago = pedido.pagamentos.reduce((acc, pag) => acc + Number(pag.valor), 0);
+            if (totalPago >= (totalPedido - 0.01)) {
+                await this.pedidoRepository.update(pedido.id, { status: 'EM PRODUÇÃO' });
+            }
+        }
         return novoPagamento;
     }
     findAll() {

@@ -16,6 +16,7 @@ class CreateUsuarioDto {
     senha;
     nome;
     dataValidade;
+    idFuncionario;
 }
 exports.CreateUsuarioDto = CreateUsuarioDto;
 __decorate([
@@ -39,4 +40,9 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Date)
 ], CreateUsuarioDto.prototype, "dataValidade", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateUsuarioDto.prototype, "idFuncionario", void 0);
 //# sourceMappingURL=create-usuario.dto.js.map

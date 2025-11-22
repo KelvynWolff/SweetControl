@@ -8,14 +8,13 @@ export class Pedido {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // Esta coluna espera um formato 'YYYY-MM-DD'
   @Column({ type: 'date' })
   data: Date;
 
   @Column()
   idCliente: number;
 
-  @Column()
+  @Column({ default: 'AGUARDANDO PAGAMENTO' })
   status: string;
 
   @Column({ type: 'date', nullable: true })
@@ -34,6 +33,6 @@ export class Pedido {
   @OneToMany(() => ItemPedido, item => item.pedido, { cascade: true })
   itens: ItemPedido[];
 
-  @OneToOne(() => Pagamento, pagamento => pagamento.pedido, { cascade: true })
-  pagamento: Pagamento;
+  @OneToMany(() => Pagamento, pagamento => pagamento.pedido)
+  pagamentos: Pagamento[];
 }

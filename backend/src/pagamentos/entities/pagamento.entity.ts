@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { Pedido } from '../../pedidos/entities/pedido.entity';
 
 @Entity()
@@ -18,7 +18,7 @@ export class Pagamento {
   @Column({ type: 'date' })
   dataPagamento: Date;
 
-  @OneToOne(() => Pedido, pedido => pedido.pagamento)
+  @ManyToOne(() => Pedido, pedido => pedido.pagamentos)
   @JoinColumn({ name: 'idPedido' })
   pedido: Pedido;
 }

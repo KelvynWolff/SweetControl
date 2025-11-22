@@ -24,7 +24,7 @@ let Pedido = class Pedido {
     observacao;
     cliente;
     itens;
-    pagamento;
+    pagamentos;
 };
 exports.Pedido = Pedido;
 __decorate([
@@ -40,7 +40,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Pedido.prototype, "idCliente", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 'AGUARDANDO PAGAMENTO' }),
     __metadata("design:type", String)
 ], Pedido.prototype, "status", void 0);
 __decorate([
@@ -65,9 +65,9 @@ __decorate([
     __metadata("design:type", Array)
 ], Pedido.prototype, "itens", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => pagamento_entity_1.Pagamento, pagamento => pagamento.pedido, { cascade: true }),
-    __metadata("design:type", pagamento_entity_1.Pagamento)
-], Pedido.prototype, "pagamento", void 0);
+    (0, typeorm_1.OneToMany)(() => pagamento_entity_1.Pagamento, pagamento => pagamento.pedido),
+    __metadata("design:type", Array)
+], Pedido.prototype, "pagamentos", void 0);
 exports.Pedido = Pedido = __decorate([
     (0, typeorm_1.Entity)()
 ], Pedido);

@@ -20,6 +20,7 @@ export class PedidosService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    
     try {
       for (const item of createPedidoDto.itens) {
         const estoqueTotal = await this.calcularEstoqueItem(item.idProduto, 'produto', queryRunner);
@@ -28,10 +29,21 @@ export class PedidosService {
         }
         await this.registrarSaidaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, TipoMovimentacao.SAIDA_VENDA);
       }
-      const pedido = this.pedidoRepository.create({ ...createPedidoDto, data: new Date() });
-      const novoPedido = await queryRunner.manager.save(pedido);
+
+      const { pagamento, ...dadosPedido } = createPedidoDto as any;
+
+      const pedido = this.pedidoRepository.create({ 
+          ...dadosPedido, 
+          data: new Date(),
+          status: 'AGUARDANDO PAGAMENTO' 
+      });
+      
+      const novoPedido = (await queryRunner.manager.save(pedido)) as unknown as Pedido;
+
       await queryRunner.commitTransaction();
-      return this.findOne(novoPedido.id);
+      
+      return this.findOne(novoPedido.id); 
+
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
@@ -41,13 +53,23 @@ export class PedidosService {
   }
 
   findAll(): Promise<Pedido[]> {
-    return this.pedidoRepository.find({ relations: ['cliente', 'cliente.pessoa'], order: { id: 'DESC' } });
+    return this.pedidoRepository.find({ 
+      relations: ['cliente', 'cliente.pessoa'], 
+      order: { id: 'DESC' } 
+    });
   }
 
   async findOne(id: number): Promise<Pedido> {
     const pedido = await this.pedidoRepository.findOne({ 
-        where: { id }, 
-        relations: ['cliente', 'cliente.pessoa', 'cliente.pessoa.emails', 'itens', 'itens.produto', 'pagamento'] 
+      where: { id }, 
+      relations: [
+          'cliente', 
+          'cliente.pessoa', 
+          'cliente.pessoa.emails', 
+          'itens', 
+          'itens.produto', 
+          'pagamentos' 
+      ] 
     });
     if (!pedido) throw new NotFoundException(`Pedido com o ID #${id} não encontrado.`);
     return pedido;
@@ -62,11 +84,10 @@ export class PedidosService {
         const itemPedidoRepo = queryRunner.manager.getRepository(ItemPedido);
         const pedidoExistente = await this.findOne(id);
 
-        for (const item of pedidoExistente.itens) {
-            await this.registrarEntradaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, TipoMovimentacao.ENTRADA_DEVOLUCAO);
-        }
-
         if (updatePedidoDto.itens) {
+            for (const item of pedidoExistente.itens) {
+                await this.registrarEntradaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, TipoMovimentacao.ENTRADA_DEVOLUCAO);
+            }
             for (const item of updatePedidoDto.itens) {
                 if(!item.idProduto || !item.quantidade) continue;
                 const estoqueTotal = await this.calcularEstoqueItem(item.idProduto, 'produto', queryRunner);
@@ -75,9 +96,9 @@ export class PedidosService {
                 }
                 await this.registrarSaidaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, TipoMovimentacao.SAIDA_VENDA);
             }
+            await itemPedidoRepo.delete({ idPedido: id });
         }
 
-        await itemPedidoRepo.delete({ idPedido: id });
         const pedidoAtualizado = pedidoRepo.merge(pedidoExistente, updatePedidoDto);
         await queryRunner.manager.save(pedidoAtualizado);
 
@@ -95,12 +116,28 @@ export class PedidosService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    
     try {
-        const pedido = await this.findOne(id);
+        const pedido = await this.pedidoRepository.findOne({ 
+            where: { id }, 
+            relations: ['itens', 'pagamentos']
+        });
+
+        if (!pedido) {
+            throw new NotFoundException(`Pedido #${id} não encontrado.`);
+        }
+
         for (const item of pedido.itens) {
             await this.registrarEntradaEstoque(item.idProduto, 'produto', item.quantidade, queryRunner, TipoMovimentacao.ENTRADA_DEVOLUCAO);
         }
+
+        if (pedido.pagamentos && pedido.pagamentos.length > 0) {
+            const pagamentoRepo = queryRunner.manager.getRepository('Pagamento');
+            await pagamentoRepo.remove(pedido.pagamentos);
+        }
+
         await queryRunner.manager.remove(pedido);
+
         await queryRunner.commitTransaction();
     } catch (err) {
         await queryRunner.rollbackTransaction();
@@ -109,12 +146,23 @@ export class PedidosService {
         await queryRunner.release();
     }
   }
+
+  async updateStatus(id: number, status: string): Promise<Pedido> {
+    const pedido = await this.pedidoRepository.preload({ id, status });
+    if (!pedido) {
+        throw new NotFoundException(`Pedido com o ID #${id} não encontrado.`);
+    }
+    await this.pedidoRepository.save(pedido);
+    return this.findOne(id);
+  }
   
   private async registrarSaidaEstoque(itemId: number, tipoItem: 'produto' | 'insumo', quantidadeTotalSaida: number, queryRunner: QueryRunner, tipoMovimentacao: TipoMovimentacao) {
     const loteRepo = queryRunner.manager.getRepository(Lote);
     const movEstoqueRepo = queryRunner.manager.getRepository(MovimentacaoEstoque);
     const whereCondition = tipoItem === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
+
     const lotes = await loteRepo.find({ where: whereCondition, relations: ['movimentacoes'], order: { dataValidade: 'ASC' } });
+
     let quantidadeRestante = quantidadeTotalSaida;
     for (const lote of lotes) {
       if (quantidadeRestante <= 0) break;
@@ -132,8 +180,10 @@ export class PedidosService {
     const loteRepo = queryRunner.manager.getRepository(Lote);
     const movEstoqueRepo = queryRunner.manager.getRepository(MovimentacaoEstoque);
     const whereCondition = tipoItem === 'produto' ? { idProduto: itemId } : { idInsumo: itemId };
+
     const loteMaisRecente = await loteRepo.findOne({ where: whereCondition, order: { dataValidade: 'DESC' } });
-    if (!loteMaisRecente) throw new NotFoundException(`Nenhum lote para o item #${itemId}.`);
+    if (!loteMaisRecente) throw new NotFoundException(`Nenhum lote encontrado para o item #${itemId} para reverter o estoque.`);
+    
     const movimentacao = movEstoqueRepo.create({ idLote: loteMaisRecente.id, tipo: tipoMovimentacao, quantidade: quantidadeTotalEntrada });
     await queryRunner.manager.save(movimentacao);
   }

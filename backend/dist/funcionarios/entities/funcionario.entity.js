@@ -12,12 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Funcionario = void 0;
 const typeorm_1 = require("typeorm");
 const pessoa_entity_1 = require("../../pessoas/entities/pessoa.entity");
+const usuario_entity_1 = require("../../usuarios/entities/usuario.entity");
 let Funcionario = class Funcionario {
     id;
     idPessoa;
     dataAdmissao;
     dataRecisao;
     pessoa;
+    usuario;
 };
 exports.Funcionario = Funcionario;
 __decorate([
@@ -41,6 +43,10 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'idPessoa' }),
     __metadata("design:type", pessoa_entity_1.Pessoa)
 ], Funcionario.prototype, "pessoa", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => usuario_entity_1.Usuario, usuario => usuario.funcionario),
+    __metadata("design:type", usuario_entity_1.Usuario)
+], Funcionario.prototype, "usuario", void 0);
 exports.Funcionario = Funcionario = __decorate([
     (0, typeorm_1.Entity)()
 ], Funcionario);

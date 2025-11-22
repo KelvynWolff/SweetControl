@@ -22,9 +22,30 @@ let UsuariosService = class UsuariosService {
     constructor(usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
+    async onModuleInit() {
+        const supervisorLogin = process.env.SUPERVISOR_LOGIN || 'admin_supervisor';
+        const supervisorPassword = process.env.SUPERVISOR_PASSWORD || 'Mudar123!';
+        const supervisorExistente = await this.usuarioRepository.findOneBy({ login: supervisorLogin });
+        if (!supervisorExistente) {
+            console.log('🚀 Criando usuário Supervisor padrão...');
+            const novoSupervisor = this.usuarioRepository.create({
+                login: supervisorLogin,
+                senha: supervisorPassword,
+                nome: 'Supervisor do Sistema',
+                dataValidade: new Date('2099-12-31'),
+                role: usuario_entity_1.UserRole.SUPERVISOR,
+            });
+            await this.usuarioRepository.save(novoSupervisor);
+            console.log('✅ Supervisor criado com sucesso!');
+        }
+    }
     async create(createUsuarioDto) {
-        const usuario = this.usuarioRepository.create(createUsuarioDto);
-        return this.usuarioRepository.save(usuario);
+        const { idFuncionario, ...dadosBasicos } = createUsuarioDto;
+        const novoUsuario = this.usuarioRepository.create({
+            ...dadosBasicos,
+            funcionario: idFuncionario ? { id: idFuncionario } : undefined,
+        });
+        return this.usuarioRepository.save(novoUsuario);
     }
     findAll() {
         return this.usuarioRepository.find();
@@ -54,6 +75,27 @@ let UsuariosService = class UsuariosService {
         if (result.affected === 0) {
             throw new common_1.NotFoundException(`Usuário com ID #${id} não encontrado.`);
         }
+    }
+    async updateRole(id, newRole) {
+        const usuario = await this.findOne(id);
+        usuario.role = newRole;
+        return this.usuarioRepository.save(usuario);
+    }
+    async findUnlinked() {
+        return this.usuarioRepository.find({
+            where: { funcionario: (0, typeorm_2.IsNull)() },
+            select: ['id', 'login', 'role']
+        });
+    }
+    async linkFuncionario(userId, funcionarioId, newRole) {
+        const usuario = await this.usuarioRepository.findOneBy({ id: userId });
+        if (!usuario)
+            throw new common_1.NotFoundException('Usuário não encontrado');
+        usuario.funcionario = { id: funcionarioId };
+        if (newRole) {
+            usuario.role = newRole;
+        }
+        return this.usuarioRepository.save(usuario);
     }
 };
 exports.UsuariosService = UsuariosService;

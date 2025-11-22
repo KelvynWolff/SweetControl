@@ -42,10 +42,15 @@ const PromocoesList = () => {
   };
 
   const isAtiva = (dataInicio, dataFim) => {
-    const today = new Date();
-    const inicio = new Date(dataInicio);
-    const fim = new Date(dataFim);
-    return today >= inicio && today <= fim;
+      const today = new Date();
+      const inicio = new Date(dataInicio);
+      const fim = new Date(dataFim);
+
+      today.setHours(0, 0, 0, 0);
+      inicio.setHours(0, 0, 0, 0);
+      fim.setHours(0, 0, 0, 0);
+
+      return today >= inicio && today <= fim;
   };
 
   const filteredPromocoes = promocoes.filter(promocao =>
@@ -55,6 +60,12 @@ const PromocoesList = () => {
   if (loading) {
     return <p>Carregando lista...</p>;
   }
+
+  const formatarData = (dataString) => {
+    if (!dataString) return '-';
+    const data = new Date(dataString);
+    return data.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+  };
 
   return (
     <div className="list-container">
@@ -93,9 +104,7 @@ const PromocoesList = () => {
                 <td>{promocao.tipoDeDesconto}</td>
                 <td>{promocao.valor}</td>
                 <td>{promocao.produto ? promocao.produto.nome : 'Todos'}</td>
-                <td>
-                  {new Date(promocao.dataInicio).toLocaleDateString()} a {new Date(promocao.dataFim).toLocaleDateString()}
-                </td>
+                <td>{formatarData(promocao.dataInicio)} a {formatarData(promocao.dataFim)}</td>
                 <td style={{ color: isAtiva(promocao.dataInicio, promocao.dataFim) ? 'green' : 'red' }}>
                   {isAtiva(promocao.dataInicio, promocao.dataFim) ? 'Ativa' : 'Inativa'}
                 </td>

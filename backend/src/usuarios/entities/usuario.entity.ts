@@ -1,6 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
+import { Funcionario } from '../../funcionarios/entities/funcionario.entity';
+
+export enum UserRole {
+  USER = 'user',
+  SUPERVISOR = 'supervisor',
+}
 
 @Entity()
 export class Usuario {
@@ -20,8 +26,21 @@ export class Usuario {
   @Column({ type: 'date' })
   dataValidade: Date;
 
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
+
+  @OneToOne(() => Funcionario)
+  @JoinColumn({ name: 'idFuncionario' })
+  funcionario: Funcionario;
+
   @BeforeInsert()
   async hashPassword() {
-    this.senha = await bcrypt.hash(this.senha, 10);
+    if (this.senha) {
+        this.senha = await bcrypt.hash(this.senha, 10);
+    }
   }
 }

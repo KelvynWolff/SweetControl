@@ -16,6 +16,7 @@ let Notificacao = class Notificacao {
     id;
     idPedido;
     mensagem;
+    lida;
     data;
     status_leitura;
     pedido;
@@ -30,9 +31,13 @@ __decorate([
     __metadata("design:type", Number)
 ], Notificacao.prototype, "idPedido", void 0);
 __decorate([
-    (0, typeorm_1.Column)('text'),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Notificacao.prototype, "mensagem", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Notificacao.prototype, "lida", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEmail, MinLength, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, MinLength, IsDateString, IsInt, IsOptional } from 'class-validator';
 
 export class CreateUsuarioDto {
   @IsEmail({}, { message: 'O login deve ser um email válido.'})
@@ -17,4 +17,8 @@ export class CreateUsuarioDto {
   @IsDateString()
   @IsNotEmpty()
   dataValidade: Date;
+
+  @IsInt()
+  @IsOptional()
+  idFuncionario?: number;
 }

@@ -23,9 +23,11 @@ const telefone_entity_1 = require("../telefones/entities/telefone.entity");
 const email_entity_1 = require("../emails/entities/email.entity");
 let ClientesService = class ClientesService {
     clienteRepository;
+    pessoaRepository;
     dataSource;
-    constructor(clienteRepository, dataSource) {
+    constructor(clienteRepository, pessoaRepository, dataSource) {
         this.clienteRepository = clienteRepository;
+        this.pessoaRepository = pessoaRepository;
         this.dataSource = dataSource;
     }
     async create(createClienteDto) {
@@ -38,33 +40,57 @@ let ClientesService = class ClientesService {
             const clienteRepo = queryRunner.manager.getRepository(cliente_entity_1.Cliente);
             const telefoneRepo = queryRunner.manager.getRepository(telefone_entity_1.Telefone);
             const emailRepo = queryRunner.manager.getRepository(email_entity_1.Email);
-            const pessoa = pessoaRepo.create({
-                nome: createClienteDto.nome,
-                cpfCnpj: createClienteDto.cpfCnpj,
-                idCidade: createClienteDto.endereco.idCidade,
+            let pessoa = await pessoaRepo.findOne({
+                where: { cpfCnpj: createClienteDto.cpfCnpj }
             });
-            const novaPessoa = await queryRunner.manager.save(pessoa);
-            const cliente = clienteRepo.create({ idPessoa: novaPessoa.id });
-            const novoCliente = await queryRunner.manager.save(cliente);
-            const endereco = enderecoRepo.create({
-                ...createClienteDto.endereco,
-                idPessoa: novaPessoa.id,
-            });
-            await queryRunner.manager.save(endereco);
+            if (pessoa) {
+                pessoa.nome = createClienteDto.nome;
+                await pessoaRepo.save(pessoa);
+            }
+            else {
+                const novaPessoa = pessoaRepo.create({
+                    nome: createClienteDto.nome,
+                    cpfCnpj: createClienteDto.cpfCnpj,
+                    idCidade: createClienteDto.endereco.idCidade,
+                });
+                pessoa = await pessoaRepo.save(novaPessoa);
+            }
+            let endereco = await enderecoRepo.findOne({ where: { idPessoa: pessoa.id } });
+            if (endereco) {
+                enderecoRepo.merge(endereco, {
+                    ...createClienteDto.endereco,
+                    idCidade: createClienteDto.endereco.idCidade
+                });
+                await enderecoRepo.save(endereco);
+            }
+            else {
+                const novoEndereco = enderecoRepo.create({
+                    ...createClienteDto.endereco,
+                    idPessoa: pessoa.id
+                });
+                await enderecoRepo.save(novoEndereco);
+            }
+            let cliente = await clienteRepo.findOne({ where: { idPessoa: pessoa.id } });
+            if (!cliente) {
+                const novoCliente = clienteRepo.create({ idPessoa: pessoa.id });
+                cliente = await clienteRepo.save(novoCliente);
+            }
+            await telefoneRepo.delete({ idPessoa: pessoa.id });
             for (const tel of createClienteDto.telefones) {
                 if (tel.numero) {
-                    const telefone = telefoneRepo.create({ ...tel, idPessoa: novaPessoa.id });
+                    const telefone = telefoneRepo.create({ ...tel, idPessoa: pessoa.id });
                     await queryRunner.manager.save(telefone);
                 }
             }
+            await emailRepo.delete({ idPessoa: pessoa.id });
             for (const mail of createClienteDto.emails) {
                 if (mail.email) {
-                    const email = emailRepo.create({ ...mail, idPessoa: novaPessoa.id });
+                    const email = emailRepo.create({ ...mail, idPessoa: pessoa.id });
                     await queryRunner.manager.save(email);
                 }
             }
             await queryRunner.commitTransaction();
-            return this.findOne(novoCliente.id);
+            return this.findOne(cliente.id);
         }
         catch (err) {
             await queryRunner.rollbackTransaction();
@@ -76,13 +102,20 @@ let ClientesService = class ClientesService {
     }
     findAll() {
         return this.clienteRepository.find({
-            relations: ['pessoa', 'pessoa.cidade', 'pessoa.enderecos', 'pessoa.telefones', 'pessoa.emails'],
+            relations: ['pessoa', 'pessoa.cidade']
         });
     }
     async findOne(id) {
         const cliente = await this.clienteRepository.findOne({
             where: { id },
-            relations: ['pessoa', 'pessoa.cidade', 'pessoa.enderecos', 'pessoa.telefones', 'pessoa.emails'],
+            relations: [
+                'pessoa',
+                'pessoa.cidade',
+                'pessoa.enderecos',
+                'pessoa.enderecos.cidade',
+                'pessoa.telefones',
+                'pessoa.emails'
+            ]
         });
         if (!cliente) {
             throw new common_1.NotFoundException(`Cliente com o ID #${id} não encontrado.`);
@@ -90,78 +123,28 @@ let ClientesService = class ClientesService {
         return cliente;
     }
     async update(id, updateClienteDto) {
-        const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.connect();
-        await queryRunner.startTransaction();
-        try {
-            const clienteRepo = queryRunner.manager.getRepository(cliente_entity_1.Cliente);
-            const pessoaRepo = queryRunner.manager.getRepository(pessoa_entity_1.Pessoa);
-            const enderecoRepo = queryRunner.manager.getRepository(endereco_entity_1.Endereco);
-            const telefoneRepo = queryRunner.manager.getRepository(telefone_entity_1.Telefone);
-            const emailRepo = queryRunner.manager.getRepository(email_entity_1.Email);
-            const cliente = await clienteRepo.findOneBy({ id });
-            if (!cliente) {
-                throw new common_1.NotFoundException(`Cliente com o ID #${id} não encontrado.`);
-            }
-            const { idPessoa } = cliente;
-            const dadosPessoa = {
-                nome: updateClienteDto.nome,
-                cpfCnpj: updateClienteDto.cpfCnpj,
-                idCidade: updateClienteDto.endereco?.idCidade,
-            };
-            await pessoaRepo.update(idPessoa, dadosPessoa);
-            if (updateClienteDto.endereco) {
-                const dadosEndereco = {
-                    rua: updateClienteDto.endereco.rua,
-                    numero: updateClienteDto.endereco.numero,
-                    CEP: updateClienteDto.endereco.CEP,
-                    idBairro: updateClienteDto.endereco.idBairro,
-                };
-                await enderecoRepo.update({ idPessoa }, dadosEndereco);
-            }
-            if (updateClienteDto.telefones) {
-                await telefoneRepo.delete({ idPessoa });
-                for (const tel of updateClienteDto.telefones) {
-                    if (tel.numero) {
-                        const telefone = telefoneRepo.create({ ...tel, idPessoa });
-                        await queryRunner.manager.save(telefone);
-                    }
-                }
-            }
-            if (updateClienteDto.emails) {
-                await emailRepo.delete({ idPessoa });
-                for (const mail of updateClienteDto.emails) {
-                    if (mail.email) {
-                        const email = emailRepo.create({ ...mail, idPessoa });
-                        await queryRunner.manager.save(email);
-                    }
-                }
-            }
-            await queryRunner.commitTransaction();
-            return this.findOne(id);
+        const cliente = await this.findOne(id);
+        const pessoaAtualizada = await this.pessoaRepository.preload({
+            id: cliente.idPessoa,
+            nome: updateClienteDto.nome,
+        });
+        if (pessoaAtualizada) {
+            await this.pessoaRepository.save(pessoaAtualizada);
         }
-        catch (err) {
-            await queryRunner.rollbackTransaction();
-            console.error('ERRO NA TRANSAÇÃO DE UPDATE:', err);
-            throw err;
-        }
-        finally {
-            await queryRunner.release();
-        }
+        return this.findOne(id);
     }
     async remove(id) {
         const cliente = await this.findOne(id);
-        await this.dataSource.transaction(async (manager) => {
-            await manager.getRepository(cliente_entity_1.Cliente).remove(cliente);
-            await manager.getRepository(pessoa_entity_1.Pessoa).delete(cliente.idPessoa);
-        });
+        await this.clienteRepository.remove(cliente);
     }
 };
 exports.ClientesService = ClientesService;
 exports.ClientesService = ClientesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(cliente_entity_1.Cliente)),
+    __param(1, (0, typeorm_1.InjectRepository)(pessoa_entity_1.Pessoa)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.DataSource])
 ], ClientesService);
 //# sourceMappingURL=clientes.service.js.map

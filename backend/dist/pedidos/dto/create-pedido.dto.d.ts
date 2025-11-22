@@ -9,7 +9,7 @@ declare class CreatePagamentoDto {
 }
 export declare class CreatePedidoDto {
     idCliente: number;
-    status: string;
+    status?: string;
     dataEntrega: Date;
     enderecoEntrega?: string;
     observacao?: string;

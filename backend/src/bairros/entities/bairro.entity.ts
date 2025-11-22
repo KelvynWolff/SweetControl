@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Cidade } from '../../cidades/entities/cidade.entity';
 
 @Entity()
@@ -13,6 +13,6 @@ export class Bairro {
   ibgeCidade: number;
 
   @ManyToOne(() => Cidade)
-  @JoinColumn({ name: 'ibgeCidade', referencedColumnName: 'codigobge' })
+  @JoinColumn({ name: 'ibgeCidade' })
   cidade: Cidade;
 }

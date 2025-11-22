@@ -40,34 +40,66 @@ let FuncionariosService = class FuncionariosService {
             const funcionarioRepo = queryRunner.manager.getRepository(funcionario_entity_1.Funcionario);
             const telefoneRepo = queryRunner.manager.getRepository(telefone_entity_1.Telefone);
             const emailRepo = queryRunner.manager.getRepository(email_entity_1.Email);
-            const pessoa = pessoaRepo.create({
-                nome: createFuncionarioDto.nome,
-                cpfCnpj: createFuncionarioDto.cpfCnpj,
-                idCidade: createFuncionarioDto.endereco.idCidade,
+            let pessoa = await pessoaRepo.findOne({
+                where: { cpfCnpj: createFuncionarioDto.cpfCnpj }
             });
-            const novaPessoa = await queryRunner.manager.save(pessoa);
-            const funcionario = funcionarioRepo.create({
-                idPessoa: novaPessoa.id,
-                dataAdmissao: createFuncionarioDto.dataAdmissao,
-                dataRecisao: null,
-            });
-            const novoFuncionario = await queryRunner.manager.save(funcionario);
-            const endereco = enderecoRepo.create({ ...createFuncionarioDto.endereco, idPessoa: novaPessoa.id });
-            await queryRunner.manager.save(endereco);
+            if (pessoa) {
+                pessoa.nome = createFuncionarioDto.nome;
+                await pessoaRepo.save(pessoa);
+            }
+            else {
+                const novaPessoa = pessoaRepo.create({
+                    nome: createFuncionarioDto.nome,
+                    cpfCnpj: createFuncionarioDto.cpfCnpj,
+                    idCidade: createFuncionarioDto.endereco.idCidade,
+                });
+                pessoa = await pessoaRepo.save(novaPessoa);
+            }
+            let endereco = await enderecoRepo.findOne({ where: { idPessoa: pessoa.id } });
+            if (endereco) {
+                enderecoRepo.merge(endereco, {
+                    ...createFuncionarioDto.endereco,
+                    idCidade: createFuncionarioDto.endereco.idCidade
+                });
+                await enderecoRepo.save(endereco);
+            }
+            else {
+                const novoEndereco = enderecoRepo.create({
+                    ...createFuncionarioDto.endereco,
+                    idPessoa: pessoa.id
+                });
+                await enderecoRepo.save(novoEndereco);
+            }
+            let funcionario = await funcionarioRepo.findOne({ where: { idPessoa: pessoa.id } });
+            if (funcionario) {
+                funcionario.dataAdmissao = createFuncionarioDto.dataAdmissao;
+                funcionario.dataRecisao = null;
+                await funcionarioRepo.save(funcionario);
+            }
+            else {
+                const novoFuncionario = funcionarioRepo.create({
+                    idPessoa: pessoa.id,
+                    dataAdmissao: createFuncionarioDto.dataAdmissao,
+                    dataRecisao: null,
+                });
+                funcionario = await funcionarioRepo.save(novoFuncionario);
+            }
+            await telefoneRepo.delete({ idPessoa: pessoa.id });
             for (const tel of createFuncionarioDto.telefones) {
                 if (tel.numero) {
-                    const telefone = telefoneRepo.create({ ...tel, idPessoa: novaPessoa.id });
+                    const telefone = telefoneRepo.create({ ...tel, idPessoa: pessoa.id });
                     await queryRunner.manager.save(telefone);
                 }
             }
+            await emailRepo.delete({ idPessoa: pessoa.id });
             for (const mail of createFuncionarioDto.emails) {
                 if (mail.email) {
-                    const email = emailRepo.create({ ...mail, idPessoa: novaPessoa.id });
+                    const email = emailRepo.create({ ...mail, idPessoa: pessoa.id });
                     await queryRunner.manager.save(email);
                 }
             }
             await queryRunner.commitTransaction();
-            return this.findOne(novoFuncionario.id);
+            return this.findOne(funcionario.id);
         }
         catch (err) {
             await queryRunner.rollbackTransaction();
@@ -78,10 +110,23 @@ let FuncionariosService = class FuncionariosService {
         }
     }
     findAll() {
-        return this.funcionarioRepository.find({ relations: ['pessoa', 'pessoa.cidade'] });
+        return this.funcionarioRepository.find({
+            relations: ['pessoa', 'pessoa.cidade', 'usuario']
+        });
     }
     async findOne(id) {
-        const funcionario = await this.funcionarioRepository.findOne({ where: { id }, relations: ['pessoa', 'pessoa.cidade'] });
+        const funcionario = await this.funcionarioRepository.findOne({
+            where: { id },
+            relations: [
+                'pessoa',
+                'pessoa.cidade',
+                'pessoa.enderecos',
+                'pessoa.enderecos.cidade',
+                'pessoa.telefones',
+                'pessoa.emails',
+                'usuario'
+            ]
+        });
         if (!funcionario) {
             throw new common_1.NotFoundException(`Funcionário com o ID #${id} não encontrado.`);
         }
@@ -91,12 +136,11 @@ let FuncionariosService = class FuncionariosService {
         const funcionario = await this.findOne(id);
         const pessoaAtualizada = await this.pessoaRepository.preload({
             id: funcionario.idPessoa,
-            ...updateFuncionarioDto,
+            nome: updateFuncionarioDto.nome,
         });
-        if (!pessoaAtualizada) {
-            throw new common_1.NotFoundException(`Pessoa associada ao funcionário #${id} não foi encontrada.`);
+        if (pessoaAtualizada) {
+            await this.pessoaRepository.save(pessoaAtualizada);
         }
-        await this.pessoaRepository.save(pessoaAtualizada);
         const funcionarioAtualizado = await this.funcionarioRepository.preload({
             id: id,
             dataAdmissao: updateFuncionarioDto.dataAdmissao,
@@ -111,7 +155,6 @@ let FuncionariosService = class FuncionariosService {
     async remove(id) {
         const funcionario = await this.findOne(id);
         await this.funcionarioRepository.remove(funcionario);
-        await this.pessoaRepository.delete(funcionario.idPessoa);
     }
 };
 exports.FuncionariosService = FuncionariosService;

@@ -30,9 +30,11 @@ import { LotesModule } from './lotes/lotes.module';
 import { Pagamento } from './pagamentos/entities/pagamento.entity';
 import { PagamentosModule } from './pagamentos/pagamentos.module';
 import { NotasComprasModule } from './notas-compras/notas-compras.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
+    DashboardModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

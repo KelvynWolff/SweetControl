@@ -12,5 +12,11 @@ export declare class EmailsService {
     findOne(id: number): Promise<Email>;
     update(id: number, updateEmailDto: UpdateEmailDto): Promise<Email>;
     remove(id: number): Promise<void>;
-    enviarEmailPedido(pedido: Pedido, emailCliente: string): Promise<void>;
+    enviarEmailPedido(pedido: Pedido): Promise<{
+        message: string;
+        error?: undefined;
+    } | {
+        message: string;
+        error: any;
+    }>;
 }
