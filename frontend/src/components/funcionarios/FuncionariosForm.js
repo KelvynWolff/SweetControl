@@ -4,8 +4,8 @@ import { isSupervisor } from '../../services/authService';
 import { 
     updateUsuarioRole, 
     createUsuarioVinculado, 
-    getUnlinkedUsers, // Novo
-    linkUsuarioToFuncionario // Novo
+    getUnlinkedUsers,
+    linkUsuarioToFuncionario
 } from '../../services/usuariosService';
 import {
   createFuncionario,
@@ -22,13 +22,11 @@ const FuncionariosForm = () => {
   const navigate = useNavigate();
   const isEditing = Boolean(id);
 
-  // --- Form States ---
   const [formData, setFormData] = useState({ nome: '', cpfCnpj: '', dataAdmissao: '' });
   const [endereco, setEndereco] = useState({ rua: '', numero: '', CEP: '', idBairro: '' });
   const [telefones, setTelefones] = useState([{ numero: '', observacao: '' }]);
   const [emails, setEmails] = useState([{ email: '', observacao: '' }]);
 
-  // --- Location States ---
   const [estados, setEstados] = useState([]);
   const [cidades, setCidades] = useState([]);
   const [bairros, setBairros] = useState([]);
@@ -38,26 +36,21 @@ const FuncionariosForm = () => {
   const [novoBairroNome, setNovoBairroNome] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // --- Access Control States ---
   const [canManageAccess, setCanManageAccess] = useState(false);
-  const [linkedUser, setLinkedUser] = useState(null); // Usuário já vinculado
+  const [linkedUser, setLinkedUser] = useState(null);
   
-  // Estado do modo de acesso: 'none' | 'create' | 'link'
   const [accessMode, setAccessMode] = useState('none'); 
   
-  // Dados para criação ou vínculo
   const [newUserData, setNewUserData] = useState({ login: '', senha: '' });
-  const [selectedUserId, setSelectedUserId] = useState(''); // ID do usuário existente selecionado
-  const [accessRole, setAccessRole] = useState('user'); // Cargo para ambos os casos
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [accessRole, setAccessRole] = useState('user');
   
-  // Lista de usuários "órfãos"
   const [unlinkedUsers, setUnlinkedUsers] = useState([]);
 
   useEffect(() => {
     const supervisor = isSupervisor();
     setCanManageAccess(supervisor);
     
-    // Se for supervisor, carrega usuários sem vínculo para o dropdown
     if (supervisor) {
         getUnlinkedUsers().then(setUnlinkedUsers).catch(console.error);
     }
@@ -106,7 +99,6 @@ const FuncionariosForm = () => {
     }
   }, [selectedCidade]);
 
-  // --- Handlers Genéricos ---
   const handleFormChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleEnderecoChange = (e) => setEndereco({ ...endereco, [e.target.name]: e.target.value });
   const handleBairroChange = (e) => {
@@ -126,7 +118,6 @@ const FuncionariosForm = () => {
     setList(updated);
   };
 
-  // --- Handlers de Acesso ---
   const handleUpdateRole = async () => {
       if (!linkedUser) return;
       try {
@@ -163,11 +154,9 @@ const FuncionariosForm = () => {
     try {
       let funcionarioId = id;
 
-      // 1. Salva/Cria Funcionário
       if (isEditing) {
         await updateFuncionario(id, payload);
         
-        // Se já tem usuário, apenas atualiza o cargo se mudou
         if (linkedUser && accessRole !== linkedUser.role) {
             await handleUpdateRole();
         }
@@ -176,10 +165,8 @@ const FuncionariosForm = () => {
         funcionarioId = novoFunc.id;
       }
 
-      // 2. Gerencia Criação/Vínculo de Usuário (Se selecionado)
       if (canManageAccess && !linkedUser) {
           
-          // Cenário A: Criar Novo
           if (accessMode === 'create' && newUserData.login && newUserData.senha) {
               await createUsuarioVinculado({
                   login: newUserData.login,
@@ -187,13 +174,9 @@ const FuncionariosForm = () => {
                   nome: formData.nome,
                   dataValidade: '2030-12-31',
                   idFuncionario: parseInt(funcionarioId),
-                  // Nota: O backend precisa suportar receber 'role' no create ou atualizamos depois
               });
-              // Hack rápido: Se o backend não aceita role no create, precisaríamos fazer update logo em seguida
-              // Mas vamos assumir que o padrão é 'user'. Se for supervisor, teria que atualizar depois.
           }
           
-          // Cenário B: Vincular Existente
           if (accessMode === 'link' && selectedUserId) {
               await linkUsuarioToFuncionario(selectedUserId, parseInt(funcionarioId), accessRole);
           }
@@ -226,13 +209,11 @@ const FuncionariosForm = () => {
           </div>
         </fieldset>
 
-        {/* --- GESTÃO DE ACESSO (SUPERVISOR) --- */}
         {canManageAccess && (
             <fieldset style={{ borderColor: '#27ae60', backgroundColor: '#f0fcf4' }}>
                 <legend style={{ color: '#27ae60', fontWeight: 'bold' }}>Acesso ao Sistema</legend>
                 
                 {linkedUser ? (
-                    // Se já tem usuário vinculado
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <p><strong>Usuário Vinculado:</strong> {linkedUser.login}</p>
                         <div className="form-group">
@@ -244,39 +225,13 @@ const FuncionariosForm = () => {
                         </div>
                     </div>
                 ) : (
-                    // Se NÃO tem usuário vinculado
                     <div>
                         <div style={{ marginBottom: '15px' }}>
-                            <label style={{ marginRight: '15px' }}>
-                                <input 
-                                    type="radio" 
-                                    name="accessMode" 
-                                    value="none" 
-                                    checked={accessMode === 'none'} 
-                                    onChange={e => setAccessMode(e.target.value)} 
-                                /> Sem Acesso
-                            </label>
-                            <label style={{ marginRight: '15px' }}>
-                                <input 
-                                    type="radio" 
-                                    name="accessMode" 
-                                    value="create" 
-                                    checked={accessMode === 'create'} 
-                                    onChange={e => setAccessMode(e.target.value)} 
-                                /> Criar Novo Usuário
-                            </label>
-                            <label>
-                                <input 
-                                    type="radio" 
-                                    name="accessMode" 
-                                    value="link" 
-                                    checked={accessMode === 'link'} 
-                                    onChange={e => setAccessMode(e.target.value)} 
-                                /> Vincular Existente
-                            </label>
+                            <label style={{ marginRight: '15px' }}><input style={{ width: 'auto' }} type="radio" name="accessMode" value="none" checked={accessMode === 'none'} onChange={e => setAccessMode(e.target.value)} /> Sem Acesso</label>
+                            <label style={{ marginRight: '15px' }}><input style={{ width: 'auto' }} type="radio" name="accessMode" value="create" checked={accessMode === 'create'} onChange={e => setAccessMode(e.target.value)} /> Criar Novo Usuário</label>
+                            <label><input style={{ width: 'auto' }} type="radio" name="accessMode" value="link" checked={accessMode === 'link'} onChange={e => setAccessMode(e.target.value)} /> Vincular Existente</label>
                         </div>
 
-                        {/* Formulário Criar Novo */}
                         {accessMode === 'create' && (
                             <div className="form-row" style={{ background: '#fff', padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }}>
                                 <input 
@@ -295,7 +250,6 @@ const FuncionariosForm = () => {
                             </div>
                         )}
 
-                        {/* Formulário Vincular Existente */}
                         {accessMode === 'link' && (
                             <div style={{ background: '#fff', padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }}>
                                 <label>Selecione o Usuário (Sem vínculo):</label>
@@ -316,7 +270,6 @@ const FuncionariosForm = () => {
                             </div>
                         )}
 
-                        {/* Seletor de Cargo (Comum para Create e Link) */}
                         {accessMode !== 'none' && (
                             <div className="form-group" style={{ marginTop: '10px' }}>
                                 <label>Definir Cargo:</label>
@@ -331,7 +284,6 @@ const FuncionariosForm = () => {
             </fieldset>
         )}
 
-        {/* Endereço */}
         <fieldset>
           <legend>Endereço</legend>
           <div className="form-row">
@@ -359,7 +311,6 @@ const FuncionariosForm = () => {
           </div>
         </fieldset>
 
-        {/* Telefones e Emails (Mantidos iguais) */}
         <fieldset>
           <legend>Contatos</legend>
           {telefones.map((tel, index) => (

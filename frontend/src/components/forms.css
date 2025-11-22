@@ -1,3 +1,274 @@
+.form-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-container h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text);
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin-bottom: 32px;
+}
+
+legend {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.form-container input,
+.form-container select,
+.form-container textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--text);
+  transition: 0.2s;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+
+.form-container input:focus,
+.form-container select:focus,
+.form-container textarea:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(244, 155, 26, 0.3);
+  outline: none;
+}
+
+.form-container input:disabled,
+.form-container select:disabled,
+.form-container textarea:disabled {
+  background: #f3f4f6;
+  color: var(--text-light);
+  cursor: not-allowed;
+}
+
+.form-helper {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: -10px;
+  margin-bottom: 12px;
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: #d93025;
+  margin-top: -10px;
+  margin-bottom: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-row > * {
+  flex: 1;
+}
+
+.dynamic-field-row {
+  display: grid;
+  grid-template-columns: 1.1fr 2fr 1fr 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.dynamic-field-row select,
+.dynamic-field-row input {
+  width: 100%;
+  margin-bottom: 0;
+
+}
+
+.dynamic-field-row button {
+  height: 42px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.form-container button,
+.modal button {
+  padding: 12px 18px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.button-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.button-primary:hover {
+  background: var(--primary-dark);
+}
+
+.button-secondary {
+  background: #e9edf3;
+  color: #222;
+}
+
+.button-secondary:hover {
+  background: #d4dbe6;
+}
+
+.button-cancel {
+  background: #c7c7c7;
+  color: #333;
+}
+
+.button-cancel:hover {
+  background: #b3b3b3;
+}
+
+.button-remove {
+  background: #f3f4f6;
+  color: #444;
+  padding: 0 12px;
+  min-width: 42px;
+  text-align: center;
+}
+
+.button-remove:hover {
+  background: #e2e4ea;
+}
+
+.form-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.upload-label {
+  background: var(--primary);
+  padding: 12px 16px;
+  color: #fff;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-bottom: 24px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.upload-label:hover {
+  background: var(--primary-dark);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: var(--surface);
+  padding: 28px;
+  border-radius: var(--radius);
+  width: 420px;
+  max-width: 90%;
+  box-shadow: var(--shadow-soft);
+}
+
+.modal h4 {
+  margin-bottom: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal .form-group {
+  margin-bottom: 18px;
+}
+
+.page-header {
+  width: 100%;
+  padding: 4px 0 12px 0;
+  background: transparent;
+  border-radius: 0;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.page-header a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.page-header a:hover {
+  text-decoration: underline;
+
+
+}
+
+.page-separator {
+  color: var(--text-light);
+}
+
+.page-current {
+  color: var(--text);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .dynamic-field-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dynamic-field-row button {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

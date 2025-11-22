@@ -5,8 +5,8 @@ import {
   getClienteById,
   updateCliente,
 } from '../../services/clientesService';
+import { getCidades, getCidadesByEstado } from '../../services/cidadesService'; // <-- Importe getCidadesByEstado
 import { getEstados } from '../../services/estadosService';
-import { getCidades } from '../../services/cidadesService';
 import {
   createBairro,
   getBairrosByCidade,
@@ -38,36 +38,47 @@ const ClientesForm = () => {
   const [showNovoBairro, setShowNovoBairro] = useState(false);
   const [novoBairroNome, setNovoBairroNome] = useState('');
 
-  const [clienteData, setClienteData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getEstados()
-      .then(setEstados)
-      .catch(() => alert('Erro ao carregar estados.'));
-    getCidades()
-      .then(setCidades)
-      .catch(() => alert('Erro ao carregar cidades.'));
-  }, []);
+    getEstados().then(setEstados);
 
-  useEffect(() => {
     if (isEditing) {
       setIsLoading(true);
       getClienteById(id)
         .then((data) => {
-          setClienteData(data);
-
           setFormData({
             nome: data.pessoa.nome,
             cpfCnpj: data.pessoa.cpfCnpj,
           });
 
-          if (data.pessoa.telefones?.length)
-            setTelefones(data.pessoa.telefones);
+          if (data.pessoa.enderecos && data.pessoa.enderecos.length > 0) {
+            const endAtual = data.pessoa.enderecos[0];
 
-          if (data.pessoa.emails?.length) setEmails(data.pessoa.emails);
+            setEndereco({
+              rua: endAtual.rua,
+              numero: endAtual.numero,
+              CEP: endAtual.CEP,
+              idBairro: endAtual.idBairro,
+            });
+
+            if (endAtual.cidade) {
+               const estadoSigla = endAtual.cidade.estado;
+               
+               setSelectedEstado(estadoSigla);
+               
+               getCidadesByEstado(estadoSigla).then(cidadesDoEstado => {
+                   setCidades(cidadesDoEstado);
+                   setSelectedCidade(endAtual.cidade.codigobge);
+               });
+            }
+          }
+
+          if (data.pessoa.telefones) setTelefones(data.pessoa.telefones);
+          if (data.pessoa.emails) setEmails(data.pessoa.emails);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error(err);
           alert('Cliente não encontrado.');
           navigate('/clientes');
         })
@@ -76,34 +87,17 @@ const ClientesForm = () => {
   }, [id, isEditing, navigate]);
 
   useEffect(() => {
-    if (isEditing && clienteData && cidades.length > 0) {
-      const end = clienteData.pessoa.enderecos?.[0];
+     if (selectedEstado && !isEditing) {
+         getCidadesByEstado(selectedEstado).then(setCidades);
+     } else if(selectedEstado) {
+          getCidadesByEstado(selectedEstado).then(setCidades);
+     }
+  }, [selectedEstado]);
 
-      if (end) {
-        const cidadeDoEndereco = cidades.find((c) =>
-          c.bairros?.some((b) => b.id === end.idBairro),
-        );
-
-        if (cidadeDoEndereco) {
-          setSelectedEstado(cidadeDoEndereco.estado);
-          setSelectedCidade(cidadeDoEndereco.codigobge);
-        }
-
-        setEndereco({
-          rua: end.rua,
-          numero: end.numero,
-          CEP: end.CEP,
-          idBairro: end.idBairro,
-        });
-      }
-    }
-  }, [clienteData, cidades, isEditing]);
 
   useEffect(() => {
     if (selectedCidade) {
-      getBairrosByCidade(selectedCidade)
-        .then(setBairros)
-        .catch(() => alert('Erro ao carregar bairros.'));
+      getBairrosByCidade(selectedCidade).then(setBairros);
     } else {
       setBairros([]);
     }
@@ -190,7 +184,6 @@ const ClientesForm = () => {
       <form onSubmit={handleSubmit}>
         <fieldset>
           <legend>Dados Pessoais</legend>
-
           <div className="form-row">
             <input
               name="nome"
@@ -211,7 +204,6 @@ const ClientesForm = () => {
 
         <fieldset>
           <legend>Endereço</legend>
-
           <div className="form-row">
             <select
               value={selectedEstado}
@@ -233,18 +225,17 @@ const ClientesForm = () => {
               required
             >
               <option value="">Selecione uma Cidade</option>
-              {cidades
-                .filter((c) => c.estado === selectedEstado)
-                .map((c) => (
-                  <option key={c.codigobge} value={c.codigobge}>
-                    {c.nome}
-                  </option>
-                ))}
+              {cidades.map((c) => (
+                <option key={c.codigobge} value={c.codigobge}>
+                  {c.nome}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="form-row">
             <select
+              name="idBairro"
               value={endereco.idBairro}
               onChange={handleBairroChange}
               disabled={!selectedCidade}
@@ -256,11 +247,12 @@ const ClientesForm = () => {
                   {b.nome}
                 </option>
               ))}
-              <option value="novo">+ Cadastrar Novo Bairro</option>
+              <option value="novo">-- Cadastrar Novo Bairro --</option>
             </select>
 
             {showNovoBairro && (
               <input
+                type="text"
                 placeholder="Nome do Novo Bairro"
                 value={novoBairroNome}
                 onChange={(e) => setNovoBairroNome(e.target.value)}
@@ -295,100 +287,32 @@ const ClientesForm = () => {
         </fieldset>
 
         <fieldset>
-          <legend>Telefones</legend>
-
-          {telefones.map((t, index) => (
-            <div key={index} className="form-row">
-              <input
-                name="numero"
-                value={t.numero}
-                placeholder="Número"
-                onChange={(e) =>
-                  handleListChange(index, e, telefones, setTelefones)
-                }
-              />
-              <input
-                name="observacao"
-                value={t.observacao}
-                placeholder="Observação"
-                onChange={(e) =>
-                  handleListChange(index, e, telefones, setTelefones)
-                }
-              />
-
-              {telefones.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeField(index, telefones, setTelefones)}
-                >
-                  -
-                </button>
-              )}
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() =>
-              addField(telefones, setTelefones, { numero: '', observacao: '' })
-            }
-          >
-            + Adicionar Telefone
-          </button>
+            <legend>Telefones</legend>
+            {telefones.map((t, index) => (
+                <div key={index} className="form-row">
+                    <input name="numero" value={t.numero} onChange={(e) => handleListChange(index, e, telefones, setTelefones)} placeholder="Número" />
+                    <input name="observacao" value={t.observacao} onChange={(e) => handleListChange(index, e, telefones, setTelefones)} placeholder="Observação" />
+                    <button type="button" className="btn-danger" onClick={() => removeField(index, telefones, setTelefones)}>-</button>
+                </div>
+            ))}
+            <button type="button" className="btn-secondary" onClick={() => addField(telefones, setTelefones, { numero: '', observacao: '' })}>+ Telefone</button>
         </fieldset>
 
         <fieldset>
-          <legend>Emails</legend>
-
-          {emails.map((m, index) => (
-            <div key={index} className="form-row">
-              <input
-                type="email"
-                name="email"
-                value={m.email}
-                placeholder="Email"
-                onChange={(e) => handleListChange(index, e, emails, setEmails)}
-              />
-              <input
-                name="observacao"
-                value={m.observacao}
-                placeholder="Observação"
-                onChange={(e) => handleListChange(index, e, emails, setEmails)}
-              />
-
-              {emails.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeField(index, emails, setEmails)}
-                >
-                  -
-                </button>
-              )}
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() =>
-              addField(emails, setEmails, { email: '', observacao: '' })
-            }
-          >
-            + Adicionar Email
-          </button>
+            <legend>Emails</legend>
+            {emails.map((m, index) => (
+                <div key={index} className="form-row">
+                    <input type="email" name="email" value={m.email} onChange={(e) => handleListChange(index, e, emails, setEmails)} placeholder="Email" />
+                    <input name="observacao" value={m.observacao} onChange={(e) => handleListChange(index, e, emails, setEmails)} placeholder="Observação" />
+                    <button type="button" className="btn-danger" onClick={() => removeField(index, emails, setEmails)}>-</button>
+                </div>
+            ))}
+            <button type="button" className="btn-secondary" onClick={() => addField(emails, setEmails, { email: '', observacao: '' })}>+ Email</button>
         </fieldset>
 
-        <div className="form-row">
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? 'Salvando...' : 'Salvar Cliente'}
-          </button>
-
-          <button
-            type="button"
-            className="form-button-secondary"
-            onClick={() => navigate('/clientes')}
-          >
-            Cancelar
-          </button>
+        <div className="form-actions">
+          <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Cliente'}</button>
+          <button type="button" className="form-button-secondary" onClick={() => navigate('/clientes')}>Cancelar</button>
         </div>
       </form>
     </div>

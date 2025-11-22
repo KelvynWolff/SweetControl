@@ -26,3 +26,8 @@ export const deleteCidade = async (codigobge) => {
   const response = await axios.delete(`${API_URL}/${codigobge}`);
   return response.data;
 };
+
+export const getCidadesByEstado = async (estadoSigla) => {
+  const response = await axios.get(API_URL);
+  return response.data.filter(cidade => cidade.estado === estadoSigla);
+};

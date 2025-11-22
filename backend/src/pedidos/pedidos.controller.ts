@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { PedidosService } from './pedidos.service';
+import { EmailsService } from '../emails/emails.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { UpdatePedidoDto } from './dto/update-pedido.dto';
 
 @Controller('pedidos')
 export class PedidosController {
-  constructor(private readonly pedidosService: PedidosService) {}
+  constructor(private readonly pedidosService: PedidosService, private readonly emailsService: EmailsService,) {}
 
   @Post()
   create(@Body() createPedidoDto: CreatePedidoDto) {
@@ -30,5 +31,11 @@ export class PedidosController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.pedidosService.remove(id);
+  }
+
+  @Post(':id/enviar-email')
+  async enviarEmail(@Param('id', ParseIntPipe) id: number) {
+    const pedido = await this.pedidosService.findOne(id);
+    return this.emailsService.enviarEmailPedido(pedido);
   }
 }

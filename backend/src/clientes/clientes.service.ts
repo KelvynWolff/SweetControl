@@ -120,19 +120,64 @@ export class ClientesService {
     return cliente;
   }
   
-  async update(id: number, updateClienteDto: UpdateClienteDto): Promise<Cliente> {
-    const cliente = await this.findOne(id);
-    
-    const pessoaAtualizada = await this.pessoaRepository.preload({
-        id: cliente.idPessoa,
-        nome: updateClienteDto.nome,
-    });
-    
-    if (pessoaAtualizada) {
-        await this.pessoaRepository.save(pessoaAtualizada);
-    }
+async update(id: number, updateClienteDto: UpdateClienteDto): Promise<Cliente> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    return this.findOne(id);
+    try {
+        const cliente = await this.findOne(id);
+        const idPessoa = cliente.idPessoa;
+
+        const pessoaRepo = queryRunner.manager.getRepository(Pessoa);
+        const enderecoRepo = queryRunner.manager.getRepository(Endereco);
+        const telefoneRepo = queryRunner.manager.getRepository(Telefone);
+        const emailRepo = queryRunner.manager.getRepository(Email);
+
+        if (updateClienteDto.nome) {
+            await pessoaRepo.update(idPessoa, { nome: updateClienteDto.nome });
+        }
+
+        if (updateClienteDto.endereco) {
+            const enderecoExistente = await enderecoRepo.findOneBy({ idPessoa });
+            if (enderecoExistente) {
+                enderecoRepo.merge(enderecoExistente, {
+                    ...updateClienteDto.endereco,
+                    idCidade: updateClienteDto.endereco.idCidade
+                });
+                await queryRunner.manager.save(enderecoExistente);
+            }
+        }
+
+        if (updateClienteDto.telefones) {
+            await telefoneRepo.delete({ idPessoa });
+            for (const tel of updateClienteDto.telefones) {
+                if (tel.numero) {
+                    const novoTel = telefoneRepo.create({ ...tel, idPessoa });
+                    await queryRunner.manager.save(novoTel);
+                }
+            }
+        }
+
+        if (updateClienteDto.emails) {
+            await emailRepo.delete({ idPessoa });
+            for (const mail of updateClienteDto.emails) {
+                if (mail.email) {
+                    const novoEmail = emailRepo.create({ ...mail, idPessoa });
+                    await queryRunner.manager.save(novoEmail);
+                }
+            }
+        }
+
+        await queryRunner.commitTransaction();
+        return this.findOne(id);
+
+    } catch (err) {
+        await queryRunner.rollbackTransaction();
+        throw err;
+    } finally {
+        await queryRunner.release();
+    }
   }
 
   async remove(id: number): Promise<void> {
