@@ -119,12 +119,12 @@ legend {
 }
 
 .button-primary {
-  background: var(--primary);
-  color: #fff;
+  background: rgb(0, 132, 255);
+  color: #ffffff;
 }
 
 .button-primary:hover {
-  background: var(--primary-dark);
+  background: rgb(0, 108, 132);
 }
 
 .button-secondary {
@@ -137,17 +137,27 @@ legend {
 }
 
 .button-cancel {
-  background: #c7c7c7;
-  color: #333;
+  background: #ff0000;
+  color: white;
 }
 
 .button-cancel:hover {
-  background: #b3b3b3;
+  background: #660000;
+}
+
+.button-confirm {
+  background: rgb(0, 160, 0);
+  color: #333;
+}
+
+.button-confirm:hover {
+  background: #0c5900;
+  color: white
 }
 
 .button-remove {
-  background: #f3f4f6;
-  color: #444;
+  background: #ff9100;
+  color: #ffffff;
   padding: 0 12px;
   min-width: 42px;
   text-align: center;
@@ -320,7 +330,7 @@ legend {
 }
 
 .items-table th {
-  background-color: #f1f1f1;
+  background-color: blue;
   font-weight: 600;
 }
 
@@ -333,6 +343,23 @@ legend {
   padding: 10px;
   background: #fffbe6;
   border-radius: 5px;
+}
+
+.icon-btn {
+  background-color: rgb(0, 136, 204);
+  border-radius: 10px;
+  border: none;
+  padding: 5px;
+  font-size: 18px;
+}
+
+.icon-btn-delete {
+  background-color: #e74c3c;
+  border-radius: 10px;
+  border: none;
+  padding: 5px;
+  font-size: 18px;
+  margin-left: 5px;
 }
 
 @media (max-width: 768px) {

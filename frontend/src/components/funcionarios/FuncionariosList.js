@@ -102,9 +102,6 @@ const FuncionariosList = () => {
   useEffect(() => {
     const role = getCurrentUserRole();
     const checkSupervisor = isSupervisor();
-    console.log("--- DEBUG DE PERMISSÃO ---");
-    console.log("Cargo no Token:", role);
-    console.log("É Supervisor?", checkSupervisor);
     setIsUserSupervisor(isSupervisor());
     loadData();
   }, []);
@@ -130,7 +127,7 @@ const FuncionariosList = () => {
   return (
     <div className="list-container">
       <h2>
-        <Link className="btn" to="/funcionarios/novo">+ Novo Funcionário</Link>
+        <Link className="btn" to="/funcionarios/novo">+</Link>
         Colaboradores
       </h2>
 

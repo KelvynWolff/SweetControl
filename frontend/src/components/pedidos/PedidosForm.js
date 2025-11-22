@@ -271,8 +271,8 @@ const PedidosForm = () => {
         </div>
 
         <div className="form-actions">
-            <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Confirmar Pedido'}</button>
-            <button type="button" className="form-button-secondary" onClick={() => navigate('/pedidos')}>Cancelar</button>
+            <button type="submit" className='button-confirm' disabled={isLoading}>{isLoading ? 'Salvando...' : 'Confirmar Pedido'}</button>
+            <button type="button" className="form-button-secondary button-cancel" onClick={() => navigate('/pedidos')}>Cancelar</button>
         </div>
 
       </form>

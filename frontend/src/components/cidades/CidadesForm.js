@@ -106,13 +106,13 @@ const CidadesForm = () => {
         </div>
 
         <div className="form-row">
-          <button type="submit" className="form-button">
+          <button type="submit" className="form-button button-confirm">
             {isEditing ? 'Salvar Alterações' : 'Cadastrar'}
           </button>
 
           <button
             type="button"
-            className="form-button form-button-secondary"
+            className="form-button form-button-secondary button-cancel"
             onClick={() => navigate('/cidades')}
           >
             Cancelar

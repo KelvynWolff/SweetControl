@@ -5,7 +5,8 @@ import {
   getClienteById,
   updateCliente,
 } from '../../services/clientesService';
-import { getCidades, getCidadesByEstado } from '../../services/cidadesService'; // <-- Importe getCidadesByEstado
+import { getPessoaByDocumento } from '../../services/pessoasService'; // Serviço de busca por CPF
+import { getCidades, getCidadesByEstado } from '../../services/cidadesService';
 import { getEstados } from '../../services/estadosService';
 import {
   createBairro,
@@ -40,6 +41,42 @@ const ClientesForm = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const preencherDadosPessoa = (pessoa) => {
+    setFormData({
+      nome: pessoa.nome,
+      cpfCnpj: pessoa.cpfCnpj,
+    });
+
+    if (pessoa.enderecos && pessoa.enderecos.length > 0) {
+      const endAtual = pessoa.enderecos[0];
+
+      setEndereco({
+        rua: endAtual.rua,
+        numero: endAtual.numero,
+        CEP: endAtual.CEP,
+        idBairro: endAtual.idBairro,
+      });
+
+      if (endAtual.cidade) {
+        const estadoSigla = endAtual.cidade.estado;
+        
+        setSelectedEstado(estadoSigla);
+
+        getCidadesByEstado(estadoSigla).then((cidadesDoEstado) => {
+          setCidades(cidadesDoEstado);
+          setSelectedCidade(endAtual.cidade.codigobge);
+        });
+      }
+    }
+
+    if (pessoa.telefones && pessoa.telefones.length > 0) {
+        setTelefones(pessoa.telefones.map(t => ({ numero: t.numero, observacao: t.observacao || '' })));
+    }
+    if (pessoa.emails && pessoa.emails.length > 0) {
+        setEmails(pessoa.emails.map(e => ({ email: e.email, observacao: e.observacao || '' })));
+    }
+  };
+
   useEffect(() => {
     getEstados().then(setEstados);
 
@@ -47,35 +84,7 @@ const ClientesForm = () => {
       setIsLoading(true);
       getClienteById(id)
         .then((data) => {
-          setFormData({
-            nome: data.pessoa.nome,
-            cpfCnpj: data.pessoa.cpfCnpj,
-          });
-
-          if (data.pessoa.enderecos && data.pessoa.enderecos.length > 0) {
-            const endAtual = data.pessoa.enderecos[0];
-
-            setEndereco({
-              rua: endAtual.rua,
-              numero: endAtual.numero,
-              CEP: endAtual.CEP,
-              idBairro: endAtual.idBairro,
-            });
-
-            if (endAtual.cidade) {
-               const estadoSigla = endAtual.cidade.estado;
-               
-               setSelectedEstado(estadoSigla);
-               
-               getCidadesByEstado(estadoSigla).then(cidadesDoEstado => {
-                   setCidades(cidadesDoEstado);
-                   setSelectedCidade(endAtual.cidade.codigobge);
-               });
-            }
-          }
-
-          if (data.pessoa.telefones) setTelefones(data.pessoa.telefones);
-          if (data.pessoa.emails) setEmails(data.pessoa.emails);
+          preencherDadosPessoa(data.pessoa);
         })
         .catch((err) => {
           console.error(err);
@@ -87,13 +96,12 @@ const ClientesForm = () => {
   }, [id, isEditing, navigate]);
 
   useEffect(() => {
-     if (selectedEstado && !isEditing) {
-         getCidadesByEstado(selectedEstado).then(setCidades);
-     } else if(selectedEstado) {
-          getCidadesByEstado(selectedEstado).then(setCidades);
-     }
+    if (selectedEstado) {
+        getCidadesByEstado(selectedEstado).then(setCidades);
+    } else {
+        setCidades([]);
+    }
   }, [selectedEstado]);
-
 
   useEffect(() => {
     if (selectedCidade) {
@@ -102,6 +110,24 @@ const ClientesForm = () => {
       setBairros([]);
     }
   }, [selectedCidade]);
+
+
+  const handleCpfBlur = async () => {
+    if (!formData.cpfCnpj || isEditing) return;
+
+    setIsLoading(true);
+    try {
+      const pessoaExistente = await getPessoaByDocumento(formData.cpfCnpj);
+      
+      if (pessoaExistente) {
+        alert(`Pessoa encontrada: ${pessoaExistente.nome}. Os dados foram carregados.`);
+        preencherDadosPessoa(pessoaExistente);
+      }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFormChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -135,7 +161,7 @@ const ClientesForm = () => {
 
     let finalEndereco = { ...endereco };
 
-    if (showNovoBairro) {
+    if (showNovoBairro && novoBairroNome) {
       try {
         const novoBairro = await createBairro({
           nome: novoBairroNome,
@@ -186,17 +212,20 @@ const ClientesForm = () => {
           <legend>Dados Pessoais</legend>
           <div className="form-row">
             <input
+              name="cpfCnpj"
+              value={formData.cpfCnpj}
+              onChange={handleFormChange}
+              onBlur={handleCpfBlur}
+              placeholder="CPF ou CNPJ (Digite para buscar)"
+              required
+              autoFocus
+              disabled={isEditing}
+            />
+            <input
               name="nome"
               value={formData.nome}
               onChange={handleFormChange}
               placeholder="Nome Completo"
-              required
-            />
-            <input
-              name="cpfCnpj"
-              value={formData.cpfCnpj}
-              onChange={handleFormChange}
-              placeholder="CPF ou CNPJ"
               required
             />
           </div>
@@ -287,32 +316,85 @@ const ClientesForm = () => {
         </fieldset>
 
         <fieldset>
-            <legend>Telefones</legend>
-            {telefones.map((t, index) => (
-                <div key={index} className="form-row">
-                    <input name="numero" value={t.numero} onChange={(e) => handleListChange(index, e, telefones, setTelefones)} placeholder="Número" />
-                    <input name="observacao" value={t.observacao} onChange={(e) => handleListChange(index, e, telefones, setTelefones)} placeholder="Observação" />
-                    <button type="button" className="btn-danger" onClick={() => removeField(index, telefones, setTelefones)}>-</button>
-                </div>
-            ))}
-            <button type="button" className="btn-secondary" onClick={() => addField(telefones, setTelefones, { numero: '', observacao: '' })}>+ Telefone</button>
+          <legend>Contatos</legend>
+          {telefones.map((t, index) => (
+            <div className="form-row" key={index}>
+              <input
+                name="numero"
+                value={t.numero}
+                onChange={(e) => handleListChange(index, e, telefones, setTelefones)}
+                placeholder="Telefone"
+              />
+              <input
+                name="observacao"
+                value={t.observacao}
+                onChange={(e) => handleListChange(index, e, telefones, setTelefones)}
+                placeholder="Observação"
+              />
+              <button
+                type="button"
+                className="btn-danger"
+                onClick={() => removeField(index, telefones, setTelefones)}
+              >
+                -
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => addField(telefones, setTelefones, { numero: '', observacao: '' })}
+          >
+            + Adicionar Telefone
+          </button>
         </fieldset>
 
         <fieldset>
-            <legend>Emails</legend>
-            {emails.map((m, index) => (
-                <div key={index} className="form-row">
-                    <input type="email" name="email" value={m.email} onChange={(e) => handleListChange(index, e, emails, setEmails)} placeholder="Email" />
-                    <input name="observacao" value={m.observacao} onChange={(e) => handleListChange(index, e, emails, setEmails)} placeholder="Observação" />
-                    <button type="button" className="btn-danger" onClick={() => removeField(index, emails, setEmails)}>-</button>
-                </div>
-            ))}
-            <button type="button" className="btn-secondary" onClick={() => addField(emails, setEmails, { email: '', observacao: '' })}>+ Email</button>
+          <legend>Emails</legend>
+          {emails.map((m, index) => (
+            <div className="form-row" key={index}>
+              <input
+                type="email"
+                name="email"
+                value={m.email}
+                onChange={(e) => handleListChange(index, e, emails, setEmails)}
+                placeholder="Email"
+              />
+              <input
+                name="observacao"
+                value={m.observacao}
+                onChange={(e) => handleListChange(index, e, emails, setEmails)}
+                placeholder="Observação"
+              />
+              <button
+                type="button"
+                className="btn-danger"
+                onClick={() => removeField(index, emails, setEmails)}
+              >
+                -
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => addField(emails, setEmails, { email: '', observacao: '' })}
+          >
+            + Adicionar Email
+          </button>
         </fieldset>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Cliente'}</button>
-          <button type="button" className="form-button-secondary" onClick={() => navigate('/clientes')}>Cancelar</button>
+          <button type="submit" disabled={isLoading} className='button-confirm'>
+            {isLoading ? 'Salvando...' : 'Salvar Cliente'}
+          </button>
+          <button
+            type="button"
+            className="form-button-secondary button-cancel"
+            onClick={() => navigate('/clientes')}
+          >
+            Cancelar
+          </button>
         </div>
       </form>
     </div>

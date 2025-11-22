@@ -6,6 +6,7 @@ import { CreateEmailDto } from './dto/create-email.dto';
 import { UpdateEmailDto } from './dto/update-email.dto';
 import * as nodemailer from 'nodemailer';
 import { Pedido } from '../pedidos/entities/pedido.entity';
+import { Notificacao } from '../notificacoes/entities/notificacao.entity';
 
 @Injectable()
 export class EmailsService {
@@ -14,6 +15,8 @@ export class EmailsService {
   constructor(
     @InjectRepository(Email)
     private readonly emailRepository: Repository<Email>,
+    @InjectRepository(Notificacao) 
+    private readonly notificacaoRepository: Repository<Notificacao>,
   ) {
     this.transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -100,6 +103,15 @@ export class EmailsService {
             subject: `Confirmação do Pedido #${pedido.id}`,
             html: htmlContent,
         });
+
+        const novaNotificacao = this.notificacaoRepository.create({
+            mensagem: `Confirmação do Pedido #${pedido.id} enviada para ${emailDestino}.`,
+            lida: false,
+            idPedido: pedido.id,
+            pedido: pedido
+        });
+
+        await this.notificacaoRepository.save(novaNotificacao);
         return { message: 'Email enviado com sucesso!' };
     } catch (error) {
         console.error("Erro ao enviar email:", error);

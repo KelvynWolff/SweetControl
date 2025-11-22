@@ -26,3 +26,11 @@ export const deletePessoa = async (id) => {
   const response = await axios.delete(`${API_URL}/${id}`);
   return response.data;
 };
+
+export const getPessoaByDocumento = async (cpfCnpj) => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(`${API_URL}/buscar?cpfCnpj=${cpfCnpj}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};

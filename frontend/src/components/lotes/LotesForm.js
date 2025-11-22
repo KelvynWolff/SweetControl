@@ -171,14 +171,14 @@ const LotesForm = () => {
         </div>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>
+          <button type="submit" disabled={isLoading} className='button-confirm'>
             {isLoading
               ? 'Salvando...'
               : isEditMode
               ? 'Atualizar Lote'
               : 'Salvar Lote'}
           </button>
-          <button type="button" onClick={() => navigate('/lotes')}>
+          <button type="button" onClick={() => navigate('/lotes')} className='button-cancel'>
             Cancelar
           </button>
         </div>

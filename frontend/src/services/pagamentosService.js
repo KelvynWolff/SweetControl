@@ -11,3 +11,8 @@ export const createPagamento = async (data) => {
   const response = await axios.post(API_URL, data);
   return response.data;
 };
+
+export const deletePagamento = async (id) => {
+  const response = await axios.delete(`${API_URL}/${id}`);
+  return response.data;
+};

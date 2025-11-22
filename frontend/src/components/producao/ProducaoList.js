@@ -1,63 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { getProducoes } from '../../services/producaoService';
+import { useNavigate, Link } from 'react-router-dom';
+import { getProducoes, deleteProducao } from '../../services/producaoService';
 import '../tables.css';
 
 const ProducaoList = () => {
   const [producoes, setProducoes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
+  const navigate = useNavigate();
+  
+  const loadData = () => {
     getProducoes()
       .then(setProducoes)
-      .catch(err => alert("Erro ao carregar histórico de produção."))
+      .catch(err => console.error("Erro ao carregar histórico de produção", err))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const filteredProducoes = producoes.filter(producao =>
-    producao.produto.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleDelete = async (id) => {
+    if (window.confirm('ATENÇÃO: Excluir esta ordem de produção irá reverter o estoque (adicionar insumos de volta e remover o produto final). Deseja continuar?')) {
+      try {
+        await deleteProducao(id); 
+        alert('Ordem de produção excluída e estoque revertido com sucesso!');
+        loadData();
+      } catch (error) {
+        alert('Erro ao excluir a ordem de produção.');
+        console.error(error);
+      }
+    }
+  };
 
-  if (loading) {
-    return <p>Carregando histórico...</p>;
-  }
+  if (loading) return <p>Carregando lista...</p>;
 
   return (
     <div className="list-container">
-      <h2>Histórico de Produção</h2>
-
-      <input
-        type="text"
-        placeholder="Buscar pelo nome do produto produzido..."
-        className="search-input"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
+      <h2>
+        <Link className="btn" to="/producao/novo">+</Link>
+        Histórico de Produções
+      </h2>
 
       <table>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Data</th>
-            <th>Produto Produzido</th>
-            <th>Quantidade</th>
-            <th>Observação</th>
+            <th>Produto Fabricado</th>
+            <th>Qtd.</th>
+            <th>Data de Criação</th>
+            <th>Validade Lote</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {filteredProducoes.length === 0 ? (
-            <tr><td colSpan="5">Nenhum registro de produção encontrado.</td></tr>
-          ) : (
-            filteredProducoes.map((producao) => (
-              <tr key={producao.id}>
-                <td>{producao.id}</td>
-                <td>{new Date(producao.data).toLocaleString()}</td>
-                <td>{producao.produto.nome}</td>
-                <td>{producao.quantidade}</td>
-                <td>{producao.observacao}</td>
-              </tr>
-            ))
-          )}
+          {producoes.map((prod) => (
+            <tr key={prod.id}>
+              <td>{prod.id}</td>
+              <td>{prod.produto?.nome || 'Produto Indefinido'}</td>
+              <td>{prod.quantidade}</td>
+              <td>{new Date(prod.data).toLocaleDateString()}</td>
+              <td>{new Date(prod.dataValidade).toLocaleDateString()}</td> 
+              <td>
+                <button 
+                  className="icon-btn-delete" 
+                  onClick={() => handleDelete(prod.id)} 
+                  title="Excluir Ordem e Reverter Estoque"
+                >
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

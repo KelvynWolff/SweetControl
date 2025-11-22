@@ -110,8 +110,8 @@ const PagamentosForm = () => {
           <input type="date" value={dataPagamento} onChange={e => setDataPagamento(e.target.value)} required />
         </div>
         <div className="form-actions">
-          <button type="submit">Registrar Pagamento</button>
-          <button type="button" onClick={() => navigate('/pagamentos')}>Cancelar</button>
+          <button type="submit" className='button-confirm'>Registrar Pagamento</button>
+          <button type="button" className='button-cancel' onClick={() => navigate('/pagamentos')}>Cancelar</button>
         </div>
       </form>
     </div>

@@ -126,8 +126,8 @@ const PromocoesForm = () => {
         </div>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar'}</button>
-          <button type="button" className="form-button-secondary" onClick={() => navigate('/promocoes')}>Cancelar</button>
+          <button type="submit" className='button-confirm' disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar'}</button>
+          <button type="button" className="button-cancel" onClick={() => navigate('/promocoes')}>Cancelar</button>
         </div>
       </form>
     </div>

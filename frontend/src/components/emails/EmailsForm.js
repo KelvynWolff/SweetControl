@@ -106,13 +106,13 @@ const EmailsForm = () => {
         </div>
 
         <div className="form-row">
-          <button type="submit">
+          <button type="submit" className='button-confirm'>
             {isEditing ? 'Salvar Alterações' : 'Cadastrar'}
           </button>
 
           <button
             type="button"
-            className="form-button-secondary"
+            className="form-button-secondary button-cancel"
             onClick={() => navigate('/emails')}
           >
             Cancelar

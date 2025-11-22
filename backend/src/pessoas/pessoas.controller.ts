@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { PessoasService } from './pessoas.service';
 import { CreatePessoaDto } from './dto/create-pessoa.dto';
 import { UpdatePessoaDto } from './dto/update-pessoa.dto';
@@ -6,6 +6,7 @@ import { UpdatePessoaDto } from './dto/update-pessoa.dto';
 @Controller('pessoas')
 export class PessoasController {
   constructor(private readonly pessoasService: PessoasService) {}
+  
 
   @Post()
   create(@Body() createPessoaDto: CreatePessoaDto) {
@@ -17,9 +18,18 @@ export class PessoasController {
     return this.pessoasService.findAll();
   }
 
+  @Get('buscar')
+  async buscarPorDocumento(@Query('cpfCnpj') cpfCnpj: string) {
+    const pessoa = await this.pessoasService.findByCpfCnpj(cpfCnpj);
+    if (!pessoa) {
+        return null; 
+    }
+    return pessoa;
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.pessoasService.findOne(id);
+    //return this.pessoasService.findOne(id);
   }
 
   @Patch(':id')

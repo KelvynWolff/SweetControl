@@ -256,13 +256,13 @@ const EnderecosForm = () => {
         </fieldset>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>
+          <button type="submit" disabled={isLoading} className='button-confirm'>
             {isLoading ? 'Salvando...' : 'Salvar Endereço'}
           </button>
 
           <button
             type="button"
-            className="form-button-secondary"
+            className="form-button-secondary button-cancel"
             onClick={() => navigate('/enderecos')}
           >
             Cancelar

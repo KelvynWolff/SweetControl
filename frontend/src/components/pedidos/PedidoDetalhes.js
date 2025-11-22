@@ -10,6 +10,8 @@ const PedidoDetalhes = () => {
   const [pedido, setPedido] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -28,13 +30,18 @@ const PedidoDetalhes = () => {
 
   const handleEnviarEmail = async () => {
     if (!id) return;
+    
+    setSendingEmail(true);
+
     try {
       const response = await enviarEmailPedido(id);
-      alert(response.message || "Email enviado com sucesso!");
+      alert(response.message || "Email enviado com sucesso!!");
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Erro ao enviar email.";
       alert(errorMessage);
       console.error(err);
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -62,9 +69,7 @@ const PedidoDetalhes = () => {
   }
   
   const totalPedido = pedido.itens ? pedido.itens.reduce((acc, item) => acc + (Number(item.preco) * item.quantidade), 0) : 0;
-  
   const totalPago = pedido.pagamentos ? pedido.pagamentos.reduce((acc, p) => acc + Number(p.valor), 0) : 0;
-  
   const restante = totalPedido - totalPago;
   const isPago = restante <= 0.01;
 
@@ -161,11 +166,23 @@ const PedidoDetalhes = () => {
 
       <div className="card">
         <h4>Ações</h4>
-        <button className='btn' onClick={handleEnviarEmail} style={{display: "flex", padding: "8px 15px", alignItems: 'center', gap: '10px'}}>
+        <button 
+            className='btn' 
+            onClick={handleEnviarEmail} 
+            disabled={sendingEmail}
+            style={{
+                display: "flex", 
+                padding: "8px 15px", 
+                alignItems: 'center', 
+                gap: '10px',
+                opacity: sendingEmail ? 0.6 : 1,
+                cursor: sendingEmail ? 'not-allowed' : 'pointer'
+            }}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
             <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
           </svg>
-          <span>Enviar Confirmação por Email</span>
+          <span>{sendingEmail ? 'Enviando...' : 'Enviar Confirmação por Email'}</span>
         </button>
       </div>
 

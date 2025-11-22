@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param, ParseIntPipe, Patch } from '@nestjs/common';
 import { ProducaoService } from './producao.service';
 import { CreateProducaoDto } from './dto/create-producao.dto';
 
@@ -14,5 +14,10 @@ export class ProducaoController {
   @Get()
   findAll() {
     return this.producaoService.findAll();
+  }
+
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.producaoService.remove(id); 
   }
 }

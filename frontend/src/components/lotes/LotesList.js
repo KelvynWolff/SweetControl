@@ -33,7 +33,10 @@ const LotesList = () => {
 
   return (
     <div className="list-container">
-      <h2>Gerenciar Lotes</h2>
+      <h2>
+        <Link className="btn" to="/lotes/novo">+</Link>
+        Gerenciar Lotes
+      </h2>
       <input
         type="text"
         placeholder="Buscar por código do lote, produto ou insumo..."

@@ -5,14 +5,13 @@ import {
   getFornecedorById,
   updateFornecedor,
 } from '../../services/fornecedoresService';
-
-import { getCidades } from '../../services/cidadesService';
+import { getPessoaByDocumento } from '../../services/pessoasService';
+import { getCidades, getCidadesByEstado } from '../../services/cidadesService';
+import { getEstados } from '../../services/estadosService';
 import {
   createBairro,
   getBairrosByCidade,
 } from '../../services/bairrosService';
-import { getEstados } from '../../services/estadosService';
-
 import '../forms.css';
 
 const FornecedoresForm = () => {
@@ -27,7 +26,6 @@ const FornecedoresForm = () => {
     CEP: '',
     idBairro: '',
   });
-
   const [telefones, setTelefones] = useState([{ numero: '', observacao: '' }]);
   const [emails, setEmails] = useState([{ email: '', observacao: '' }]);
 
@@ -43,27 +41,67 @@ const FornecedoresForm = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const preencherDadosPessoa = (pessoa) => {
+    setFormData({
+      nome: pessoa.nome,
+      cpfCnpj: pessoa.cpfCnpj,
+    });
+
+    if (pessoa.enderecos && pessoa.enderecos.length > 0) {
+      const endAtual = pessoa.enderecos[0];
+
+      setEndereco({
+        rua: endAtual.rua,
+        numero: endAtual.numero,
+        CEP: endAtual.CEP,
+        idBairro: endAtual.idBairro,
+      });
+
+      if (endAtual.cidade) {
+        const estadoSigla = endAtual.cidade.estado;
+        
+        setSelectedEstado(estadoSigla);
+
+        getCidadesByEstado(estadoSigla).then((cidadesDoEstado) => {
+          setCidades(cidadesDoEstado);
+          setSelectedCidade(endAtual.cidade.codigobge);
+        });
+      }
+    }
+
+    if (pessoa.telefones && pessoa.telefones.length > 0) {
+        setTelefones(pessoa.telefones.map(t => ({ numero: t.numero, observacao: t.observacao || '' })));
+    }
+    if (pessoa.emails && pessoa.emails.length > 0) {
+        setEmails(pessoa.emails.map(e => ({ email: e.email, observacao: e.observacao || '' })));
+    }
+  };
+
   useEffect(() => {
     getEstados().then(setEstados);
-    getCidades().then(setCidades);
 
     if (isEditing) {
       setIsLoading(true);
-
       getFornecedorById(id)
         .then((data) => {
-          setFormData({
-            nome: data.pessoa.nome,
-            cpfCnpj: data.pessoa.cpfCnpj,
-          });
+          preencherDadosPessoa(data.pessoa);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error(err);
           alert('Fornecedor não encontrado.');
           navigate('/fornecedores');
         })
         .finally(() => setIsLoading(false));
     }
   }, [id, isEditing, navigate]);
+
+  useEffect(() => {
+    if (selectedEstado) {
+        getCidadesByEstado(selectedEstado).then(setCidades);
+    } else {
+        setCidades([]);
+    }
+  }, [selectedEstado]);
 
   useEffect(() => {
     if (selectedCidade) {
@@ -73,6 +111,24 @@ const FornecedoresForm = () => {
     }
   }, [selectedCidade]);
 
+
+  const handleCpfBlur = async () => {
+    if (!formData.cpfCnpj || isEditing) return;
+
+    setIsLoading(true);
+    try {
+      const pessoaExistente = await getPessoaByDocumento(formData.cpfCnpj);
+      
+      if (pessoaExistente) {
+        alert(`Pessoa encontrada: ${pessoaExistente.nome}. Os dados foram carregados.`);
+        preencherDadosPessoa(pessoaExistente);
+      }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleFormChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -80,18 +136,18 @@ const FornecedoresForm = () => {
     setEndereco({ ...endereco, [e.target.name]: e.target.value });
 
   const handleBairroChange = (e) => {
-    const value = e.target.value;
+    const { value } = e.target;
     setShowNovoBairro(value === 'novo');
-    setEndereco((prev) => ({ ...prev, idBairro: value }));
+    setEndereco({ ...endereco, idBairro: value });
   };
 
-  const handleListChange = (index, event, list, setList) => {
+  const handleListChange = (index, e, list, setList) => {
     const updated = [...list];
-    updated[index][event.target.name] = event.target.value;
+    updated[index][e.target.name] = e.target.value;
     setList(updated);
   };
 
-  const addField = (list, setList, field) => setList([...list, field]);
+  const addField = (list, setList, emptyObj) => setList([...list, emptyObj]);
 
   const removeField = (index, list, setList) => {
     const updated = [...list];
@@ -111,7 +167,6 @@ const FornecedoresForm = () => {
           nome: novoBairroNome,
           ibgeCidade: parseInt(selectedCidade),
         });
-
         finalEndereco.idBairro = novoBairro.id;
       } catch {
         alert('Erro ao criar novo bairro.');
@@ -139,10 +194,10 @@ const FornecedoresForm = () => {
         await createFornecedor(payload);
         alert('Fornecedor criado com sucesso!');
       }
-
       navigate('/fornecedores');
-    } catch {
+    } catch (err) {
       alert('Erro ao salvar fornecedor.');
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -153,32 +208,31 @@ const FornecedoresForm = () => {
       <h3>{isEditing ? 'Editar Fornecedor' : 'Cadastrar Novo Fornecedor'}</h3>
 
       <form onSubmit={handleSubmit}>
-        {/* Dados Pessoais */}
         <fieldset>
           <legend>Dados do Fornecedor</legend>
-
           <div className="form-row">
-            <input
-              name="nome"
-              value={formData.nome}
-              onChange={handleFormChange}
-              placeholder="Nome Completo"
-              required
-            />
             <input
               name="cpfCnpj"
               value={formData.cpfCnpj}
               onChange={handleFormChange}
-              placeholder="CPF ou CNPJ"
+              onBlur={handleCpfBlur}
+              placeholder="CNPJ ou CPF (Digite para buscar)"
+              required
+              autoFocus
+              disabled={isEditing}
+            />
+            <input
+              name="nome"
+              value={formData.nome}
+              onChange={handleFormChange}
+              placeholder="Razão Social / Nome"
               required
             />
           </div>
         </fieldset>
 
-        {/* Endereço */}
         <fieldset>
           <legend>Endereço</legend>
-
           <div className="form-row">
             <select
               value={selectedEstado}
@@ -196,22 +250,21 @@ const FornecedoresForm = () => {
             <select
               value={selectedCidade}
               onChange={(e) => setSelectedCidade(e.target.value)}
-              required
               disabled={!selectedEstado}
+              required
             >
               <option value="">Selecione uma Cidade</option>
-              {cidades
-                .filter((c) => c.estado === selectedEstado)
-                .map((c) => (
-                  <option key={c.codigobge} value={c.codigobge}>
-                    {c.nome}
-                  </option>
-                ))}
+              {cidades.map((c) => (
+                <option key={c.codigobge} value={c.codigobge}>
+                  {c.nome}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="form-row">
             <select
+              name="idBairro"
               value={endereco.idBairro}
               onChange={handleBairroChange}
               disabled={!selectedCidade}
@@ -262,108 +315,82 @@ const FornecedoresForm = () => {
           </div>
         </fieldset>
 
-        {/* Telefones */}
         <fieldset>
-          <legend>Telefones</legend>
-
-          {telefones.map((tel, index) => (
+          <legend>Contatos</legend>
+          {telefones.map((t, index) => (
             <div className="form-row" key={index}>
               <input
                 name="numero"
-                value={tel.numero}
-                onChange={(e) =>
-                  handleListChange(index, e, telefones, setTelefones)
-                }
-                placeholder="Número"
+                value={t.numero}
+                onChange={(e) => handleListChange(index, e, telefones, setTelefones)}
+                placeholder="Telefone"
               />
               <input
                 name="observacao"
-                value={tel.observacao}
-                onChange={(e) =>
-                  handleListChange(index, e, telefones, setTelefones)
-                }
+                value={t.observacao}
+                onChange={(e) => handleListChange(index, e, telefones, setTelefones)}
                 placeholder="Observação"
               />
-              {telefones.length > 1 && (
-                <button
-                  type="button"
-                  className="btn-danger"
-                  onClick={() => removeField(index, telefones, setTelefones)}
-                >
-                  -
-                </button>
-              )}
+              <button
+                type="button"
+                className="btn-danger"
+                onClick={() => removeField(index, telefones, setTelefones)}
+              >
+                -
+              </button>
             </div>
           ))}
-
           <button
             type="button"
             className="btn-secondary"
-            onClick={() =>
-              addField(telefones, setTelefones, {
-                numero: '',
-                observacao: '',
-              })
-            }
+            onClick={() => addField(telefones, setTelefones, { numero: '', observacao: '' })}
           >
             + Adicionar Telefone
           </button>
         </fieldset>
 
-        {/* Emails */}
         <fieldset>
           <legend>Emails</legend>
-
-          {emails.map((mail, index) => (
+          {emails.map((m, index) => (
             <div className="form-row" key={index}>
               <input
-                name="email"
                 type="email"
-                value={mail.email}
+                name="email"
+                value={m.email}
                 onChange={(e) => handleListChange(index, e, emails, setEmails)}
                 placeholder="Email"
               />
               <input
                 name="observacao"
-                value={mail.observacao}
+                value={m.observacao}
                 onChange={(e) => handleListChange(index, e, emails, setEmails)}
                 placeholder="Observação"
               />
-              {emails.length > 1 && (
-                <button
-                  type="button"
-                  className="btn-danger"
-                  onClick={() => removeField(index, emails, setEmails)}
-                >
-                  -
-                </button>
-              )}
+              <button
+                type="button"
+                className="btn-danger"
+                onClick={() => removeField(index, emails, setEmails)}
+              >
+                -
+              </button>
             </div>
           ))}
-
           <button
             type="button"
             className="btn-secondary"
-            onClick={() =>
-              addField(emails, setEmails, {
-                email: '',
-                observacao: '',
-              })
-            }
+            onClick={() => addField(emails, setEmails, { email: '', observacao: '' })}
           >
             + Adicionar Email
           </button>
         </fieldset>
 
-        {/* Ações */}
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>
+          <button type="submit" disabled={isLoading} className='button-confirm'>
             {isLoading ? 'Salvando...' : 'Salvar Fornecedor'}
           </button>
-
           <button
             type="button"
-            className="form-button-secondary"
+            className="form-button-secondary button-cancel"
             onClick={() => navigate('/fornecedores')}
           >
             Cancelar

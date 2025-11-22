@@ -197,7 +197,6 @@ const FuncionariosForm = () => {
       <h3>{isEditing ? 'Editar Funcionário' : 'Cadastrar Novo Funcionário'}</h3>
 
       <form onSubmit={handleSubmit}>
-        {/* Dados Pessoais */}
         <fieldset>
           <legend>Dados Pessoais</legend>
           <div className="form-row">
@@ -205,6 +204,7 @@ const FuncionariosForm = () => {
             <input name="cpfCnpj" value={formData.cpfCnpj} onChange={handleFormChange} placeholder="CPF" required />
           </div>
           <div className="form-row">
+            Data Admissão
             <input name="dataAdmissao" type="date" value={formData.dataAdmissao} onChange={handleFormChange} required />
           </div>
         </fieldset>
@@ -331,8 +331,8 @@ const FuncionariosForm = () => {
         </fieldset>
 
         <div className="form-actions">
-          <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar Dados'}</button>
-          <button type="button" className="form-button-secondary" onClick={() => navigate('/funcionarios')}>Cancelar</button>
+          <button type="submit" disabled={isLoading} className='button-confirm'>{isLoading ? 'Salvando...' : 'Salvar Dados'}</button>
+          <button type="button" className="form-button-secondary button-cancel" onClick={() => navigate('/funcionarios')}>Cancelar</button>
         </div>
       </form>
     </div>

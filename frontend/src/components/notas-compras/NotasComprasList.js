@@ -31,7 +31,12 @@ const NotasComprasList = () => {
 
   return (
     <div className="list-container">
-      <h2>Histórico de Compras</h2>
+      <h2>
+        <Link className="btn" to="/notas-compras/novo">
+            +
+        </Link>
+        Histórico de Compras
+      </h2>
       <table>
         <thead>
           <tr>

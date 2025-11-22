@@ -47,4 +47,16 @@ export class PessoasService {
     const pessoa = await this.findOne(id);
     await this.pessoaRepository.remove(pessoa);
   }
+
+  async findByCpfCnpj(cpfCnpj: string): Promise<Pessoa | null> {
+    return this.pessoaRepository.findOne({
+      where: { cpfCnpj: cpfCnpj },
+      relations: [
+        'enderecos', 
+        'enderecos.cidade', 
+        'telefones', 
+        'emails'
+      ]
+    });
+  }
 }

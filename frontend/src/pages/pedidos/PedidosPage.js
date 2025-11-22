@@ -8,22 +8,6 @@ import PedidoDetalhes from '../../components/pedidos/PedidoDetalhes';
 function PedidosPage() {
   return (
     <div className="container" style={{ display: 'grid', gap: 16 }}>
-      <nav className="tabs">
-        <NavLink
-          to="/pedidos"
-          end
-          className={({ isActive }) => `tab ${isActive ? 'is-active' : ''}`}
-        >
-          Lista de Pedidos
-        </NavLink>
-        <NavLink
-          to="/pedidos/novo"
-          className={({ isActive }) => `tab ${isActive ? 'is-active' : ''}`}
-        >
-          Novo Pedido
-        </NavLink>
-      </nav>
-
       <Routes>
         <Route index element={<PedidosList />} />
         <Route path="novo" element={<PedidosForm />} />

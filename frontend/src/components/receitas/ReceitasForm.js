@@ -27,9 +27,6 @@ const ReceitasForm = () => {
   const [existingInsumoIds, setExistingInsumoIds] = useState(new Set());
   const [dependenciesLoaded, setDependenciesLoaded] = useState(false);
 
-  // ----------------------------------------------------
-  // CARREGA DEPENDÊNCIAS
-  // ----------------------------------------------------
   useEffect(() => {
     const load = async () => {
       try {
@@ -50,9 +47,6 @@ const ReceitasForm = () => {
     load();
   }, []);
 
-  // ----------------------------------------------------
-  // CARREGA RECEITA CASO ESTEJA EDITANDO
-  // ----------------------------------------------------
   useEffect(() => {
     if (!dependenciesLoaded) return;
 
@@ -85,9 +79,6 @@ const ReceitasForm = () => {
     loadForEdit();
   }, [dependenciesLoaded, produtoId, isEditing]);
 
-  // ----------------------------------------------------
-  // VERIFICA INSUMOS JÁ EXISTENTES (no modo criar)
-  // ----------------------------------------------------
   useEffect(() => {
     if (!dependenciesLoaded) return;
 
@@ -104,9 +95,6 @@ const ReceitasForm = () => {
     check();
   }, [selectedProductId, isEditing, dependenciesLoaded]);
 
-  // ----------------------------------------------------
-  // HANDLERS
-  // ----------------------------------------------------
   const handleInsumoChange = (index, e) => {
     const { name, value } = e.target;
     const list = [...insumoList];
@@ -124,9 +112,6 @@ const ReceitasForm = () => {
     setInsumoList(list);
   };
 
-  // ----------------------------------------------------
-  // SALVAR
-  // ----------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -149,7 +134,6 @@ const ReceitasForm = () => {
     setIsLoading(true);
 
     try {
-      // editar → apaga todos os insumos antigos
       if (isEditing) {
         const todas = await getReceitas();
         const antigas = todas.filter(
@@ -160,7 +144,6 @@ const ReceitasForm = () => {
         }
       }
 
-      // cria insumos novos
       for (const insumo of insumoList) {
         await createReceita({
           idProduto: parseInt(selectedProductId),
@@ -187,14 +170,10 @@ const ReceitasForm = () => {
     setIsLoading(false);
   };
 
-  // ----------------------------------------------------
-  // RENDER
-  // ----------------------------------------------------
   return (
     <div className="form-container">
       <h3>{isEditing ? 'Editar Receita' : 'Cadastrar Nova Receita'}</h3>
 
-      {/* Notificação */}
       {notification.message && (
         <div
           className={`form-message ${
@@ -206,7 +185,6 @@ const ReceitasForm = () => {
       )}
 
       <form onSubmit={handleSubmit}>
-        {/* Produto */}
         <div className="form-row">
           <div>
             <label>Produto</label>
@@ -230,14 +208,12 @@ const ReceitasForm = () => {
 
         <h4>Insumos da Receita</h4>
 
-        {/* Cabeçalho */}
         <div className="form-row">
           <div style={{ fontWeight: '600' }}>Insumo</div>
           <div style={{ fontWeight: '600' }}>Quantidade</div>
           {!isEditing && <div style={{ fontWeight: '600' }}>Ação</div>}
         </div>
 
-        {/* Linhas */}
         {insumoList.map((item, index) => (
           <div className="form-row" key={index}>
             <select
@@ -275,39 +251,37 @@ const ReceitasForm = () => {
               <button
                 type="button"
                 onClick={() => removeInsumoField(index)}
-                className="form-button form-button-secondary"
+                className="form-button-secondary button-remove"
                 disabled={insumoList.length === 1}
               >
-                Remover
+                -
+              </button>
+            )}
+
+             {!isEditing && (
+              <button
+                type="button"
+                onClick={addInsumoField}
+                className="button-primary"
+              >
+                +
               </button>
             )}
           </div>
         ))}
 
-        {!isEditing && (
-          <button
-            type="button"
-            onClick={addInsumoField}
-            className="form-button form-button-secondary"
-          >
-            + Adicionar Insumo
-          </button>
-        )}
-
         <div className="form-separator"></div>
 
-        {/* Botões */}
-        <div className="form-row">
+        <div className="form-actions">
+          <button type="submit" className="button-confirm" disabled={isLoading}>
+            {isLoading ? 'Salvando...' : 'Salvar Receita'}
+          </button>
           <button
             type="button"
-            className="form-button form-button-secondary"
+            className="button-cancel"
             onClick={() => navigate('/receitas')}
           >
             Cancelar
-          </button>
-
-          <button type="submit" className="form-button" disabled={isLoading}>
-            {isLoading ? 'Salvando...' : 'Salvar Receita'}
           </button>
         </div>
       </form>

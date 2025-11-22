@@ -82,8 +82,8 @@ const ProductForm = () => {
         <label htmlFor="margem">Margem</label>
         <input name="margem" type="number" step="0.01" value={formData.margem} onChange={handleChange} required />
         
-        <button type="submit">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
-        <button type="button" onClick={() => navigate('/produtos')} style={{marginTop: '10px', backgroundColor: '#6c757d'}}>Cancelar</button>
+        <button type="submit" className='button-confirm'>{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
+        <button type="button" className='button-cancel' onClick={() => navigate('/produtos')} style={{marginTop: '10px', marginLeft: '5px'}}>Cancelar</button>
       </form>
     </div>
   );

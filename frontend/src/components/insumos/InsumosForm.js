@@ -110,13 +110,13 @@ const InsumosForm = () => {
         </div>
 
         <div className="form-actions">
-          <button type="submit">
+          <button type="submit" className='button-confirm'>
             {isEditing ? 'Salvar Alterações' : 'Cadastrar'}
           </button>
 
           <button
             type="button"
-            className="form-button-secondary"
+            className="form-button-secondary button-cancel"
             onClick={() => navigate('/insumos')}
           >
             Cancelar

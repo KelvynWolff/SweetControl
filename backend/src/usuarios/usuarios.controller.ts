@@ -23,6 +23,13 @@ export class UsuariosController {
     return this.usuariosService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SUPERVISOR)
+  @Get('unlinked')
+  findUnlinked() {
+    return this.usuariosService.findUnlinked();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usuariosService.findOne(id);
@@ -46,13 +53,6 @@ export class UsuariosController {
     @Body('role') role: UserRole
   ) {
     return this.usuariosService.updateRole(id, role);
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERVISOR)
-  @Get('unlinked')
-  findUnlinked() {
-    return this.usuariosService.findUnlinked();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
