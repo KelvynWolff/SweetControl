@@ -64,19 +64,6 @@ cd backend
 cp .env.example .env
 ```
 > **Importante:** Edite o arquivo `.env` com as credenciais corretas do banco de dados. Os valores padrão funcionam com o Docker Compose.
-
-```bash
-# Instalar dependências
-npm install
-```
-
-### 3. Configurar o Frontend
-Em um novo terminal:
-```bash
-cd frontend
-npm install
-```
-
 ---
 
 ## ▶️ Rodando a Aplicação
@@ -86,7 +73,7 @@ Será necessário **1 terminal** abertos.
 ### **Container Docker**
 Na pasta raiz do projeto:
 ```bash
-docker compose up -d
+docker-compose up --build
 ```
 
 API disponível em: **[http://localhost:3000](http://localhost:3000)**

@@ -188,10 +188,11 @@ const NotasComprasForm = () => {
 
     try {
       const response = await uploadNotaXml(file);
-      const { dadosNota, produtos: p2, insumos: i2 } = response;
+      const { dadosNota, produtos: p2, insumos: i2, fornecedores: fornecedoresAtualizados } = response;
 
       setProdutos(p2);
       setInsumos(i2);
+      setFornecedores(fornecedoresAtualizados);
 
       setFormData({
         chaveAcesso: dadosNota.chaveAcesso,

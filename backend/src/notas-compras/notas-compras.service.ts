@@ -1,11 +1,10 @@
-import { Injectable, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnprocessableEntityException, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { NotasCompras } from './entities/notas-compras.entity';
 import { ItensNotasCompras } from '../itens-notas-compras/entities/itens-notas-compras.entity';
 import { Lote } from '../lotes/entities/lote.entity';
 import { MovimentacaoEstoque, TipoMovimentacao } from '../movimentacao-estoque/entities/movimentacao-estoque.entity';
 import { CreateNotaCompraDto } from './dto/create-nota-compra.dto';
-import { NotFoundException } from '@nestjs/common';
 import { parseStringPromise } from 'xml2js';
 import { Fornecedor } from '../fornecedores/entities/fornecedor.entity';
 import { FornecedoresService } from '../fornecedores/fornecedores.service';
@@ -23,7 +22,7 @@ export class NotasComprasService {
     private fornecedoresService: FornecedoresService,
   ) {}
 
-async create(createNotaCompraDto: CreateNotaCompraDto): Promise<NotasCompras> {
+  async create(createNotaCompraDto: CreateNotaCompraDto): Promise<NotasCompras> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -39,6 +38,7 @@ async create(createNotaCompraDto: CreateNotaCompraDto): Promise<NotasCompras> {
 
       for (const itemDto of createNotaCompraDto.itens) {
         let loteParaMovimentacao: Lote;
+        
         const loteExistente = await loteRepo.findOneBy({ codigoLote: itemDto.codigoLote });
 
         if (loteExistente) {
@@ -77,6 +77,7 @@ async create(createNotaCompraDto: CreateNotaCompraDto): Promise<NotasCompras> {
             idProduto: itemDto.idProduto,
             idInsumo: itemDto.idInsumo,
             quantidade: itemDto.quantidade,
+            idLote: loteParaMovimentacao.id,
         });
         await queryRunner.manager.save(itemNota);
       }
@@ -91,7 +92,7 @@ async create(createNotaCompraDto: CreateNotaCompraDto): Promise<NotasCompras> {
     }
   }
 
-async processXml(xmlBuffer: Buffer): Promise<any> {
+  async processXml(xmlBuffer: Buffer): Promise<any> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -117,19 +118,16 @@ async processXml(xmlBuffer: Buffer): Promise<any> {
       
       let estado = await estadoRepo.findOneBy({ sigla: siglaEstadoXml });
       if (!estado) {
-        console.log(`Estado "${siglaEstadoXml}" não encontrado. Cadastrando...`);
         estado = await queryRunner.manager.save(estadoRepo.create({ sigla: siglaEstadoXml, nome: siglaEstadoXml }));
       }
       
       let cidade = await cidadeRepo.findOneBy({ codigobge: codCidadeXml });
       if (!cidade) {
-        console.log(`Cidade "${nomeCidadeXml}" não encontrada. Cadastrando...`);
         cidade = await queryRunner.manager.save(cidadeRepo.create({ codigobge: codCidadeXml, nome: nomeCidadeXml, estado: siglaEstadoXml }));
       }
 
       let bairro = await bairroRepo.findOne({ where: { nome: nomeBairroXml, ibgeCidade: codCidadeXml }});
       if (!bairro) {
-        console.log(`Bairro "${nomeBairroXml}" não encontrado. Cadastrando...`);
         bairro = await queryRunner.manager.save(bairroRepo.create({ nome: nomeBairroXml, ibgeCidade: codCidadeXml }));
       }
       
@@ -138,15 +136,18 @@ async processXml(xmlBuffer: Buffer): Promise<any> {
       let fornecedor = await fornecedorRepo.findOne({ where: { pessoa: { cpfCnpj: cnpjFornecedor } }, relations: ['pessoa'] });
 
       if (!fornecedor) {
-        console.log(`Fornecedor com CNPJ ${cnpjFornecedor} não encontrado. Cadastrando...`);
-        const novaPessoa = pessoaRepo.create({
-            nome: nomeFornecedor,
-            cpfCnpj: cnpjFornecedor,
-            idCidade: cidade.codigobge,
-        });
-        const pessoaSalva = await queryRunner.manager.save(novaPessoa);
+        let pessoa = await pessoaRepo.findOne({ where: { cpfCnpj: cnpjFornecedor } });
+        
+        if (!pessoa) {
+            const novaPessoa = pessoaRepo.create({
+                nome: nomeFornecedor,
+                cpfCnpj: cnpjFornecedor,
+                idCidade: cidade.codigobge,
+            });
+            pessoa = await queryRunner.manager.save(novaPessoa);
+        }
 
-        const novoFornecedor = fornecedorRepo.create({ idPessoa: pessoaSalva.id });
+        const novoFornecedor = fornecedorRepo.create({ idPessoa: pessoa.id });
         fornecedor = await queryRunner.manager.save(novoFornecedor);
       }
 
@@ -166,7 +167,6 @@ async processXml(xmlBuffer: Buffer): Promise<any> {
         }
         
         if (!itemEncontrado) {
-            console.log(`Item "${nomeItem}" não encontrado. Cadastrando como novo insumo...`);
             const novoInsumo = insumoRepo.create({
                 nome: nomeItem,
                 valor: parseFloat(prod.vUnCom[0]),
@@ -194,6 +194,8 @@ async processXml(xmlBuffer: Buffer): Promise<any> {
       const produtosAtualizados = await this.dataSource.getRepository(Produto).find();
       const insumosAtualizados = await this.dataSource.getRepository(Insumo).find();
 
+      const fornecedoresAtualizados = await this.dataSource.getRepository(Fornecedor).find({ relations: ['pessoa'] });
+
       return {
         dadosNota: {
           chaveAcesso: infNFe.$.Id.replace('NFe', ''),
@@ -204,6 +206,7 @@ async processXml(xmlBuffer: Buffer): Promise<any> {
         },
         produtos: produtosAtualizados,
         insumos: insumosAtualizados,
+        fornecedores: fornecedoresAtualizados,
       };
 
     } catch (error) {
@@ -244,7 +247,7 @@ async processXml(xmlBuffer: Buffer): Promise<any> {
       
       const nota = await notaRepo.findOne({
         where: { id },
-        relations: ['itens', 'itens.lote'],
+        relations: ['itens', 'itens.lote'], 
       });
 
       if (!nota) {
@@ -252,29 +255,17 @@ async processXml(xmlBuffer: Buffer): Promise<any> {
       }
 
       for (const item of nota.itens) {
-        if (!item.lote) continue;
-
-        const movimentacoesAnteriores = await movEstoqueRepo.find({ 
-            where: { lote: { id: item.lote.id }, tipo: TipoMovimentacao.ENTRADA_COMPRA }
-        });
-
-        const movimentacaoParaReverter = movimentacoesAnteriores.find(
-          m => m.idLote === item.lote.id
-        );
-
-        if (movimentacaoParaReverter) {
-          const movimentacaoReversa = movEstoqueRepo.create({
-            idLote: item.lote.id,
-            tipo: TipoMovimentacao.PERDA,
-            quantidade: -item.quantidade,
-          });
-          await queryRunner.manager.save(movimentacaoReversa);
+        if (item.lote) {
+            const movimentacaoReversa = movEstoqueRepo.create({
+              idLote: item.lote.id,
+              tipo: TipoMovimentacao.PERDA,
+              quantidade: -item.quantidade,
+            });
+            await queryRunner.manager.save(movimentacaoReversa);
         }
       }
-
       
       await queryRunner.manager.remove(nota);
-
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
