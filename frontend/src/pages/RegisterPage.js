@@ -134,7 +134,7 @@ const RegisterPage = () => {
           >
             <option value="Funcionario">Funcionário</option>
             <option value="Administrador">Administrador</option>
-          </select>
+          </select><br></br>
           <span className="help">
             Definido automaticamente. Altere depois no painel de usuários.
           </span>
