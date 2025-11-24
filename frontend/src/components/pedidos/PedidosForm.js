@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createPedido, getPedidoById, updatePedido } from '../../services/pedidosService';
 import { getClientes } from '../../services/clientesService';
 import { getProducts } from '../../services/productService';
+import { getPromocoesAtivas } from '../../services/promocoesService';
 import '../forms.css';
 
 const PedidosForm = () => {
@@ -12,6 +13,7 @@ const PedidosForm = () => {
 
   const [clientes, setClientes] = useState([]);
   const [produtos, setProdutos] = useState([]);
+  const [promocoes, setPromocoes] = useState([]);
   
   const [formData, setFormData] = useState({
     idCliente: '',
@@ -26,16 +28,18 @@ const PedidosForm = () => {
     nomeProduto: '',
     quantidade: 1,
     precoUnitario: 0,
-    desconto: 0
+    desconto: 0,
+    mensagemPromocao: ''
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    Promise.all([getClientes(), getProducts()])
-      .then(([clientesData, produtosData]) => {
+    Promise.all([getClientes(), getProducts(), getPromocoesAtivas()])
+      .then(([clientesData, produtosData, promocoesData]) => {
         setClientes(clientesData);
         setProdutos(produtosData);
+        setPromocoes(promocoesData || []);
       })
       .catch(err => alert("Erro ao carregar dados cadastrais."));
 
@@ -50,10 +54,10 @@ const PedidosForm = () => {
             const itensFormatados = data.itens.map(item => ({
                 idProduto: item.produto.id,
                 nomeProduto: item.produto.nome,
-                precoUnitario: Number(item.preco),
-                desconto: Number(item.desconto || 0),
+                precoUnitario: Number(item.produto.preco),
+                desconto: (Number(item.produto.preco) - Number(item.preco)),
                 quantidade: Number(item.quantidade),
-                subtotal: (Number(item.preco) - Number(item.desconto || 0)) * Number(item.quantidade)
+                subtotal: Number(item.preco) * Number(item.quantidade)
             }));
             setItensPedido(itensFormatados);
         });
@@ -67,18 +71,40 @@ const PedidosForm = () => {
   const handleProductSelect = (e) => {
       const prodId = parseInt(e.target.value);
       if (!prodId) {
-          setCurrentItem({ ...currentItem, idProduto: '', nomeProduto: '', precoUnitario: 0 });
+          setCurrentItem({ ...currentItem, idProduto: '', nomeProduto: '', precoUnitario: 0, desconto: 0, mensagemPromocao: '' });
           return;
       }
 
       const produtoInfo = produtos.find(p => p.id === prodId);
+      const precoBase = Number(produtoInfo.preco);
+
+      let promocaoAplicavel = promocoes.find(p => p.idProduto === prodId);
       
+      if (!promocaoAplicavel) {
+          promocaoAplicavel = promocoes.find(p => p.idProduto === null);
+      }
+
+      let valorDesconto = 0;
+      let msgPromo = '';
+
+      if (promocaoAplicavel) {
+          if (promocaoAplicavel.tipoDeDesconto === 'Percentual') {
+              valorDesconto = precoBase * (Number(promocaoAplicavel.valor) / 100);
+              msgPromo = `Promoção: ${promocaoAplicavel.nome} (-${promocaoAplicavel.valor}%)`;
+          } else {
+              valorDesconto = Number(promocaoAplicavel.valor);
+              msgPromo = `Promoção: ${promocaoAplicavel.nome} (-R$ ${valorDesconto.toFixed(2)})`;
+          }
+          if (valorDesconto > precoBase) valorDesconto = precoBase;
+      }
+
       setCurrentItem({
           ...currentItem,
           idProduto: prodId,
           nomeProduto: produtoInfo.nome,
-          precoUnitario: Number(produtoInfo.preco), 
-          desconto: 0
+          precoUnitario: precoBase,
+          desconto: valorDesconto,
+          mensagemPromocao: msgPromo
       });
   };
 
@@ -87,11 +113,10 @@ const PedidosForm = () => {
           alert("Selecione um produto e uma quantidade válida.");
           return;
       }
-      if (currentItem.precoUnitario < 0) return alert("O preço não pode ser negativo.");
-
+      
       const jaExiste = itensPedido.find(i => i.idProduto === parseInt(currentItem.idProduto));
       if (jaExiste) {
-          alert("Este produto já está na lista. Remova-o se quiser adicionar novamente com outros valores.");
+          alert("Este produto já está na lista. Remova-o se quiser adicionar novamente.");
           return;
       }
 
@@ -99,12 +124,13 @@ const PedidosForm = () => {
       const subtotal = precoFinal * Number(currentItem.quantidade);
 
       const novoItem = {
-          idProduto: currentItem.idProduto,
+          idProduto: parseInt(currentItem.idProduto),
           nomeProduto: currentItem.nomeProduto,
           precoUnitario: Number(currentItem.precoUnitario),
           desconto: Number(currentItem.desconto),
           quantidade: Number(currentItem.quantidade),
-          subtotal: subtotal
+          subtotal: subtotal,
+          mensagemPromocao: currentItem.mensagemPromocao
       };
 
       setItensPedido([...itensPedido, novoItem]);
@@ -114,7 +140,8 @@ const PedidosForm = () => {
           nomeProduto: '', 
           quantidade: 1, 
           precoUnitario: 0, 
-          desconto: 0 
+          desconto: 0,
+          mensagemPromocao: ''
       });
   };
 
@@ -140,7 +167,7 @@ const PedidosForm = () => {
         itens: itensPedido.map(i => ({
             idProduto: i.idProduto,
             quantidade: i.quantidade,
-            preco: i.precoUnitario - i.desconto 
+            preco: i.precoUnitario - i.desconto
         })),
     };
 
@@ -173,7 +200,9 @@ const PedidosForm = () => {
                     <label>Cliente *</label>
                     <select name="idCliente" value={formData.idCliente} onChange={handleHeaderChange} required disabled={isEditing}>
                         <option value="">Selecione...</option>
-                        {clientes.map(c => <option key={c.id} value={c.id}>{c.pessoa.nome}</option>)}
+                        {clientes.map(c => (
+                            <option key={c.id} value={c.id}>{c.pessoa.nome}</option>
+                        ))}
                     </select>
                 </div>
                 <div className="form-group">
@@ -200,6 +229,11 @@ const PedidosForm = () => {
                             <option key={p.id} value={p.id}>{p.nome}</option>
                         ))}
                     </select>
+                    {currentItem.mensagemPromocao && (
+                        <span style={{fontSize: '0.8em', color: 'green', display: 'block', marginTop: '2px'}}>
+                            {currentItem.mensagemPromocao}
+                        </span>
+                    )}
                 </div>
 
                 <div className="form-group">
@@ -249,7 +283,10 @@ const PedidosForm = () => {
                     <tbody>
                         {itensPedido.map((item, index) => (
                             <tr key={index}>
-                                <td>{item.nomeProduto}</td>
+                                <td>
+                                    {item.nomeProduto}
+                                    {item.mensagemPromocao && <div style={{fontSize:'0.75em', color:'green'}}>{item.mensagemPromocao}</div>}
+                                </td>
                                 <td>R$ {Number(item.precoUnitario).toFixed(2)}</td>
                                 <td style={{color: 'red'}}>{item.desconto > 0 ? `- R$ ${Number(item.desconto).toFixed(2)}` : '-'}</td>
                                 <td>{item.quantidade}</td>
@@ -271,8 +308,8 @@ const PedidosForm = () => {
         </div>
 
         <div className="form-actions">
-            <button type="submit" className='button-confirm' disabled={isLoading}>{isLoading ? 'Salvando...' : 'Confirmar Pedido'}</button>
-            <button type="button" className="form-button-secondary button-cancel" onClick={() => navigate('/pedidos')}>Cancelar</button>
+            <button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Confirmar Pedido'}</button>
+            <button type="button" className="form-button-secondary" onClick={() => navigate('/pedidos')}>Cancelar</button>
         </div>
 
       </form>
