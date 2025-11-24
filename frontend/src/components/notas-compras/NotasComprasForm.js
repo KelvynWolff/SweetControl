@@ -188,7 +188,12 @@ const NotasComprasForm = () => {
 
     try {
       const response = await uploadNotaXml(file);
-      const { dadosNota, produtos: p2, insumos: i2, fornecedores: fornecedoresAtualizados } = response;
+      const {
+        dadosNota,
+        produtos: p2,
+        insumos: i2,
+        fornecedores: fornecedoresAtualizados,
+      } = response;
 
       setProdutos(p2);
       setInsumos(i2);
@@ -320,11 +325,36 @@ const NotasComprasForm = () => {
           <legend>Itens da Nota</legend>
 
           <div className="dynamic-field-row">
-            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Tipo' />
-            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Item' />
-            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Preço' />
-            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Quantidade' />
-            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Lote' />
+            <input
+              type="text"
+              style={{ backgroundColor: 'transparent', border: 'none' }}
+              readOnly
+              placeholder="Tipo"
+            />
+            <input
+              type="text"
+              style={{ backgroundColor: 'transparent', border: 'none' }}
+              readOnly
+              placeholder="Item"
+            />
+            <input
+              type="text"
+              style={{ backgroundColor: 'transparent', border: 'none' }}
+              readOnly
+              placeholder="Preço"
+            />
+            <input
+              type="text"
+              style={{ backgroundColor: 'transparent', border: 'none' }}
+              readOnly
+              placeholder="Quantidade"
+            />
+            <input
+              type="text"
+              style={{ backgroundColor: 'transparent', border: 'none' }}
+              readOnly
+              placeholder="Lote"
+            />
           </div>
 
           {itens.map((item, index) => (
@@ -408,7 +438,7 @@ const NotasComprasForm = () => {
         )}
 
         <div className="form-actions">
-          <button type="submit" className="button-primary" disabled={isLoading}>
+          <button type="submit" className="button-confirm" disabled={isLoading}>
             {isLoading ? 'Registrando...' : 'Registrar Compra'}
           </button>
 
