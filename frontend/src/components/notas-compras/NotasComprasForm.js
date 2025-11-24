@@ -319,6 +319,14 @@ const NotasComprasForm = () => {
         <fieldset>
           <legend>Itens da Nota</legend>
 
+          <div className="dynamic-field-row">
+            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Tipo' />
+            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Item' />
+            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Preço' />
+            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Quantidade' />
+            <input type="text" style={{backgroundColor: "transparent", border: "none"}} readOnly placeholder='Lote' />
+          </div>
+
           {itens.map((item, index) => (
             <div key={index} className="dynamic-field-row">
               <select
