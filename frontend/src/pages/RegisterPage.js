@@ -60,7 +60,6 @@ const RegisterPage = () => {
       >
         <h2 style={{ margin: 0 }}>Cadastro de Usuário</h2>
 
-        {/* Nome */}
         <div className="form-group">
           <label className="label required" htmlFor="nome">
             Nome Completo
@@ -77,7 +76,6 @@ const RegisterPage = () => {
           />
         </div>
 
-        {/* E-mail */}
         <div className="form-group">
           <label className="label required" htmlFor="email">
             E-mail
@@ -93,7 +91,6 @@ const RegisterPage = () => {
           />
         </div>
 
-        {/* Senha */}
         <div className="form-group">
           <label className="label required" htmlFor="senha">
             Senha
@@ -124,7 +121,6 @@ const RegisterPage = () => {
           </span>
         </div>
 
-        {/* Permissão (desabilitado) */}
         <div className="form-group">
           <label className="label" htmlFor="permissao">
             Permissão
@@ -144,7 +140,6 @@ const RegisterPage = () => {
           </span>
         </div>
 
-        {/* Erro */}
         {error && (
           <div
             className="card"
@@ -159,7 +154,6 @@ const RegisterPage = () => {
           </div>
         )}
 
-        {/* Ações */}
         <div className="actions" style={{ marginTop: 4 }}>
           <button
             type="submit"

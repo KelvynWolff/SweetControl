@@ -12,6 +12,23 @@ const InsumosForm = () => {
   const navigate = useNavigate();
   const isEditing = Boolean(id);
 
+  const unidadesMedida = [
+    { value: 'g', label: 'Gramas (g)' },
+    { value: 'kg', label: 'Quilogramas (kg)' },
+    { value: 'ml', label: 'Mililitros (ml)' },
+    { value: 'l', label: 'Litros (L)' },
+    { value: 'cchá', label: 'Colher de Chá (cchá)' },
+    { value: 'cs', label: 'Colher de Sopa (cs)' },
+    { value: 'xic', label: 'Xícara (xic)' },
+    { value: 'un', label: 'Unidade (un)' },
+    { value: 'dz', label: 'Dúzia (dz)' },
+    { value: 'pct', label: 'Pacote (pct)' },
+    { value: 'cx', label: 'Caixa (cx)' },
+    { value: 'lata', label: 'Lata' },
+    { value: 'frasco', label: 'Frasco' },
+    { value: 'rolo', label: 'Rolo' },
+  ];
+
   const initialFormState = {
     nome: '',
     valor: 0,
@@ -100,17 +117,26 @@ const InsumosForm = () => {
         <div className="form-row">
           <div className="form-column">
             <label htmlFor="unidadeMedida">Unidade de Medida</label>
-            <input
+
+            <select
               name="unidadeMedida"
               value={formData.unidadeMedida}
               onChange={handleChange}
               required
-            />
+            >
+              <option value="">Selecione...</option>
+
+              {unidadesMedida.map((u) => (
+                <option key={u.value} value={u.value}>
+                  {u.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
         <div className="form-actions">
-          <button type="submit" className='button-confirm'>
+          <button type="submit" className="button-confirm">
             {isEditing ? 'Salvar Alterações' : 'Cadastrar'}
           </button>
 
